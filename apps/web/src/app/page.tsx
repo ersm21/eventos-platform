@@ -261,7 +261,7 @@ export default function Home() {
   return (
     <main style={pageStyle}>
       <div style={containerStyle}>
-        <AppNavbar ctaHref="#cotizar" ctaLabel="Cotizar ahora" />
+        <AppNavbar ctaHref="/book-meeting" ctaLabel="Hablar con nosotros" />
 
         <section style={heroShellStyle}>
           <div style={heroGlowStyle} />
@@ -277,11 +277,11 @@ export default function Home() {
               </p>
 
               <div style={heroButtonsStyle}>
-                <a href="#cotizar" style={primaryHeroButtonStyle}>
-                  Cotizar mi evento
-                </a>
-                <Link href="/book-meeting" style={secondaryHeroButtonStyle}>
-                  Hablar con nosotros
+                <Link href="/book-meeting" style={primaryHeroButtonStyle}>
+                  Solicitar reunión
+                </Link>
+                <Link href="/login" style={secondaryHeroButtonStyle}>
+                  Entrar a mi cuenta
                 </Link>
               </div>
             </div>
@@ -306,294 +306,12 @@ export default function Home() {
                 <p style={highlightEyebrowStyle}>Servicio completo</p>
                 <h3 style={highlightTitleStyle}>Del montaje al seguimiento</h3>
                 <p style={highlightTextStyle}>
-                  Cotiza, agenda una reunión y revisa tus solicitudes desde tu cuenta.
+                  Un proceso simple para coordinar tu evento con más claridad.
                 </p>
               </div>
             </div>
           </div>
         </section>
-
-        <section style={sessionBoxStyle}>
-          {!isLoggedIn ? (
-            <div style={sessionInnerStyle}>
-              <div>
-                <p style={sectionEyebrowStyle}>Tu cuenta</p>
-                <h2 style={sessionTitleStyle}>Inicia sesión para guardar mejor</h2>
-                <p style={sessionTextStyle}>
-                  Guarda tus cotizaciones con tu usuario y vuelve cuando quieras
-                  para revisarlas, confirmar reuniones y recibir actualizaciones.
-                </p>
-              </div>
-
-              <Link href="/login" style={primaryLinkButtonStyle}>
-                Iniciar sesión
-              </Link>
-            </div>
-          ) : (
-            <div style={sessionInnerStyle}>
-              <div>
-                <p style={sectionEyebrowStyle}>Tu cuenta</p>
-                <h2 style={sessionTitleStyle}>Tu sesión está activa</h2>
-                <p style={sessionTextStyle}>
-                  {sessionEmail
-                    ? `Entraste como ${sessionEmail}. Todo lo que hagas aquí quedará vinculado a tu cuenta.`
-                    : 'Tu cuenta está activa. Ya puedes guardar cotizaciones en tu perfil.'}
-                </p>
-              </div>
-
-              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                <Link href="/my-quotes" style={primaryLinkButtonStyle}>
-                  Mis cotizaciones
-                </Link>
-                <Link href="/account" style={secondaryLinkButtonStyle}>
-                  Mi cuenta
-                </Link>
-              </div>
-            </div>
-          )}
-        </section>
-
-        <section style={quickAccessStyle}>
-          <div style={sectionHeaderStyle}>
-            <div>
-              <p style={sectionEyebrowStyle}>Accesos rápidos</p>
-              <h2 style={sectionTitleStyle}>Entra directo a lo que necesitas</h2>
-              <p style={sectionTextStyle}>
-                Consulta tus cotizaciones, reuniones y cuenta sin perder tiempo.
-              </p>
-            </div>
-          </div>
-
-          <div style={quickGridStyle}>
-            <Link href="/my-quotes" style={quickCardStyle}>
-              <p style={quickCardEyebrowStyle}>Cotizaciones</p>
-              <h3 style={quickCardTitleStyle}>Ver mis solicitudes</h3>
-              <p style={quickCardTextStyle}>
-                Revisa estados, totales, depósitos y cotizaciones enviadas.
-              </p>
-            </Link>
-
-            <Link href="/my-meetings" style={quickCardStyle}>
-              <p style={quickCardEyebrowStyle}>Reuniones</p>
-              <h3 style={quickCardTitleStyle}>Ver mi agenda</h3>
-              <p style={quickCardTextStyle}>
-                Consulta reuniones solicitadas y cambios importantes.
-              </p>
-            </Link>
-
-            <Link href="/book-meeting" style={quickCardStyle}>
-              <p style={quickCardEyebrowStyle}>Agenda</p>
-              <h3 style={quickCardTitleStyle}>Solicitar reunión</h3>
-              <p style={quickCardTextStyle}>
-                Reserva un horario para hablar sobre tu evento.
-              </p>
-            </Link>
-          </div>
-        </section>
-
-        {error && <div style={errorBoxStyle}>{error}</div>}
-        {successMessage && <div style={successBoxStyle}>{successMessage}</div>}
-
-        <section id="catalogo" style={sectionStyle}>
-          <div style={sectionHeaderStyle}>
-            <div>
-              <p style={sectionEyebrowStyle}>Catálogo</p>
-              <h2 style={sectionTitleStyle}>Catálogo de servicios</h2>
-              <p style={sectionTextStyle}>
-                Elige lo que necesitas y arma una cotización clara para tu evento.
-              </p>
-            </div>
-          </div>
-
-          {loading ? (
-            <div style={panelStyle}>
-              <p style={{ margin: 0, color: '#94a3b8' }}>Cargando productos...</p>
-            </div>
-          ) : (
-            <div style={productGridStyle}>
-              {products.map((product) => (
-                <article key={product.id} style={productCardStyle}>
-                  <div style={productCardTopStyle}>
-                    <span style={categoryBadgeStyle}>
-                      {product.category || 'general'}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 style={productNameStyle}>{product.name}</h3>
-                    <p style={productDescriptionStyle}>{product.description}</p>
-                  </div>
-
-                  <div style={productFooterStyle}>
-                    <div>
-                      <p style={productPriceLabelStyle}>Desde</p>
-                      <p style={productPriceStyle}>{formatMoney(product.price)}</p>
-                    </div>
-                    <button
-                      onClick={() => addToQuote(product)}
-                      style={primaryButtonStyle}
-                    >
-                      Agregar
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
-
-        <div id="cotizar" style={twoColumnLayoutStyle}>
-          <section style={panelStyle}>
-            <div style={panelHeaderStyle}>
-              <div>
-                <p style={sectionEyebrowStyle}>Datos del cliente</p>
-                <h2 style={panelTitleStyle}>Cuéntanos sobre tu evento</h2>
-                <p style={panelTextStyle}>
-                  Completa tus datos para revisar tu solicitud y responderte con claridad.
-                </p>
-              </div>
-            </div>
-
-            <div style={formGridStyle}>
-              <div>
-                <label style={labelStyle}>Nombre</label>
-                <input
-                  type="text"
-                  placeholder="Tu nombre"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  style={inputStyle}
-                />
-              </div>
-
-              <div>
-                <label style={labelStyle}>Email</label>
-                <input
-                  type="email"
-                  placeholder="Tu email"
-                  value={customerEmail}
-                  onChange={(e) => setCustomerEmail(e.target.value)}
-                  style={inputStyle}
-                />
-              </div>
-
-              <div style={{ gridColumn: '1 / -1' }}>
-                <label style={labelStyle}>Tipo de evento</label>
-                <input
-                  type="text"
-                  placeholder="Boda, concierto, corporativo, DJ set, cumpleaños..."
-                  value={eventType}
-                  onChange={(e) => setEventType(e.target.value)}
-                  style={inputStyle}
-                />
-              </div>
-
-              <div style={{ gridColumn: '1 / -1' }}>
-                <label style={labelStyle}>Notas adicionales</label>
-                <textarea
-                  placeholder="Fecha, lugar, duración, montaje, luces, sonido, pantalla o cualquier detalle importante"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  style={textareaStyle}
-                />
-              </div>
-            </div>
-          </section>
-
-          <section style={quotePanelStyle}>
-            <div style={panelHeaderStyle}>
-              <div>
-                <p style={sectionEyebrowStyle}>Mi cotización</p>
-                <h2 style={panelTitleStyle}>Resumen de tu selección</h2>
-                <p style={panelTextStyle}>
-                  Revisa tu selección antes de enviarla.
-                </p>
-              </div>
-            </div>
-
-            {quoteItems.length === 0 ? (
-              <div style={emptyStateStyle}>
-                <p style={emptyTitleStyle}>Todavía no has agregado productos</p>
-                <p style={emptyTextStyle}>
-                  Empieza eligiendo servicios del catálogo para construir tu cotización.
-                </p>
-              </div>
-            ) : (
-              <div style={{ display: 'grid', gap: 12 }}>
-                {quoteItems.map((item) => (
-                  <div key={item.id} style={quoteItemCardStyle}>
-                    <div style={quoteItemHeaderStyle}>
-                      <div>
-                        <p style={quoteItemNameStyle}>{item.name}</p>
-                        <p style={quoteItemMetaStyle}>
-                          Unitario: {formatMoney(item.price)}
-                        </p>
-                      </div>
-
-                      <div style={quoteItemActionsStyle}>
-                        <button
-                          onClick={() => decreaseQuantity(item.id)}
-                          style={qtyButtonStyle}
-                        >
-                          −
-                        </button>
-                        <span style={qtyValueStyle}>{item.quantity}</span>
-                        <button
-                          onClick={() => increaseQuantity(item.id)}
-                          style={qtyButtonStyle}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-
-                    <p style={quoteSubtotalStyle}>
-                      Subtotal: {formatMoney(Number(item.price) * item.quantity)}
-                    </p>
-                  </div>
-                ))}
-
-                <div style={quoteSummaryBoxStyle}>
-                  <div style={quoteSummaryRowStyle}>
-                    <span>Total de items</span>
-                    <strong>{itemCount}</strong>
-                  </div>
-                  <div style={quoteSummaryRowStyle}>
-                    <span>Total estimado</span>
-                    <strong>{formatMoney(total)}</strong>
-                  </div>
-                </div>
-
-                {!isLoggedIn ? (
-                  <Link
-                    href="/login"
-                    style={{
-                      ...primaryLinkButtonStyle,
-                      width: '100%',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    Inicia sesión para guardar tu cotización
-                  </Link>
-                ) : (
-                  <button
-                    onClick={saveQuote}
-                    disabled={saving}
-                    style={{
-                      ...primaryButtonStyle,
-                      width: '100%',
-                      justifyContent: 'center',
-                      opacity: saving ? 0.72 : 1,
-                      cursor: saving ? 'not-allowed' : 'pointer',
-                    }}
-                  >
-                    {saving ? 'Enviando...' : 'Enviar cotización'}
-                  </button>
-                )}
-              </div>
-            )}
-          </section>
-        </div>
       </div>
     </main>
   );
