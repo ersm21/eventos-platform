@@ -288,16 +288,48 @@ export default function Home() {
 
             <div style={heroVisualWrapStyle}>
               <div style={photoGridStyle}>
-                <div style={{ ...photoTileStyle, minHeight: 170 }}>
+                <div
+                  style={{
+                    ...photoTileStyle,
+                    ...photoTileImageStyle,
+                    minHeight: 170,
+                    backgroundImage:
+                      'linear-gradient(180deg, rgba(2,6,23,0.12) 0%, rgba(2,6,23,0.74) 100%), url("https://images.unsplash.com/photo-1506091403742-e3aa39518db5?auto=format&fit=crop&w=900&q=80")',
+                  }}
+                >
                   <span style={photoTagStyle}>Luces</span>
                 </div>
-                <div style={{ ...photoTileStyle, minHeight: 110 }}>
+                <div
+                  style={{
+                    ...photoTileStyle,
+                    ...photoTileImageStyle,
+                    minHeight: 110,
+                    backgroundImage:
+                      'linear-gradient(180deg, rgba(2,6,23,0.12) 0%, rgba(2,6,23,0.74) 100%), url("https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=900&q=80")',
+                  }}
+                >
                   <span style={photoTagStyle}>Sonido</span>
                 </div>
-                <div style={{ ...photoTileStyle, minHeight: 110 }}>
+                <div
+                  style={{
+                    ...photoTileStyle,
+                    ...photoTileImageStyle,
+                    minHeight: 110,
+                    backgroundImage:
+                      'linear-gradient(180deg, rgba(2,6,23,0.12) 0%, rgba(2,6,23,0.74) 100%), url("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=900&q=80")',
+                  }}
+                >
                   <span style={photoTagStyle}>LED</span>
                 </div>
-                <div style={{ ...photoTileStyle, minHeight: 170 }}>
+                <div
+                  style={{
+                    ...photoTileStyle,
+                    ...photoTileImageStyle,
+                    minHeight: 170,
+                    backgroundImage:
+                      'linear-gradient(180deg, rgba(2,6,23,0.12) 0%, rgba(2,6,23,0.74) 100%), url("https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=900&q=80")',
+                  }}
+                >
                   <span style={photoTagStyle}>Tarimas</span>
                 </div>
               </div>
@@ -472,6 +504,12 @@ const photoTileStyle: React.CSSProperties = {
   background:
     'linear-gradient(135deg, rgba(37,99,235,0.26) 0%, rgba(15,23,42,0.64) 45%, rgba(2,6,23,0.82) 100%)',
   boxShadow: '0 14px 30px rgba(0,0,0,0.18)',
+};
+
+const photoTileImageStyle: React.CSSProperties = {
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
 };
 
 const photoTagStyle: React.CSSProperties = {
