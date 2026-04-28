@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { supabase } from '../Lib/supabase/client';
+import { supabase } from '../lib/supabase/client';
 
 type Quote = {
   id: string;
