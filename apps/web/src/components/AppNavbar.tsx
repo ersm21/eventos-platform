@@ -43,94 +43,18 @@ export default function AppNavbar({
   };
 
   return (
-    <header
-      style={{
-        position: 'sticky',
-        top: 14,
-        zIndex: 50,
-        backdropFilter: 'blur(18px)',
-        WebkitBackdropFilter: 'blur(18px)',
-        background: 'rgba(2, 6, 23, 0.72)',
-        border: '1px solid rgba(148, 163, 184, 0.14)',
-        borderRadius: 22,
-        padding: '14px 18px',
-        boxShadow: '0 14px 30px rgba(0,0,0,0.20)',
-        marginBottom: 28,
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 1240,
-          margin: '0 auto',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 16,
-          flexWrap: 'wrap',
-        }}
-      >
-        <Link
-          href="/"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 14,
-            textDecoration: 'none',
-            color: '#e5e7eb',
-          }}
-        >
-          <div
-            style={{
-              width: 46,
-              height: 46,
-              borderRadius: 16,
-              display: 'grid',
-              placeItems: 'center',
-              background:
-                'linear-gradient(135deg, rgba(37,99,235,1) 0%, rgba(96,165,250,1) 100%)',
-              color: '#fff',
-              fontWeight: 900,
-              fontSize: 18,
-              boxShadow: '0 12px 24px rgba(37,99,235,0.28)',
-            }}
-          >
-            EP
-          </div>
+    <header style={navbarStyle}>
+      <div style={navbarInnerStyle}>
+        <Link href="/" style={brandLinkStyle}>
+          <div style={logoStyle}>SM</div>
 
           <div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: 11,
-                color: '#60a5fa',
-                fontWeight: 800,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-              }}
-            >
-              SM EVENTS
-            </p>
-            <p
-              style={{
-                margin: '4px 0 0',
-                fontSize: 15,
-                color: '#cbd5e1',
-                fontWeight: 700,
-              }}
-            >
-              Luces, sonido, pantallas LED y producción
-            </p>
+            <p style={brandNameStyle}>SM Events</p>
+            <p style={brandSubtitleStyle}>Producción de eventos</p>
           </div>
         </Link>
 
-        <nav
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            flexWrap: 'wrap',
-          }}
-        >
+        <nav style={navStyle}>
           <Link href="/" style={navLinkStyle}>
             Inicio
           </Link>
@@ -173,6 +97,76 @@ export default function AppNavbar({
     </header>
   );
 }
+
+const navbarStyle: React.CSSProperties = {
+  position: 'sticky',
+  top: 14,
+  zIndex: 50,
+  backdropFilter: 'blur(18px)',
+  WebkitBackdropFilter: 'blur(18px)',
+  background: 'rgba(2, 6, 23, 0.72)',
+  border: '1px solid rgba(148, 163, 184, 0.14)',
+  borderRadius: 22,
+  padding: '14px 18px',
+  boxShadow: '0 14px 30px rgba(0,0,0,0.20)',
+  marginBottom: 28,
+};
+
+const navbarInnerStyle: React.CSSProperties = {
+  maxWidth: 1240,
+  margin: '0 auto',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 16,
+  flexWrap: 'wrap',
+};
+
+const brandLinkStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 14,
+  textDecoration: 'none',
+  color: '#e5e7eb',
+};
+
+const logoStyle: React.CSSProperties = {
+  width: 46,
+  height: 46,
+  borderRadius: 16,
+  display: 'grid',
+  placeItems: 'center',
+  background:
+    'linear-gradient(135deg, rgba(37,99,235,1) 0%, rgba(96,165,250,1) 100%)',
+  color: '#fff',
+  fontWeight: 900,
+  fontSize: 18,
+  letterSpacing: '-0.04em',
+  boxShadow: '0 12px 24px rgba(37,99,235,0.28)',
+};
+
+const brandNameStyle: React.CSSProperties = {
+  margin: 0,
+  fontSize: 13,
+  color: '#93c5fd',
+  fontWeight: 900,
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase',
+};
+
+const brandSubtitleStyle: React.CSSProperties = {
+  margin: '4px 0 0',
+  fontSize: 15,
+  color: '#e5e7eb',
+  fontWeight: 800,
+};
+
+const navStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
+  flexWrap: 'wrap',
+};
 
 const navLinkStyle: React.CSSProperties = {
   color: '#cbd5e1',
