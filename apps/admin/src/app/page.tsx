@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { supabase } from '../lib/supabase/client';
+import type { User } from '@supabase/supabase-js';
+import { supabase } from '../Lib/supabase/client';
 
 type Quote = {
   id: string;
@@ -554,6 +555,11 @@ export default function AdminPage() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const allowedAdminEmails = ['ericrafaelsousamorel@gmail.com'];
+  const [authMessage, setAuthMessage] = useState<string | null>(null);
 
   const [savingId, setSavingId] = useState<string | null>(null);
   const [savingMeetingId, setSavingMeetingId] = useState<string | null>(null);
@@ -583,6 +589,63 @@ export default function AdminPage() {
   const [slotPage, setSlotPage] = useState(1);
 
   useEffect(() => {
+    const checkAdminAccess = async () => {
+      setAuthLoading(true);
+      setAuthMessage(null);
+
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
+
+      if (sessionError) {
+        setAuthMessage(sessionError.message);
+        setUser(null);
+        setIsAdmin(false);
+        setAuthLoading(false);
+        setLoading(false);
+        return;
+      }
+
+      const currentUser = sessionData.session?.user ?? null;
+      setUser(currentUser);
+
+      if (!currentUser?.email) {
+        setIsAdmin(false);
+        setAuthLoading(false);
+        setLoading(false);
+        return;
+      }
+
+      const normalizedEmail = currentUser.email.toLowerCase().trim();
+      const isHardcodedAdmin = allowedAdminEmails.includes(normalizedEmail);
+
+      if (!isHardcodedAdmin) {
+        setAuthMessage('Esta cuenta no está autorizada para entrar al panel admin.');
+        setIsAdmin(false);
+        setAuthLoading(false);
+        setLoading(false);
+        return;
+      }
+
+      setIsAdmin(true);
+      setAuthLoading(false);
+    };
+
+    checkAdminAccess();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      checkAdminAccess();
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+
     const loadData = async () => {
       const { data: quotesData, error: quotesError } = await supabase
         .from('quotes')
@@ -637,7 +700,7 @@ export default function AdminPage() {
     };
 
     loadData();
-  }, []);
+  }, [isAdmin]);
 
   useEffect(() => {
     setQuotePage(1);
@@ -1289,6 +1352,93 @@ export default function AdminPage() {
 
     exportToExcel('admin_horarios', headers, rows);
   };
+
+  const signInWithGoogle = async () => {
+    setAuthMessage(null);
+
+    const { error: signInError } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/`,
+      },
+    });
+
+    if (signInError) {
+      setAuthMessage(signInError.message);
+    }
+  };
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setIsAdmin(false);
+    setQuotes([]);
+    setQuoteItems([]);
+    setMeetingRequests([]);
+    setMeetingSlots([]);
+  };
+
+  if (authLoading) {
+    return (
+      <main style={pageStyle}>
+        <div style={containerStyle}>
+          <section style={heroCardStyle}>
+            <p style={eyebrowStyle}>Backoffice</p>
+            <h1 style={heroTitleStyle}>Verificando acceso</h1>
+            <p style={heroTextStyle}>Estamos revisando tu sesión de admin...</p>
+          </section>
+        </div>
+      </main>
+    );
+  }
+
+  if (!user) {
+    return (
+      <main style={pageStyle}>
+        <div style={containerStyle}>
+          <section style={heroCardStyle}>
+            <p style={eyebrowStyle}>Backoffice</p>
+            <h1 style={heroTitleStyle}>Inicia sesión como admin</h1>
+            <p style={heroTextStyle}>
+              Para entrar al panel necesitas iniciar sesión con una cuenta autorizada.
+            </p>
+
+            {authMessage && <div style={errorBoxStyle}>{authMessage}</div>}
+
+            <div style={{ marginTop: 18 }}>
+              <button onClick={signInWithGoogle} style={primaryButtonStyle}>
+                Entrar con Google
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <main style={pageStyle}>
+        <div style={containerStyle}>
+          <section style={heroCardStyle}>
+            <p style={eyebrowStyle}>Backoffice</p>
+            <h1 style={heroTitleStyle}>No tienes acceso</h1>
+            <p style={heroTextStyle}>
+              La cuenta {user.email} no está autorizada para entrar al panel admin.
+            </p>
+
+            {authMessage && <div style={errorBoxStyle}>{authMessage}</div>}
+
+            <div style={{ marginTop: 18 }}>
+              <button onClick={signOut} style={secondaryButtonStyle}>
+                Cerrar sesión
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
+    );
+  }
 
   if (loading) {
     return (
@@ -2042,14 +2192,17 @@ export default function AdminPage() {
             </div>
 
             <div style={heroBadgeCardStyle}>
-              <p style={heroBadgeLabelStyle}>Estado general</p>
-              <p style={heroBadgeValueStyle}>
-                {totals.totalQuotes} cotizaciones · {totals.totalMeetings}{' '}
-                reuniones
-              </p>
+              <p style={heroBadgeLabelStyle}>Admin conectado</p>
+              <p style={heroBadgeValueStyle}>{user.email}</p>
               <p style={heroBadgeHintStyle}>
-                {totals.activeSlots} horarios activos
+                {totals.totalQuotes} cotizaciones · {totals.totalMeetings}{' '}
+                reuniones · {totals.activeSlots} horarios activos
               </p>
+              <div style={{ marginTop: 12 }}>
+                <button onClick={signOut} style={secondaryButtonStyle}>
+                  Cerrar sesión
+                </button>
+              </div>
             </div>
           </div>
         </section>
