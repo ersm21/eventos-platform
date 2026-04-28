@@ -265,6 +265,8 @@ export default function Home() {
 
         <section style={heroShellStyle}>
           <div style={heroGlowStyle} />
+          <div style={sideBrandLeftStyle} />
+          <div style={sideBrandRightStyle} />
           <div style={heroGridStyle}>
             <div style={heroContentStyle}>
               <p style={brandHeroLabelStyle}>Producción de eventos</p>
@@ -351,8 +353,10 @@ export default function Home() {
 
 const pageStyle: React.CSSProperties = {
   minHeight: '100vh',
-  color: '#e5e7eb',
+  color: '#f8fafc',
   padding: '34px 20px 80px',
+  background:
+    'radial-gradient(circle at 12% 18%, rgba(168,85,247,0.20), transparent 28%), radial-gradient(circle at 88% 12%, rgba(245,158,11,0.16), transparent 28%), linear-gradient(135deg, #020617 0%, #09090f 48%, #111827 100%)',
   fontFamily:
     'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
 };
@@ -366,21 +370,50 @@ const heroShellStyle: React.CSSProperties = {
   position: 'relative',
   overflow: 'hidden',
   background:
-    'linear-gradient(135deg, rgba(15,23,42,0.90) 0%, rgba(17,24,39,0.82) 55%, rgba(9,14,28,0.92) 100%)',
-  border: '1px solid rgba(148, 163, 184, 0.16)',
-  borderRadius: 30,
-  padding: 30,
-  boxShadow: '0 24px 60px rgba(0,0,0,0.24)',
+    'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(24,24,37,0.88) 42%, rgba(30,27,75,0.86) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.16)',
+  borderRadius: 34,
+  padding: 32,
+  boxShadow: '0 30px 80px rgba(0,0,0,0.34)',
 };
 
 const heroGlowStyle: React.CSSProperties = {
   position: 'absolute',
-  top: -40,
-  right: -40,
-  width: 240,
-  height: 240,
+  top: -70,
+  right: -50,
+  width: 320,
+  height: 320,
   borderRadius: '999px',
-  background: 'radial-gradient(circle, rgba(37,99,235,0.22), transparent 70%)',
+  background:
+    'radial-gradient(circle, rgba(245,158,11,0.24), rgba(168,85,247,0.12) 42%, transparent 72%)',
+  pointerEvents: 'none',
+};
+
+const sideBrandLeftStyle: React.CSSProperties = {
+  position: 'absolute',
+  left: -70,
+  top: 70,
+  width: 150,
+  height: 360,
+  borderRadius: 999,
+  background:
+    'linear-gradient(180deg, rgba(245,158,11,0.20) 0%, rgba(168,85,247,0.16) 54%, rgba(59,130,246,0.12) 100%)',
+  filter: 'blur(2px)',
+  opacity: 0.72,
+  pointerEvents: 'none',
+};
+
+const sideBrandRightStyle: React.CSSProperties = {
+  position: 'absolute',
+  right: -90,
+  bottom: -40,
+  width: 220,
+  height: 420,
+  borderRadius: 40,
+  background:
+    'linear-gradient(180deg, rgba(59,130,246,0.10) 0%, rgba(168,85,247,0.22) 48%, rgba(245,158,11,0.16) 100%)',
+  transform: 'rotate(12deg)',
+  opacity: 0.68,
   pointerEvents: 'none',
 };
 
@@ -410,18 +443,19 @@ const eyebrowStyle: React.CSSProperties = {
 
 const brandHeroLabelStyle: React.CSSProperties = {
   margin: 0,
-  color: '#93c5fd',
+  color: '#fbbf24',
   fontWeight: 900,
-  letterSpacing: '0.08em',
+  letterSpacing: '0.1em',
   textTransform: 'uppercase',
-  fontSize: 18,
+  fontSize: 16,
 };
 
 const heroTitleStyle: React.CSSProperties = {
   margin: '14px 0 14px',
-  fontSize: 52,
-  lineHeight: 1.02,
-  letterSpacing: '-0.03em',
+  fontSize: 56,
+  lineHeight: 1.01,
+  letterSpacing: '-0.04em',
+  textShadow: '0 18px 60px rgba(0,0,0,0.42)',
 };
 
 const heroTextStyle: React.CSSProperties = {
@@ -446,10 +480,10 @@ const primaryHeroButtonStyle: React.CSSProperties = {
   padding: '13px 18px',
   borderRadius: 14,
   textDecoration: 'none',
-  background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
+  background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
   color: '#fff',
-  fontWeight: 800,
-  boxShadow: '0 16px 28px rgba(37,99,235,0.24)',
+  fontWeight: 900,
+  boxShadow: '0 18px 34px rgba(236,72,153,0.26)',
 };
 
 const secondaryHeroButtonStyle: React.CSSProperties = {
@@ -459,10 +493,11 @@ const secondaryHeroButtonStyle: React.CSSProperties = {
   padding: '13px 18px',
   borderRadius: 14,
   textDecoration: 'none',
-  background: 'rgba(2, 6, 23, 0.42)',
-  color: '#e5e7eb',
+  background: 'rgba(2, 6, 23, 0.46)',
+  color: '#f8fafc',
   fontWeight: 800,
-  border: '1px solid rgba(148, 163, 184, 0.18)',
+  border: '1px solid rgba(250, 204, 21, 0.22)',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
 };
 
 const heroTrustRowStyle: React.CSSProperties = {
@@ -517,13 +552,14 @@ const photoTagStyle: React.CSSProperties = {
   left: 14,
   bottom: 14,
   display: 'inline-flex',
-  padding: '7px 10px',
+  padding: '8px 11px',
   borderRadius: 999,
-  background: 'rgba(2, 6, 23, 0.62)',
-  border: '1px solid rgba(148, 163, 184, 0.18)',
-  color: '#e5e7eb',
+  background: 'rgba(2, 6, 23, 0.70)',
+  border: '1px solid rgba(250, 204, 21, 0.24)',
+  color: '#f8fafc',
   fontSize: 12,
-  fontWeight: 800,
+  fontWeight: 900,
+  boxShadow: '0 10px 24px rgba(0,0,0,0.28)',
 };
 
 const heroStatsRowStyle: React.CSSProperties = {
@@ -554,17 +590,18 @@ const heroStatValueStyle: React.CSSProperties = {
 
 const highlightCardStyle: React.CSSProperties = {
   background:
-    'linear-gradient(180deg, rgba(37,99,235,0.14) 0%, rgba(2,6,23,0.34) 100%)',
-  border: '1px solid rgba(96, 165, 250, 0.18)',
+    'linear-gradient(135deg, rgba(245,158,11,0.14) 0%, rgba(168,85,247,0.14) 48%, rgba(2,6,23,0.36) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.18)',
   borderRadius: 22,
   padding: 18,
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
 };
 
 const highlightEyebrowStyle: React.CSSProperties = {
   margin: 0,
-  color: '#93c5fd',
+  color: '#fbbf24',
   fontSize: 12,
-  fontWeight: 800,
+  fontWeight: 900,
   textTransform: 'uppercase',
   letterSpacing: '0.08em',
 };
