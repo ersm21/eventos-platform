@@ -59,13 +59,13 @@ export default function AppNavbar({
             Inicio
           </Link>
 
-          <a href="/#catalogo" style={navLinkStyle}>
+          <Link href="/catalogo" style={navLinkStyle}>
             Catálogo
-          </a>
+          </Link>
 
-          <a href="/#cotizar" style={navLinkStyle}>
+          <Link href="/cotizar" style={navLinkStyle}>
             Cotizar
-          </a>
+          </Link>
 
           <Link href="/my-quotes" style={navLinkStyle}>
             Mis cotizaciones
@@ -89,9 +89,9 @@ export default function AppNavbar({
             </button>
           )}
 
-          <a href={ctaHref} style={ctaButtonStyle}>
+          <Link href={ctaHref} style={ctaButtonStyle}>
             {ctaLabel}
-          </a>
+          </Link>
         </nav>
       </div>
     </header>
