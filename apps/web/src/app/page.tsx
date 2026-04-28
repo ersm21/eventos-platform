@@ -267,14 +267,13 @@ export default function Home() {
           <div style={heroGlowStyle} />
           <div style={heroGridStyle}>
             <div style={heroContentStyle}>
-              <p style={eyebrowStyle}>Eventos Platform</p>
+              <p style={eyebrowStyle}>SM Events</p>
               <h1 style={heroTitleStyle}>
-                Cotizaciones, agenda y seguimiento en una sola experiencia
+                Luces, sonido, pantallas LED, tarimas y producción para tu evento
               </h1>
               <p style={heroTextStyle}>
-                Organiza tu evento con una experiencia clara y moderna. Explora
-                servicios, arma tu cotización, solicita reuniones y da
-                seguimiento a todo desde tu cuenta.
+                Cotiza los servicios de SM Events, arma tu selección, solicita
+                reuniones y da seguimiento a cada detalle desde tu cuenta.
               </p>
 
               <div style={heroButtonsStyle}>
@@ -287,9 +286,9 @@ export default function Home() {
               </div>
 
               <div style={heroTrustRowStyle}>
-                <span style={miniBadgeStyle}>Cotizaciones claras</span>
-                <span style={miniBadgeStyle}>Seguimiento del cliente</span>
-                <span style={miniBadgeStyle}>Agenda de reuniones</span>
+                <span style={miniBadgeStyle}>Luces y sonido</span>
+                <span style={miniBadgeStyle}>Pantallas LED</span>
+                <span style={miniBadgeStyle}>Tarimas y producción</span>
               </div>
             </div>
 
@@ -310,11 +309,11 @@ export default function Home() {
               </div>
 
               <div style={highlightCardStyle}>
-                <p style={highlightEyebrowStyle}>Experiencia cliente</p>
-                <h3 style={highlightTitleStyle}>Todo queda guardado en tu cuenta</h3>
+                <p style={highlightEyebrowStyle}>SM Events</p>
+                <h3 style={highlightTitleStyle}>Tu evento organizado desde el primer contacto</h3>
                 <p style={highlightTextStyle}>
                   Inicia sesión para ver tus cotizaciones, tus reuniones y cada
-                  actualización importante en un solo lugar.
+                  actualización importante de tu evento en un solo lugar.
                 </p>
               </div>
             </div>
@@ -365,9 +364,9 @@ export default function Home() {
           <div style={sectionHeaderStyle}>
             <div>
               <p style={sectionEyebrowStyle}>Accesos rápidos</p>
-              <h2 style={sectionTitleStyle}>Muévete rápido por la plataforma</h2>
+              <h2 style={sectionTitleStyle}>Gestiona tu evento con SM Events</h2>
               <p style={sectionTextStyle}>
-                Todo el flujo importante queda a un clic.
+                Cotizaciones, reuniones, cuenta y seguimiento en un solo lugar.
               </p>
             </div>
           </div>
@@ -414,10 +413,10 @@ export default function Home() {
           <div style={sectionHeaderStyle}>
             <div>
               <p style={sectionEyebrowStyle}>Catálogo</p>
-              <h2 style={sectionTitleStyle}>Equipos y servicios disponibles</h2>
+              <h2 style={sectionTitleStyle}>Equipos y servicios de SM Events</h2>
               <p style={sectionTextStyle}>
-                Selecciona lo necesario para bodas, conciertos, eventos
-                corporativos, montajes DJ y producciones privadas.
+                Selecciona luces, sonido, pantallas LED, tarimas y producción
+                para bodas, conciertos, eventos corporativos y montajes privados.
               </p>
             </div>
           </div>
@@ -464,10 +463,10 @@ export default function Home() {
             <div style={panelHeaderStyle}>
               <div>
                 <p style={sectionEyebrowStyle}>Datos del cliente</p>
-                <h2 style={panelTitleStyle}>Cuéntanos sobre tu evento</h2>
+                <h2 style={panelTitleStyle}>Cotiza tu evento con SM Events</h2>
                 <p style={panelTextStyle}>
                   Completa tus datos para enviarnos una solicitud clara y más fácil
-                  de revisar.
+                  de revisar por nuestro equipo.
                 </p>
               </div>
             </div>
@@ -499,7 +498,7 @@ export default function Home() {
                 <label style={labelStyle}>Tipo de evento</label>
                 <input
                   type="text"
-                  placeholder="Boda, concierto, corporativo, DJ set..."
+                  placeholder="Boda, concierto, corporativo, DJ set, cumpleaños..."
                   value={eventType}
                   onChange={(e) => setEventType(e.target.value)}
                   style={inputStyle}
@@ -509,7 +508,7 @@ export default function Home() {
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={labelStyle}>Notas adicionales</label>
                 <textarea
-                  placeholder="Fecha, lugar, duración, montaje o cualquier detalle importante"
+                  placeholder="Fecha, lugar, duración, montaje, luces, sonido, pantalla o cualquier detalle importante"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   style={textareaStyle}
@@ -533,7 +532,7 @@ export default function Home() {
               <div style={emptyStateStyle}>
                 <p style={emptyTitleStyle}>Todavía no has agregado productos</p>
                 <p style={emptyTextStyle}>
-                  Empieza eligiendo servicios del catálogo para construir tu
+                  Empieza eligiendo servicios de SM Events para construir tu
                   cotización.
                 </p>
               </div>
