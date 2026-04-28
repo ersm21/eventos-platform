@@ -1383,9 +1383,9 @@ export default function AdminPage() {
       <main style={pageStyle}>
         <div style={containerStyle}>
           <section style={heroCardStyle}>
-            <p style={eyebrowStyle}>Backoffice</p>
-            <h1 style={heroTitleStyle}>Verificando acceso</h1>
-            <p style={heroTextStyle}>Estamos revisando tu sesión de admin...</p>
+            <p style={eyebrowStyle}>SM Events Backoffice</p>
+            <h1 style={heroTitleStyle}>Verificando acceso a SM Events</h1>
+            <p style={heroTextStyle}>Estamos revisando tu sesión de administrador de SM Events...</p>
           </section>
         </div>
       </main>
@@ -1397,10 +1397,10 @@ export default function AdminPage() {
       <main style={pageStyle}>
         <div style={containerStyle}>
           <section style={heroCardStyle}>
-            <p style={eyebrowStyle}>Backoffice</p>
-            <h1 style={heroTitleStyle}>Inicia sesión como admin</h1>
+            <p style={eyebrowStyle}>SM Events Backoffice</p>
+            <h1 style={heroTitleStyle}>Inicia sesión en SM Events Admin</h1>
             <p style={heroTextStyle}>
-              Para entrar al panel necesitas iniciar sesión con una cuenta autorizada.
+              Para entrar al panel de SM Events necesitas iniciar sesión con una cuenta autorizada.
             </p>
 
             {authMessage && <div style={errorBoxStyle}>{authMessage}</div>}
@@ -1421,7 +1421,7 @@ export default function AdminPage() {
       <main style={pageStyle}>
         <div style={containerStyle}>
           <section style={heroCardStyle}>
-            <p style={eyebrowStyle}>Backoffice</p>
+            <p style={eyebrowStyle}>SM Events Backoffice</p>
             <h1 style={heroTitleStyle}>No tienes acceso</h1>
             <p style={heroTextStyle}>
               La cuenta {user.email} no está autorizada para entrar al panel admin.
@@ -1445,8 +1445,8 @@ export default function AdminPage() {
       <main style={pageStyle}>
         <div style={containerStyle}>
           <section style={heroCardStyle}>
-            <p style={eyebrowStyle}>Backoffice</p>
-            <h1 style={heroTitleStyle}>Panel Admin</h1>
+            <p style={eyebrowStyle}>SM Events Backoffice</p>
+            <h1 style={heroTitleStyle}>Panel Admin SM Events</h1>
             <p style={heroTextStyle}>
               Cargando cotizaciones, reuniones y horarios...
             </p>
@@ -2183,11 +2183,10 @@ export default function AdminPage() {
         <section style={heroCardStyle}>
           <div style={heroHeaderRowStyle}>
             <div>
-              <p style={eyebrowStyle}>Backoffice</p>
-              <h1 style={heroTitleStyle}>Panel Admin</h1>
+              <p style={eyebrowStyle}>SM Events Backoffice</p>
+              <h1 style={heroTitleStyle}>Panel Admin SM Events</h1>
               <p style={heroTextStyle}>
-                Ahora con dashboard visual, secciones, búsqueda, filtros, orden,
-                paginación y exportación.
+                Gestiona cotizaciones, reuniones, horarios y comprobantes de SM Events desde un solo lugar.
               </p>
             </div>
 
