@@ -267,7 +267,7 @@ export default function Home() {
           <div style={heroGlowStyle} />
           <div style={heroGridStyle}>
             <div style={heroContentStyle}>
-              <p style={eyebrowStyle}>SM Events</p>
+              <p style={brandHeroLabelStyle}>SM Events</p>
               <h1 style={heroTitleStyle}>
                 Luces, sonido, pantallas LED, tarimas y producción para tu evento
               </h1>
@@ -674,6 +674,15 @@ const eyebrowStyle: React.CSSProperties = {
   letterSpacing: '0.12em',
   textTransform: 'uppercase',
   fontSize: 12,
+};
+
+const brandHeroLabelStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#93c5fd',
+  fontWeight: 900,
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase',
+  fontSize: 18,
 };
 
 const heroTitleStyle: React.CSSProperties = {

@@ -108,7 +108,7 @@ export default function AppNavbar({
                 textTransform: 'uppercase',
               }}
             >
-              Eventos Platform
+              SM EVENTS
             </p>
             <p
               style={{
@@ -118,7 +118,7 @@ export default function AppNavbar({
                 fontWeight: 700,
               }}
             >
-              Cotizaciones, agenda y seguimiento
+              Luces, sonido, pantallas LED y producción
             </p>
           </div>
         </Link>
