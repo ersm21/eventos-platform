@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { supabase } from '../lib/supabase/client';
+import { supabase } from '../Lib/supabase/client';
 
 type Quote = {
   id: string;
@@ -2671,5 +2671,4 @@ const paginationWrapStyle: React.CSSProperties = {
 
 const paginationTextStyle: React.CSSProperties = {
   color: '#94a3b8',
-  fontSize: 14,
 };
