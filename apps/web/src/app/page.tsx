@@ -219,7 +219,7 @@ export default function Home() {
     }
 
     try {
-     await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/resend`, {
+      await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/resend`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -267,53 +267,46 @@ export default function Home() {
           <div style={heroGlowStyle} />
           <div style={heroGridStyle}>
             <div style={heroContentStyle}>
-              <p style={brandHeroLabelStyle}>SM Events</p>
+              <p style={brandHeroLabelStyle}>Producción de eventos</p>
               <h1 style={heroTitleStyle}>
-                Luces, sonido, pantallas LED, tarimas y producción para tu evento
+                Hacemos que tu evento se vea y suene como debe
               </h1>
               <p style={heroTextStyle}>
-                Cotiza los servicios de SM Events, arma tu selección, solicita
-                reuniones y da seguimiento a cada detalle desde tu cuenta.
+                Cuéntanos qué estás preparando y te ayudamos a organizar luces,
+                sonido, pantallas LED, tarimas y producción con un proceso claro.
               </p>
 
               <div style={heroButtonsStyle}>
-                <a href="#catalogo" style={primaryHeroButtonStyle}>
-                  Explorar catálogo
+                <a href="#cotizar" style={primaryHeroButtonStyle}>
+                  Cotizar mi evento
                 </a>
                 <Link href="/book-meeting" style={secondaryHeroButtonStyle}>
-                  Solicitar reunión
+                  Hablar con nosotros
                 </Link>
-              </div>
-
-              <div style={heroTrustRowStyle}>
-                <span style={miniBadgeStyle}>Luces y sonido</span>
-                <span style={miniBadgeStyle}>Pantallas LED</span>
-                <span style={miniBadgeStyle}>Tarimas y producción</span>
               </div>
             </div>
 
-            <div style={heroStatsWrapStyle}>
-              <div style={heroStatsRowStyle}>
-                <div style={heroStatCardStyle}>
-                  <p style={heroStatLabelStyle}>Productos activos</p>
-                  <p style={heroStatValueStyle}>{products.length}</p>
+            <div style={heroVisualWrapStyle}>
+              <div style={photoGridStyle}>
+                <div style={{ ...photoTileStyle, minHeight: 170 }}>
+                  <span style={photoTagStyle}>Luces</span>
                 </div>
-                <div style={heroStatCardStyle}>
-                  <p style={heroStatLabelStyle}>Items en tu cotización</p>
-                  <p style={heroStatValueStyle}>{itemCount}</p>
+                <div style={{ ...photoTileStyle, minHeight: 110 }}>
+                  <span style={photoTagStyle}>Sonido</span>
                 </div>
-                <div style={heroStatCardStyle}>
-                  <p style={heroStatLabelStyle}>Total estimado</p>
-                  <p style={heroStatValueStyle}>{formatMoney(total)}</p>
+                <div style={{ ...photoTileStyle, minHeight: 110 }}>
+                  <span style={photoTagStyle}>LED</span>
+                </div>
+                <div style={{ ...photoTileStyle, minHeight: 170 }}>
+                  <span style={photoTagStyle}>Tarimas</span>
                 </div>
               </div>
 
               <div style={highlightCardStyle}>
-                <p style={highlightEyebrowStyle}>SM Events</p>
-                <h3 style={highlightTitleStyle}>Tu evento organizado desde el primer contacto</h3>
+                <p style={highlightEyebrowStyle}>Servicio completo</p>
+                <h3 style={highlightTitleStyle}>Del montaje al seguimiento</h3>
                 <p style={highlightTextStyle}>
-                  Inicia sesión para ver tus cotizaciones, tus reuniones y cada
-                  actualización importante de tu evento en un solo lugar.
+                  Cotiza, agenda una reunión y revisa tus solicitudes desde tu cuenta.
                 </p>
               </div>
             </div>
@@ -364,27 +357,27 @@ export default function Home() {
           <div style={sectionHeaderStyle}>
             <div>
               <p style={sectionEyebrowStyle}>Accesos rápidos</p>
-              <h2 style={sectionTitleStyle}>Gestiona tu evento con SM Events</h2>
+              <h2 style={sectionTitleStyle}>Entra directo a lo que necesitas</h2>
               <p style={sectionTextStyle}>
-                Cotizaciones, reuniones, cuenta y seguimiento en un solo lugar.
+                Consulta tus cotizaciones, reuniones y cuenta sin perder tiempo.
               </p>
             </div>
           </div>
 
           <div style={quickGridStyle}>
             <Link href="/my-quotes" style={quickCardStyle}>
-              <p style={quickCardEyebrowStyle}>Cliente</p>
-              <h3 style={quickCardTitleStyle}>Mis cotizaciones</h3>
+              <p style={quickCardEyebrowStyle}>Cotizaciones</p>
+              <h3 style={quickCardTitleStyle}>Ver mis solicitudes</h3>
               <p style={quickCardTextStyle}>
-                Revisa estados, totales, depósitos y cada cotización enviada.
+                Revisa estados, totales, depósitos y cotizaciones enviadas.
               </p>
             </Link>
 
             <Link href="/my-meetings" style={quickCardStyle}>
-              <p style={quickCardEyebrowStyle}>Cliente</p>
-              <h3 style={quickCardTitleStyle}>Mis reuniones</h3>
+              <p style={quickCardEyebrowStyle}>Reuniones</p>
+              <h3 style={quickCardTitleStyle}>Ver mi agenda</h3>
               <p style={quickCardTextStyle}>
-                Mira el estado de tus reuniones y sus cambios importantes.
+                Consulta reuniones solicitadas y cambios importantes.
               </p>
             </Link>
 
@@ -392,15 +385,7 @@ export default function Home() {
               <p style={quickCardEyebrowStyle}>Agenda</p>
               <h3 style={quickCardTitleStyle}>Solicitar reunión</h3>
               <p style={quickCardTextStyle}>
-                Reserva un horario disponible para hablar sobre tu evento.
-              </p>
-            </Link>
-
-            <Link href="/account" style={quickCardStyle}>
-              <p style={quickCardEyebrowStyle}>Cuenta</p>
-              <h3 style={quickCardTitleStyle}>Mi cuenta</h3>
-              <p style={quickCardTextStyle}>
-                Gestiona tu sesión y entra al panel personal del cliente.
+                Reserva un horario para hablar sobre tu evento.
               </p>
             </Link>
           </div>
@@ -413,10 +398,9 @@ export default function Home() {
           <div style={sectionHeaderStyle}>
             <div>
               <p style={sectionEyebrowStyle}>Catálogo</p>
-              <h2 style={sectionTitleStyle}>Equipos y servicios de SM Events</h2>
+              <h2 style={sectionTitleStyle}>Catálogo de servicios</h2>
               <p style={sectionTextStyle}>
-                Selecciona luces, sonido, pantallas LED, tarimas y producción
-                para bodas, conciertos, eventos corporativos y montajes privados.
+                Elige lo que necesitas y arma una cotización clara para tu evento.
               </p>
             </div>
           </div>
@@ -463,10 +447,9 @@ export default function Home() {
             <div style={panelHeaderStyle}>
               <div>
                 <p style={sectionEyebrowStyle}>Datos del cliente</p>
-                <h2 style={panelTitleStyle}>Cotiza tu evento con SM Events</h2>
+                <h2 style={panelTitleStyle}>Cuéntanos sobre tu evento</h2>
                 <p style={panelTextStyle}>
-                  Completa tus datos para enviarnos una solicitud clara y más fácil
-                  de revisar por nuestro equipo.
+                  Completa tus datos para revisar tu solicitud y responderte con claridad.
                 </p>
               </div>
             </div>
@@ -532,8 +515,7 @@ export default function Home() {
               <div style={emptyStateStyle}>
                 <p style={emptyTitleStyle}>Todavía no has agregado productos</p>
                 <p style={emptyTextStyle}>
-                  Empieza eligiendo servicios de SM Events para construir tu
-                  cotización.
+                  Empieza eligiendo servicios del catálogo para construir tu cotización.
                 </p>
               </div>
             ) : (
@@ -752,9 +734,40 @@ const miniBadgeStyle: React.CSSProperties = {
   fontWeight: 700,
 };
 
-const heroStatsWrapStyle: React.CSSProperties = {
+const heroVisualWrapStyle: React.CSSProperties = {
   display: 'grid',
   gap: 14,
+};
+
+const photoGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 12,
+  alignItems: 'stretch',
+};
+
+const photoTileStyle: React.CSSProperties = {
+  position: 'relative',
+  overflow: 'hidden',
+  borderRadius: 22,
+  border: '1px solid rgba(148, 163, 184, 0.14)',
+  background:
+    'linear-gradient(135deg, rgba(37,99,235,0.26) 0%, rgba(15,23,42,0.64) 45%, rgba(2,6,23,0.82) 100%)',
+  boxShadow: '0 14px 30px rgba(0,0,0,0.18)',
+};
+
+const photoTagStyle: React.CSSProperties = {
+  position: 'absolute',
+  left: 14,
+  bottom: 14,
+  display: 'inline-flex',
+  padding: '7px 10px',
+  borderRadius: 999,
+  background: 'rgba(2, 6, 23, 0.62)',
+  border: '1px solid rgba(148, 163, 184, 0.18)',
+  color: '#e5e7eb',
+  fontSize: 12,
+  fontWeight: 800,
 };
 
 const heroStatsRowStyle: React.CSSProperties = {
