@@ -115,6 +115,34 @@ function formatMeetingDate(value: string | null | undefined) {
   return date.toLocaleDateString();
 }
 
+function getMeetingNoteValue(notes: string | null | undefined, label: string) {
+  if (!notes) return '';
+
+  const line = notes
+    .split('\n')
+    .find((item) => item.toLowerCase().startsWith(`${label.toLowerCase()}:`));
+
+  if (!line) return '';
+
+  return line.slice(label.length + 1).trim();
+}
+
+function getMeetingPhone(notes: string | null | undefined) {
+  return getMeetingNoteValue(notes, 'Teléfono') || '—';
+}
+
+function getMeetingCompany(notes: string | null | undefined) {
+  const company = getMeetingNoteValue(notes, 'Empresa');
+
+  if (!company || company.toLowerCase() === 'no aplica') return '—';
+
+  return company;
+}
+
+function getMeetingClientNotes(notes: string | null | undefined) {
+  return getMeetingNoteValue(notes, 'Notas') || 'Sin notas';
+}
+
 function getStatusLabel(status: string | null | undefined) {
   switch (status) {
     case 'draft':
@@ -1917,10 +1945,11 @@ export default function AdminPage() {
         <div style={{ display: 'grid', gap: 10 }}>
           <div style={meetingTableHeaderStyle}>
             <span>Cliente</span>
+            <span>Teléfono</span>
+            <span>Empresa</span>
             <span>Fecha</span>
             <span>Hora</span>
             <span>Estado</span>
-            <span>Notas</span>
             <span>Acción</span>
           </div>
 
@@ -1931,6 +1960,14 @@ export default function AdminPage() {
                   <strong>{meeting.customer_name || 'Cliente sin nombre'}</strong>
                   <span>{meeting.customer_email || 'Sin email'}</span>
                   <small>ID: {meeting.id.slice(0, 8)}...</small>
+                </div>
+
+                <div style={quoteCompactCellStyle}>
+                  <strong>{getMeetingPhone(meeting.notes)}</strong>
+                </div>
+
+                <div style={quoteCompactCellStyle}>
+                  <strong>{getMeetingCompany(meeting.notes)}</strong>
                 </div>
 
                 <div style={quoteCompactCellStyle}>
@@ -1946,10 +1983,6 @@ export default function AdminPage() {
                   <span style={getMeetingBadgeStyle(meeting.status)}>
                     {getMeetingLabel(meeting.status)}
                   </span>
-                </div>
-
-                <div style={meetingNotesPreviewStyle}>
-                  {meeting.notes || 'Sin notas'}
                 </div>
 
                 <div style={quoteCompactActionStyle}>
@@ -1973,7 +2006,7 @@ export default function AdminPage() {
               <section style={subPanelStyle}>
                 <h4 style={subPanelTitleStyle}>Notas del cliente</h4>
                 <p style={notesTextStyle}>
-                  {meeting.notes || 'Sin notas adicionales.'}
+                  {getMeetingClientNotes(meeting.notes)}
                 </p>
               </section>
 
@@ -3429,7 +3462,7 @@ const sectionToggleContentStyle: React.CSSProperties = {
 const meetingTableHeaderStyle: React.CSSProperties = {
   display: 'grid',
   gridTemplateColumns:
-    'minmax(210px, 1.4fr) minmax(140px, 0.9fr) 90px minmax(110px, 0.8fr) minmax(180px, 1.2fr) 82px',
+    'minmax(190px, 1.3fr) minmax(120px, 0.8fr) minmax(130px, 0.9fr) minmax(130px, 0.8fr) 80px minmax(110px, 0.8fr) 82px',
   gap: 10,
   alignItems: 'center',
   padding: '0 12px 6px',
@@ -3443,7 +3476,7 @@ const meetingTableHeaderStyle: React.CSSProperties = {
 const meetingCompactRowStyle: React.CSSProperties = {
   display: 'grid',
   gridTemplateColumns:
-    'minmax(210px, 1.4fr) minmax(140px, 0.9fr) 90px minmax(110px, 0.8fr) minmax(180px, 1.2fr) 82px',
+    'minmax(190px, 1.3fr) minmax(120px, 0.8fr) minmax(130px, 0.9fr) minmax(130px, 0.8fr) 80px minmax(110px, 0.8fr) 82px',
   gap: 10,
   alignItems: 'center',
 };
