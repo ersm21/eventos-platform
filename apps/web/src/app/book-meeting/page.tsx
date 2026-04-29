@@ -175,7 +175,7 @@ export default function BookMeetingPage() {
       .filter(Boolean)
       .join('\n');
 
-    const { error: insertError } = await supabase.from('meeting_requests').insert([
+    const { data: meetingData, error: insertError } = await supabase.from('meeting_requests').insert([
       {
         user_id: user?.id ?? null,
         slot_id: selectedSlot.id,
@@ -183,10 +183,12 @@ export default function BookMeetingPage() {
         customer_email: customerEmail,
         requested_date: selectedSlot.slot_date,
         requested_time: selectedSlot.slot_time,
-        notes,
+        notes: extraNotes,
         status: 'pending',
       },
-    ]);
+    ])
+      .select()
+      .single();
 
     if (insertError) {
       setError(insertError.message);
@@ -213,7 +215,8 @@ export default function BookMeetingPage() {
         },
         body: JSON.stringify({
           type: 'meeting_request',
-          fullName,
+          meetingId: meetingData?.id,
+          customerName: fullName,
           customerEmail,
           requestedDate: selectedSlot.slot_date,
           requestedTime: selectedSlot.slot_time,
