@@ -2024,16 +2024,34 @@ export default function AdminPage() {
                   <section style={subPanelStyle}>
                     <h3 style={subPanelTitleStyle}>Resumen económico</h3>
                     <p style={infoLineStyle}>
+                      <strong>Subtotal original sin descuento:</strong>{' '}
+                      {hasQuoteAdminDiscount(quote, itemsForQuote) ? (
+                        <span style={quoteItemsOriginalTotalStyle}>
+                          {formatMoney(getQuoteItemsTotal(itemsForQuote))}
+                        </span>
+                      ) : (
+                        formatMoney(getQuoteBaseTotal(quote, itemsForQuote))
+                      )}
+                    </p>
+                    {hasQuoteAdminDiscount(quote, itemsForQuote) && (
+                      <p style={infoLineStyle}>
+                        <strong>Descuento aplicado:</strong>{' '}
+                        <span style={quoteItemsDiscountStyle}>
+                          -{formatMoney(getQuoteItemsTotal(itemsForQuote) - getQuoteBaseTotal(quote, itemsForQuote))}
+                        </span>
+                      </p>
+                    )}
+                    <p style={infoLineStyle}>
                       <strong>Subtotal sin ITBIS:</strong>{' '}
-                      {formatMoney(quote.admin_final_total ?? quote.total)}
+                      {formatMoney(getQuoteBaseTotal(quote, itemsForQuote))}
                     </p>
                     <p style={infoLineStyle}>
                       <strong>ITBIS 18%:</strong>{' '}
-                      {formatMoney(calculateItbis(quote.admin_final_total ?? quote.total))}
+                      {formatMoney(calculateItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
                     </p>
                     <p style={infoLineStyle}>
                       <strong>Total con ITBIS:</strong>{' '}
-                      {formatMoney(calculateTotalWithItbis(quote.admin_final_total ?? quote.total))}
+                      {formatMoney(calculateTotalWithItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
                     </p>
                     <p style={rowTextStyle}>
                       <strong>Depósito requerido:</strong>{' '}
