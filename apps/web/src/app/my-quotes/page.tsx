@@ -222,6 +222,27 @@ export default function MyQuotesPage() {
     loadQuotes();
   }, [router]);
 
+  const getItemsSubtotalForQuote = (quoteId: string) =>
+    quoteItems
+      .filter((item) => item.quote_id === quoteId)
+      .reduce((sum, item) => sum + Number(item.subtotal ?? 0), 0);
+
+  const getQuoteBaseTotal = (quote: Quote) =>
+    Number(
+      quote.admin_final_total ?? quote.total ?? getItemsSubtotalForQuote(quote.id)
+    );
+
+  const hasQuoteAdminDiscount = (quote: Quote) => {
+    const getItemsSubtotalForQuote(quote.id) = getItemsSubtotalForQuote(quote.id);
+
+    return (
+      quote.admin_final_total !== null &&
+      quote.admin_final_total !== undefined &&
+      getItemsSubtotalForQuote(quote.id) > 0 &&
+      quote.admin_final_total < getItemsSubtotalForQuote(quote.id)
+    );
+  };
+
   return (
     <main style={pageStyle}>
       <div style={containerStyle}>
@@ -328,33 +349,33 @@ export default function MyQuotesPage() {
                     <div style={quoteItemsTotalsStackStyle}>
                       <div>
                         <span style={quoteItemsTaxStyle}>Subtotal sin descuento: </span>
-                        {hasAdminDiscount ? (
+                        {hasQuoteAdminDiscount(quote) ? (
                           <span style={quoteItemsOriginalTotalStyle}>
-                            {formatMoney(itemsSubtotal)}
+                            {formatMoney(getItemsSubtotalForQuote(quote.id))}
                           </span>
                         ) : (
                           <strong style={quoteItemsTotalStyle}>
-                            {formatMoney(itemsSubtotal)}
+                            {formatMoney(getItemsSubtotalForQuote(quote.id))}
                           </strong>
                         )}
                       </div>
 
-                      {hasAdminDiscount && (
+                      {hasQuoteAdminDiscount(quote) && (
                         <>
                           <div style={quoteItemsDiscountStyle}>
-                            Descuento aplicado: -{formatMoney(itemsSubtotal - quoteBaseTotal)}
+                            Descuento aplicado: -{formatMoney(getItemsSubtotalForQuote(quote.id) - getQuoteBaseTotal(quote))}
                           </div>
                           <strong style={quoteItemsTotalStyle}>
-                            Subtotal sin ITBIS: {formatMoney(quoteBaseTotal)}
+                            Subtotal sin ITBIS: {formatMoney(getQuoteBaseTotal(quote))}
                           </strong>
                         </>
                       )}
 
                       <span style={quoteItemsTaxStyle}>
-                        ITBIS 18%: {formatMoney(calculateItbis(quoteBaseTotal))}
+                        ITBIS 18%: {formatMoney(calculateItbis(getQuoteBaseTotal(quote)))}
                       </span>
                       <strong style={quoteItemsTotalStyle}>
-                        Total con ITBIS: {formatMoney(calculateTotalWithItbis(quoteBaseTotal))}
+                        Total con ITBIS: {formatMoney(calculateTotalWithItbis(getQuoteBaseTotal(quote)))}
                       </strong>
                     </div>
                   </div>
