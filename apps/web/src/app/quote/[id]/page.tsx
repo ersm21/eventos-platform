@@ -369,14 +369,19 @@ export default function QuoteDetailPage({
         >
           {[
             {
-              label: 'Total inicial',
-              value: formatMoney(quote.total),
-              hint: 'Estimado original',
+              label: 'Subtotal sin ITBIS',
+              value: formatMoney(finalTotal),
+              hint: 'Monto base aprobado',
             },
             {
-              label: 'Total final aprobado',
-              value: formatMoney(finalTotal),
-              hint: 'Revisión del admin',
+              label: 'ITBIS 18%',
+              value: formatMoney(calculateItbis(finalTotal)),
+              hint: 'Impuesto aplicado al subtotal',
+            },
+            {
+              label: 'Total con ITBIS',
+              value: formatMoney(calculateTotalWithItbis(finalTotal)),
+              hint: 'Total final a pagar',
             },
             {
               label: 'Depósito requerido',
@@ -544,11 +549,30 @@ export default function QuoteDetailPage({
               <p style={eyebrowStyle}>Detalle de servicios</p>
               <h2 style={panelTitleStyle}>Productos de tu cotización</h2>
             </div>
-            <strong style={quoteItemsTotalStyle}>Subtotal sin ITBIS: 
-              {formatMoney(
-                items.reduce((sum, item) => sum + Number(item.subtotal ?? 0), 0)
-              )}
-            </strong>
+            <div style={quoteItemsTotalsStackStyle}>
+              <strong style={quoteItemsTotalStyle}>
+                Subtotal sin ITBIS:{' '}
+                {formatMoney(
+                  items.reduce((sum, item) => sum + Number(item.subtotal ?? 0), 0)
+                )}
+              </strong>
+              <span style={quoteItemsTaxStyle}>
+                ITBIS 18%:{' '}
+                {formatMoney(
+                  calculateItbis(
+                    items.reduce((sum, item) => sum + Number(item.subtotal ?? 0), 0)
+                  )
+                )}
+              </span>
+              <strong style={quoteItemsTotalStyle}>
+                Total con ITBIS:{' '}
+                {formatMoney(
+                  calculateTotalWithItbis(
+                    items.reduce((sum, item) => sum + Number(item.subtotal ?? 0), 0)
+                  )
+                )}
+              </strong>
+            </div>
           </div>
 
           {items.length === 0 ? (
@@ -736,6 +760,17 @@ const quoteItemsHeaderStyle: React.CSSProperties = {
 const quoteItemsTotalStyle: React.CSSProperties = {
   color: '#f8fafc',
   fontSize: 18,
+};
+
+const quoteItemsTotalsStackStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 6,
+  textAlign: 'right',
+};
+
+const quoteItemsTaxStyle: React.CSSProperties = {
+  color: '#fbbf24',
+  fontWeight: 800,
 };
 
 const quoteItemsTableWrapStyle: React.CSSProperties = {
