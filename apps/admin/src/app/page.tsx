@@ -2068,43 +2068,6 @@ export default function AdminPage() {
                 </div>
 
                 <section style={{ ...subPanelStyle, marginTop: 16 }}>
-                  <h3 style={subPanelTitleStyle}>Resumen económico con ITBIS</h3>
-
-                  <div style={quoteItemsTotalsStackStyle}>
-                    <div>
-                      <span style={quoteItemsTaxStyle}>Subtotal original sin descuento: </span>
-                      {hasQuoteAdminDiscount(quote, itemsForQuote) ? (
-                        <span style={quoteItemsOriginalTotalStyle}>
-                          {formatMoney(getQuoteItemsTotal(itemsForQuote))}
-                        </span>
-                      ) : (
-                        <strong style={quoteItemsTotalStyle}>
-                          {formatMoney(getQuoteBaseTotal(quote, itemsForQuote))}
-                        </strong>
-                      )}
-                    </div>
-
-                    {hasQuoteAdminDiscount(quote, itemsForQuote) && (
-                      <>
-                        <div style={quoteItemsDiscountStyle}>
-                          Descuento aplicado: -{formatMoney(getQuoteItemsTotal(itemsForQuote) - getQuoteBaseTotal(quote, itemsForQuote))}
-                        </div>
-                        <strong style={quoteItemsTotalStyle}>
-                          Subtotal sin ITBIS: {formatMoney(getQuoteBaseTotal(quote, itemsForQuote))}
-                        </strong>
-                      </>
-                    )}
-
-                    <span style={quoteItemsTaxStyle}>
-                      ITBIS 18%: {formatMoney(calculateItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
-                    </span>
-                    <strong style={quoteItemsTotalStyle}>
-                      Total con ITBIS: {formatMoney(calculateTotalWithItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
-                    </strong>
-                  </div>
-                </section>
-
-                <section style={{ ...subPanelStyle, marginTop: 16 }}>
                   <h3 style={subPanelTitleStyle}>Comprobante</h3>
 
                   {quote.payment_proof_url ? (
@@ -2259,78 +2222,14 @@ export default function AdminPage() {
                 </section>
 
                 <section style={{ ...subPanelStyle, marginTop: 16 }}>
-                  <div style={quoteItemsTotalsStackStyle}>
-                    <div>
-                      <span style={quoteItemsTaxStyle}>Subtotal sin descuento: </span>
-                      {hasQuoteAdminDiscount(quote, itemsForQuote) ? (
-                        <span style={quoteItemsOriginalTotalStyle}>
-                          {formatMoney(getQuoteItemsTotal(itemsForQuote))}
-                        </span>
-                      ) : (
-                        <strong style={quoteItemsTotalStyle}>
-                          {formatMoney(getQuoteBaseTotal(quote, itemsForQuote))}
-                        </strong>
-                      )}
-                    </div>
-
-                    {hasQuoteAdminDiscount(quote, itemsForQuote) && (
-                      <>
-                        <div style={quoteItemsDiscountStyle}>
-                          Descuento aplicado: -{formatMoney(getQuoteItemsTotal(itemsForQuote) - getQuoteBaseTotal(quote, itemsForQuote))}
-                        </div>
-                        <strong style={quoteItemsTotalStyle}>
-                          Subtotal sin ITBIS: {formatMoney(getQuoteBaseTotal(quote, itemsForQuote))}
-                        </strong>
-                      </>
-                    )}
-
-                    <span style={quoteItemsTaxStyle}>
-                      ITBIS 18%: {formatMoney(calculateItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
-                    </span>
-                    <strong style={quoteItemsTotalStyle}>
-                      Total con ITBIS: {formatMoney(calculateTotalWithItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
-                    </strong>
-                  </div>
-                </section>
-
-                <section style={{ ...subPanelStyle, marginTop: 16 }}>
                   <div style={quoteItemEditorHeaderStyle}>
                     <div>
                       <p style={smallLabelStyle}>Editar artículos</p>
                       <h3 style={subPanelTitleStyle}>Productos solicitados</h3>
                     </div>
-                    <div style={quoteItemsTotalsStackStyle}>
-                      <div>
-                        <span style={quoteItemsTaxStyle}>Subtotal sin descuento: </span>
-                        {hasQuoteAdminDiscount(quote, itemsForQuote) ? (
-                          <span style={quoteItemsOriginalTotalStyle}>
-                            {formatMoney(getQuoteItemsTotal(itemsForQuote))}
-                          </span>
-                        ) : (
-                          <strong style={quoteItemsTotalStyle}>
-                            {formatMoney(getQuoteItemsTotal(itemsForQuote))}
-                          </strong>
-                        )}
-                      </div>
-
-                      {hasQuoteAdminDiscount(quote, itemsForQuote) && (
-                        <>
-                          <div style={quoteItemsDiscountStyle}>
-                            Descuento aplicado: -{formatMoney(getQuoteItemsTotal(itemsForQuote) - getQuoteBaseTotal(quote, itemsForQuote))}
-                          </div>
-                          <strong style={quoteItemsTotalStyle}>
-                            Subtotal sin ITBIS: {formatMoney(getQuoteBaseTotal(quote, itemsForQuote))}
-                          </strong>
-                        </>
-                      )}
-
-                      <span style={quoteItemsTaxStyle}>
-                        ITBIS 18%: {formatMoney(calculateItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
-                      </span>
-                      <strong style={quoteItemsTotalStyle}>
-                        Total con ITBIS: {formatMoney(calculateTotalWithItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
-                      </strong>
-                    </div>
+                    <strong style={quoteItemsTotalStyle}>
+                      Subtotal de artículos sin ITBIS: {formatMoney(getQuoteItemsTotal(itemsForQuote))}
+                    </strong>
                   </div>
 
                   {itemsForQuote.length === 0 ? (
