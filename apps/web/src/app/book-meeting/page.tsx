@@ -62,7 +62,10 @@ function buildNextThirtyDays() {
 }
 
 export default function BookMeetingPage() {
-  const [customerName, setCustomerName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [notes, setNotes] = useState('');
 
@@ -125,8 +128,18 @@ export default function BookMeetingPage() {
   const selectedDateSlots = selectedDate ? slotsByDate[selectedDate] || [] : [];
 
   const handleSubmit = async () => {
-    if (!customerName.trim()) {
+    if (!firstName.trim()) {
       setError('Debes escribir tu nombre.');
+      return;
+    }
+
+    if (!lastName.trim()) {
+      setError('Debes escribir tu apellido.');
+      return;
+    }
+
+    if (!phoneNumber.trim()) {
+      setError('Debes escribir tu número de teléfono.');
       return;
     }
 
@@ -152,6 +165,15 @@ export default function BookMeetingPage() {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
+    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
+    const extraNotes = [
+      `Teléfono: ${phoneNumber.trim()}`,
+      companyName.trim() ? `Empresa: ${companyName.trim()}` : 'Empresa: No aplica',
+      notes.trim() ? `Notas: ${notes.trim()}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
 
     const { error: insertError } = await supabase.from('meeting_requests').insert([
       {
@@ -195,7 +217,7 @@ export default function BookMeetingPage() {
           customerEmail,
           requestedDate: selectedSlot.slot_date,
           requestedTime: selectedSlot.slot_time,
-          notes,
+          notes: extraNotes,
         }),
       });
     } catch {
@@ -204,7 +226,10 @@ export default function BookMeetingPage() {
 
     setSlots((prev) => prev.filter((slot) => slot.id !== selectedSlot.id));
     setSuccessMessage('Tu solicitud de reunión fue enviada correctamente.');
-    setCustomerName('');
+    setFirstName('');
+    setLastName('');
+    setPhoneNumber('');
+    setCompanyName('');
     setCustomerEmail('');
     setNotes('');
     setSelectedSlotId('');
@@ -256,9 +281,47 @@ export default function BookMeetingPage() {
               <label style={labelStyle}>Nombre</label>
               <input
                 type="text"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
                 placeholder="Tu nombre"
+                style={inputStyle}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Apellido</label>
+              <input
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Tu apellido"
+                style={inputStyle}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Número de teléfono</label>
+              <input
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="Ej: 829-935-9774"
+                style={inputStyle}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>
+                Empresa <span style={optionalLabelStyle}>(si aplica)</span>
+              </label>
+              <input
+                type="text"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Nombre de la empresa"
                 style={inputStyle}
               />
             </div>
@@ -458,6 +521,11 @@ const primaryButtonStyle: React.CSSProperties = {
   fontWeight: 900,
   cursor: 'pointer',
   boxShadow: '0 18px 34px rgba(236,72,153,0.24)',
+};
+
+const optionalLabelStyle: React.CSSProperties = {
+  color: '#64748b',
+  fontWeight: 600,
 };
 
 const labelStyle: React.CSSProperties = {
