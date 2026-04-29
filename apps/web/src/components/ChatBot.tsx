@@ -10,7 +10,7 @@ type ChatMessage = {
 };
 
 const WHATSAPP_URL =
-  'https://wa.me/18095551234?text=Hola%20SM%20Events%2C%20quiero%20informaci%C3%B3n%20para%20un%20evento';
+  'https://wa.me/18299359774?text=Hola%20SM%20Events%2C%20quiero%20informaci%C3%B3n%20para%20un%20evento';
 
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
