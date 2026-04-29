@@ -25,6 +25,15 @@ type Quote = {
   user_id?: string | null;
 };
 
+type QuoteItem = {
+  id: string;
+  quote_id: string;
+  product_name: string;
+  unit_price: number | null;
+  quantity: number | null;
+  subtotal: number | null;
+};
+
 function formatMoney(value: number | null | undefined) {
   return `$${Number(value ?? 0).toLocaleString()}`;
 }
@@ -136,6 +145,7 @@ function getDepositBadgeStyle(status: string | null | undefined) {
 export default function MyQuotesPage() {
   const router = useRouter();
   const [quotes, setQuotes] = useState<Quote[]>([]);
+  const [quoteItems, setQuoteItems] = useState<QuoteItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -171,8 +181,30 @@ export default function MyQuotesPage() {
 
       if (error) {
         setError(error.message);
+        setLoading(false);
+        return;
+      }
+
+      const loadedQuotes = (data || []) as Quote[];
+      setQuotes(loadedQuotes);
+
+      const quoteIds = loadedQuotes.map((quote) => quote.id);
+
+      if (quoteIds.length === 0) {
+        setQuoteItems([]);
+        setLoading(false);
+        return;
+      }
+
+      const { data: itemsData, error: itemsError } = await supabase
+        .from('quote_items')
+        .select('*')
+        .in('quote_id', quoteIds);
+
+      if (itemsError) {
+        setError(itemsError.message);
       } else {
-        setQuotes((data || []) as Quote[]);
+        setQuoteItems((itemsData || []) as QuoteItem[]);
       }
 
       setLoading(false);
@@ -272,6 +304,49 @@ export default function MyQuotesPage() {
                     </p>
                   </section>
                 </div>
+
+                <section style={{ ...subCardStyle, marginTop: 16 }}>
+                  <div style={quoteItemsHeaderStyle}>
+                    <div>
+                      <p style={smallLabelStyle}>Detalle de servicios</p>
+                      <h3 style={subCardTitleStyle}>Artículos de la cotización</h3>
+                    </div>
+                    <strong style={quoteItemsTotalStyle}>
+                      {formatMoney(
+                        quoteItems
+                          .filter((item) => item.quote_id === quote.id)
+                          .reduce(
+                            (sum, item) => sum + Number(item.subtotal ?? 0),
+                            0
+                          )
+                      )}
+                    </strong>
+                  </div>
+
+                  {quoteItems.filter((item) => item.quote_id === quote.id).length === 0 ? (
+                    <p style={mutedTextStyle}>Todavía no hay artículos asociados.</p>
+                  ) : (
+                    <div style={quoteItemsTableWrapStyle}>
+                      <div style={quoteItemsTableHeaderStyle}>
+                        <span>Artículo</span>
+                        <span>Cantidad</span>
+                        <span>Unitario</span>
+                        <span>Subtotal</span>
+                      </div>
+
+                      {quoteItems
+                        .filter((item) => item.quote_id === quote.id)
+                        .map((item) => (
+                          <div key={item.id} style={quoteItemsTableRowStyle}>
+                            <span style={quoteItemNameStyle}>{item.product_name}</span>
+                            <span>{Number(item.quantity ?? 0)}</span>
+                            <span>{formatMoney(item.unit_price)}</span>
+                            <strong>{formatMoney(item.subtotal)}</strong>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </section>
 
                 <section style={{ ...subCardStyle, marginTop: 16 }}>
                   <h3 style={subCardTitleStyle}>Nota del admin</h3>
@@ -465,6 +540,57 @@ const notesTextStyle: React.CSSProperties = {
   margin: 0,
   color: '#d7e2ee',
   lineHeight: 1.6,
+};
+
+const quoteItemsHeaderStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  gap: 14,
+  flexWrap: 'wrap',
+  marginBottom: 14,
+};
+
+const quoteItemsTotalStyle: React.CSSProperties = {
+  color: '#f8fafc',
+  fontSize: 18,
+};
+
+const quoteItemsTableWrapStyle: React.CSSProperties = {
+  overflowX: 'auto',
+  borderRadius: 16,
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+};
+
+const quoteItemsTableHeaderStyle: React.CSSProperties = {
+  minWidth: 680,
+  display: 'grid',
+  gridTemplateColumns: 'minmax(240px, 1.6fr) 110px 130px 130px',
+  gap: 12,
+  padding: '12px 14px',
+  background: 'rgba(250, 204, 21, 0.08)',
+  color: '#fbbf24',
+  fontSize: 12,
+  fontWeight: 900,
+  textTransform: 'uppercase',
+  letterSpacing: '0.07em',
+};
+
+const quoteItemsTableRowStyle: React.CSSProperties = {
+  minWidth: 680,
+  display: 'grid',
+  gridTemplateColumns: 'minmax(240px, 1.6fr) 110px 130px 130px',
+  gap: 12,
+  padding: '13px 14px',
+  borderTop: '1px solid rgba(250, 204, 21, 0.10)',
+  background: 'rgba(2, 6, 23, 0.28)',
+  color: '#d7e2ee',
+  alignItems: 'center',
+};
+
+const quoteItemNameStyle: React.CSSProperties = {
+  color: '#f8fafc',
+  fontWeight: 800,
 };
 
 const actionsRowStyle: React.CSSProperties = {
