@@ -136,8 +136,8 @@ const brandLinkStyle: React.CSSProperties = {
 };
 
 const logoStyle: React.CSSProperties = {
-  width: 80,
-  height: 60,
+  width: 92,
+  height: 72,
   display: 'grid',
   placeItems: 'center',
   background: 'transparent',
