@@ -2097,7 +2097,7 @@ export default function AdminPage() {
                     </div>
 
                     <div>
-                      <label style={labelStyle}>Total final sin ITBIS</label>
+                      <label style={labelStyle}>Subtotal final sin ITBIS</label>
                       <input
                         type="number"
                         placeholder="Precio final ajustado"
