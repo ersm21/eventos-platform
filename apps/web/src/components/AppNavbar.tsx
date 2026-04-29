@@ -55,7 +55,6 @@ export default function AppNavbar({
           </div>
 
           <div>
-            <p style={brandNameStyle}>SM Events</p>
             <p style={brandSubtitleStyle}>Producción de eventos</p>
           </div>
         </Link>
@@ -137,13 +136,13 @@ const brandLinkStyle: React.CSSProperties = {
 };
 
 const logoStyle: React.CSSProperties = {
-  width: 46,
-  height: 46,
-  borderRadius: 16,
+  width: 72,
+  height: 52,
+  borderRadius: 18,
   display: 'grid',
   placeItems: 'center',
-  background: 'rgba(255,255,255,0.08)',
-  border: '1px solid rgba(255,255,255,0.10)',
+  background: 'rgba(255,255,255,0.06)',
+  border: '1px solid rgba(255,255,255,0.08)',
   overflow: 'hidden',
   boxShadow: '0 12px 24px rgba(0,0,0,0.20)',
 };
@@ -153,7 +152,7 @@ const logoImageStyle: React.CSSProperties = {
   height: '100%',
   objectFit: 'contain',
   display: 'block',
-  padding: 5,
+  padding: 2,
 };
 
 const brandNameStyle: React.CSSProperties = {
@@ -166,10 +165,11 @@ const brandNameStyle: React.CSSProperties = {
 };
 
 const brandSubtitleStyle: React.CSSProperties = {
-  margin: '4px 0 0',
+  margin: 0,
   fontSize: 15,
   color: '#e5e7eb',
-  fontWeight: 800,
+  fontWeight: 900,
+  letterSpacing: '0.01em',
 };
 
 const navStyle: React.CSSProperties = {
