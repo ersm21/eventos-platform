@@ -325,16 +325,38 @@ export default function MyQuotesPage() {
                       <p style={smallLabelStyle}>Detalle de servicios</p>
                       <h3 style={subCardTitleStyle}>Artículos de la cotización</h3>
                     </div>
-                    <strong style={quoteItemsTotalStyle}>
-                      {formatMoney(
-                        quoteItems
-                          .filter((item) => item.quote_id === quote.id)
-                          .reduce(
-                            (sum, item) => sum + Number(item.subtotal ?? 0),
-                            0
-                          )
+                    <div style={quoteItemsTotalsStackStyle}>
+                      <div>
+                        <span style={quoteItemsTaxStyle}>Subtotal sin descuento: </span>
+                        {hasAdminDiscount ? (
+                          <span style={quoteItemsOriginalTotalStyle}>
+                            {formatMoney(itemsSubtotal)}
+                          </span>
+                        ) : (
+                          <strong style={quoteItemsTotalStyle}>
+                            {formatMoney(itemsSubtotal)}
+                          </strong>
+                        )}
+                      </div>
+
+                      {hasAdminDiscount && (
+                        <>
+                          <div style={quoteItemsDiscountStyle}>
+                            Descuento aplicado: -{formatMoney(itemsSubtotal - quoteBaseTotal)}
+                          </div>
+                          <strong style={quoteItemsTotalStyle}>
+                            Subtotal sin ITBIS: {formatMoney(quoteBaseTotal)}
+                          </strong>
+                        </>
                       )}
-                    </strong>
+
+                      <span style={quoteItemsTaxStyle}>
+                        ITBIS 18%: {formatMoney(calculateItbis(quoteBaseTotal))}
+                      </span>
+                      <strong style={quoteItemsTotalStyle}>
+                        Total con ITBIS: {formatMoney(calculateTotalWithItbis(quoteBaseTotal))}
+                      </strong>
+                    </div>
                   </div>
 
                   {quoteItems.filter((item) => item.quote_id === quote.id).length === 0 ? (
@@ -604,6 +626,30 @@ const quoteItemsTableRowStyle: React.CSSProperties = {
 
 const quoteItemNameStyle: React.CSSProperties = {
   color: '#f8fafc',
+  fontWeight: 800,
+};
+
+const quoteItemsTotalsStackStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 6,
+  textAlign: 'right',
+};
+
+const quoteItemsOriginalTotalStyle: React.CSSProperties = {
+  color: '#94a3b8',
+  fontSize: 16,
+  fontWeight: 800,
+  textDecoration: 'line-through',
+  textDecorationThickness: 2,
+};
+
+const quoteItemsDiscountStyle: React.CSSProperties = {
+  color: '#86efac',
+  fontWeight: 900,
+};
+
+const quoteItemsTaxStyle: React.CSSProperties = {
+  color: '#fbbf24',
   fontWeight: 800,
 };
 
