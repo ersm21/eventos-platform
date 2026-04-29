@@ -592,6 +592,9 @@ export default function AdminPage() {
   const [quoteSort, setQuoteSort] = useState<QuoteSort>('newest');
   const [quotePage, setQuotePage] = useState(1);
   const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null);
+  const [expandedQuoteSections, setExpandedQuoteSections] = useState<
+    Record<string, Record<string, boolean>>
+  >({});
 
   const [meetingSearch, setMeetingSearch] = useState('');
   const [meetingStatusFilter, setMeetingStatusFilter] = useState('all');
@@ -720,6 +723,7 @@ export default function AdminPage() {
   useEffect(() => {
     setQuotePage(1);
     setExpandedQuoteId(null);
+    setExpandedQuoteSections({});
   }, [quoteSearch, quoteStatusFilter, depositFilter, quoteSort]);
 
   useEffect(() => {
@@ -1899,6 +1903,34 @@ export default function AdminPage() {
     </section>
   );
 
+  const toggleQuoteSection = (quoteId: string, section: string) => {
+    setExpandedQuoteSections((prev) => ({
+      ...prev,
+      [quoteId]: {
+        ...(prev[quoteId] || {}),
+        [section]: !prev[quoteId]?.[section],
+      },
+    }));
+  };
+
+  const isQuoteSectionOpen = (quoteId: string, section: string) =>
+    expandedQuoteSections[quoteId]?.[section] ?? false;
+
+  const renderQuoteSectionHeader = (
+    quoteId: string,
+    section: string,
+    title: string
+  ) => (
+    <button
+      type="button"
+      onClick={() => toggleQuoteSection(quoteId, section)}
+      style={sectionToggleButtonStyle}
+    >
+      <span>{title}</span>
+      <span>{isQuoteSectionOpen(quoteId, section) ? '−' : '+'}</span>
+    </button>
+  );
+
   const renderQuotes = () => (
     <section style={sectionStyle}>
       <div style={sectionHeaderRowStyle}>
@@ -2019,7 +2051,9 @@ export default function AdminPage() {
 
                 <div style={infoGridStyle}>
                   <section style={subPanelStyle}>
-                    <h3 style={subPanelTitleStyle}>Datos del cliente</h3>
+                    {renderQuoteSectionHeader(quote.id, 'customer', 'Datos del cliente')}
+                    {isQuoteSectionOpen(quote.id, 'customer') && (
+                      <div style={sectionToggleContentStyle}>
                     <p style={rowTextStyle}>
                       <strong>Cliente:</strong> {quote.customer_name || '—'}
                     </p>
@@ -2035,10 +2069,14 @@ export default function AdminPage() {
                     <p style={rowTextStyle}>
                       <strong>Notas:</strong> {quote.notes || '—'}
                     </p>
+                      </div>
+                    )}
                   </section>
 
                   <section style={subPanelStyle}>
-                    <h3 style={subPanelTitleStyle}>Resumen económico</h3>
+                    {renderQuoteSectionHeader(quote.id, 'summary', 'Resumen económico')}
+                    {isQuoteSectionOpen(quote.id, 'summary') && (
+                      <div style={sectionToggleContentStyle}>
                     <p style={rowTextStyle}>
                       <strong>Subtotal original sin descuento:</strong>{' '}
                       {hasQuoteAdminDiscount(quote, itemsForQuote) ? (
@@ -2080,11 +2118,15 @@ export default function AdminPage() {
                     <p style={rowTextStyle}>
                       <strong>Nota interna:</strong> {quote.admin_note || '—'}
                     </p>
+                      </div>
+                    )}
                   </section>
                 </div>
 
                 <section style={{ ...subPanelStyle, marginTop: 16 }}>
-                  <h3 style={subPanelTitleStyle}>Comprobante</h3>
+                  {renderQuoteSectionHeader(quote.id, 'proof', 'Comprobante')}
+                  {isQuoteSectionOpen(quote.id, 'proof') && (
+                    <div style={sectionToggleContentStyle}>
 
                   {quote.payment_proof_url ? (
                     <div style={{ display: 'grid', gap: 10 }}>
@@ -2108,10 +2150,14 @@ export default function AdminPage() {
                       No se ha subido comprobante todavía.
                     </p>
                   )}
+                    </div>
+                  )}
                 </section>
 
                 <section style={{ ...subPanelStyle, marginTop: 16 }}>
-                  <h3 style={subPanelTitleStyle}>Controles del admin</h3>
+                  {renderQuoteSectionHeader(quote.id, 'controls', 'Controles del admin')}
+                  {isQuoteSectionOpen(quote.id, 'controls') && (
+                    <div style={sectionToggleContentStyle}>
 
                   <div style={controlsGridStyle}>
                     <div>
@@ -2235,9 +2281,14 @@ export default function AdminPage() {
                       </button>
                     </div>
                   </div>
+                    </div>
+                  )}
                 </section>
 
                 <section style={{ ...subPanelStyle, marginTop: 16 }}>
+                  {renderQuoteSectionHeader(quote.id, 'products', 'Productos solicitados')}
+                  {isQuoteSectionOpen(quote.id, 'products') && (
+                    <div style={sectionToggleContentStyle}>
                   <div style={quoteItemEditorHeaderStyle}>
                     <div>
                       <p style={smallLabelStyle}>Editar artículos</p>
@@ -2403,6 +2454,8 @@ export default function AdminPage() {
                       </div>
                     </div>
                   </div>
+                    </div>
+                  )}
                 </section>
                   </>
                 )}
@@ -3173,6 +3226,27 @@ const badgeRowStyle: React.CSSProperties = {
   alignItems: 'center',
 };
 
+
+
+const sectionToggleButtonStyle: React.CSSProperties = {
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  gap: 12,
+  padding: 0,
+  border: 'none',
+  background: 'transparent',
+  color: '#f8fafc',
+  fontSize: 16,
+  fontWeight: 900,
+  cursor: 'pointer',
+  textAlign: 'left',
+};
+
+const sectionToggleContentStyle: React.CSSProperties = {
+  marginTop: 14,
+};
 
 const compactQuoteButtonStyle: React.CSSProperties = {
   display: 'inline-flex',
