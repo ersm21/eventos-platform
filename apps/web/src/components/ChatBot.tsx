@@ -22,6 +22,7 @@ export default function ChatBot() {
     },
   ]);
   const [inputValue, setInputValue] = useState('');
+  const [isThinking, setIsThinking] = useState(false);
 
   const addBotMessage = (text: string) => {
     setMessages((prev) => [
@@ -43,6 +44,38 @@ export default function ChatBot() {
         text,
       },
     ]);
+  };
+
+  const askAi = async (text: string, nextMessages: ChatMessage[]) => {
+    setIsThinking(true);
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: text,
+          history: nextMessages.map((message) => ({
+            sender: message.sender,
+            text: message.text,
+          })),
+        }),
+      });
+
+      const data = await response.json();
+      addBotMessage(
+        data.reply ||
+          'Puedo ayudarte con cotizaciones, catálogo, reuniones o WhatsApp. ¿Qué necesitas para tu evento?'
+      );
+    } catch {
+      addBotMessage(
+        'Ahora mismo no pude responder con IA. Puedes intentar otra vez o escribirnos por WhatsApp al 829-935-9774.'
+      );
+    } finally {
+      setIsThinking(false);
+    }
   };
 
   const handleQuickAction = (
@@ -76,67 +109,21 @@ export default function ChatBot() {
     addBotMessage('Te dejo el acceso directo a WhatsApp para hablar con SM Events.');
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     const text = inputValue.trim();
-    if (!text) return;
+    if (!text || isThinking) return;
 
-    addUserMessage(text);
+    const userMessage: ChatMessage = {
+      id: Date.now() + Math.random(),
+      sender: 'user',
+      text,
+    };
+
+    const nextMessages = [...messages, userMessage];
+    setMessages(nextMessages);
     setInputValue('');
 
-    const normalized = text.toLowerCase();
-
-    if (
-      normalized.includes('cotiz') ||
-      normalized.includes('precio') ||
-      normalized.includes('cuanto') ||
-      normalized.includes('cuánto') ||
-      normalized.includes('presupuesto')
-    ) {
-      addBotMessage(
-        'Para cotizar, entra a la sección Cotizar, agrega los servicios y envía tu solicitud. El equipo puede ajustar el total final según montaje, lugar y fecha.'
-      );
-      return;
-    }
-
-    if (
-      normalized.includes('reunion') ||
-      normalized.includes('reunión') ||
-      normalized.includes('cita') ||
-      normalized.includes('agenda')
-    ) {
-      addBotMessage(
-        'Puedes solicitar una reunión desde la sección Solicitar reunión. Ahí eliges un horario disponible y nos dejas tus datos.'
-      );
-      return;
-    }
-
-    if (
-      normalized.includes('pantalla') ||
-      normalized.includes('led') ||
-      normalized.includes('luces') ||
-      normalized.includes('sonido') ||
-      normalized.includes('tarima')
-    ) {
-      addBotMessage(
-        'SM Events trabaja luces, sonido, pantallas LED, tarimas y producción. Puedes ver los servicios en Catálogo o armar tu selección en Cotizar.'
-      );
-      return;
-    }
-
-    if (
-      normalized.includes('whatsapp') ||
-      normalized.includes('contacto') ||
-      normalized.includes('hablar')
-    ) {
-      addBotMessage(
-        'Puedes hablar directamente con SM Events por WhatsApp usando el botón de WhatsApp dentro de este chat.'
-      );
-      return;
-    }
-
-    addBotMessage(
-      'Puedo ayudarte con cotizaciones, catálogo, reuniones o WhatsApp. Elige una opción rápida o escribe qué necesitas para tu evento.'
-    );
+    await askAi(text, nextMessages);
   };
 
   return (
@@ -177,6 +164,12 @@ export default function ChatBot() {
                 </div>
               </div>
             ))}
+
+            {isThinking && (
+              <div style={{ ...messageRowStyle, justifyContent: 'flex-start' }}>
+                <div style={botBubbleStyle}>Pensando...</div>
+              </div>
+            )}
           </div>
 
           <div style={quickActionsStyle}>
@@ -224,9 +217,19 @@ export default function ChatBot() {
               }}
               placeholder="Escribe tu pregunta..."
               style={chatInputStyle}
+              disabled={isThinking}
             />
-            <button type="button" onClick={handleSendMessage} style={sendButtonStyle}>
-              Enviar
+            <button
+              type="button"
+              onClick={handleSendMessage}
+              style={{
+                ...sendButtonStyle,
+                opacity: isThinking ? 0.72 : 1,
+                cursor: isThinking ? 'not-allowed' : 'pointer',
+              }}
+              disabled={isThinking}
+            >
+              {isThinking ? '...' : 'Enviar'}
             </button>
           </div>
         </section>
