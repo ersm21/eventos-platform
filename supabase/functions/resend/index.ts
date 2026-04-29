@@ -1,4 +1,19 @@
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+const ADMIN_EMAIL = 'ericrafaelsousamorel@gmail.com';
+
+function formatMoney(value: unknown) {
+  return `$${Number(value ?? 0).toLocaleString()}`;
+}
+
+function getNoteValue(notes: string, label: string) {
+  const line = notes
+    .split('\n')
+    .find((item) => item.toLowerCase().startsWith(`${label.toLowerCase()}:`));
+
+  if (!line) return '';
+
+  return line.slice(label.length + 1).trim();
+}
 
 Deno.serve(async (request) => {
   try {
@@ -15,16 +30,22 @@ Deno.serve(async (request) => {
       customerEmail = body.customerEmail ?? 'Sin email';
       const requestedDate = body.requestedDate ?? 'Sin fecha';
       const requestedTime = body.requestedTime ?? 'Sin hora';
-      const notes = body.notes ?? 'Sin notas';
 
-      subject = 'Nueva solicitud de reunión';
+      const notes = body.notes ?? 'Sin notas';
+      const phone = getNoteValue(notes, 'Teléfono') || 'Sin teléfono';
+      const company = getNoteValue(notes, 'Empresa') || 'No aplica';
+      const clientNotes = getNoteValue(notes, 'Notas') || 'Sin notas';
+
+      subject = `Nueva reunión solicitada - ${customerName}`;
       html = `
         <h2>Nueva solicitud de reunión</h2>
         <p><strong>Cliente:</strong> ${customerName}</p>
         <p><strong>Email:</strong> ${customerEmail}</p>
+        <p><strong>Teléfono:</strong> ${phone}</p>
+        <p><strong>Empresa:</strong> ${company}</p>
         <p><strong>Fecha:</strong> ${requestedDate}</p>
         <p><strong>Hora:</strong> ${requestedTime}</p>
-        <p><strong>Notas:</strong> ${notes}</p>
+        <p><strong>Notas:</strong> ${clientNotes}</p>
       `;
     }
 
@@ -34,6 +55,8 @@ Deno.serve(async (request) => {
       const eventType = body.eventType ?? 'Sin tipo de evento';
       const notes = body.notes ?? 'Sin notas';
       const total = body.total ?? 0;
+      const itbis = Number(total ?? 0) * 0.18;
+      const totalWithItbis = Number(total ?? 0) * 1.18;
       const quoteId = body.quoteId ?? 'Sin ID';
       const items = Array.isArray(body.items) ? body.items : [];
 
@@ -51,21 +74,23 @@ Deno.serve(async (request) => {
                   <li>
                     <strong>${item.name ?? 'Producto'}</strong> ·
                     Cantidad: ${item.quantity ?? 0} ·
-                    Unitario: $${Number(item.unitPrice ?? 0).toLocaleString()} ·
-                    Subtotal: $${Number(item.subtotal ?? 0).toLocaleString()}
+                    Unitario: ${formatMoney(item.unitPrice)} ·
+                    Subtotal: ${formatMoney(item.subtotal)}
                   </li>
                 `
               )
               .join('');
 
-      subject = 'Nueva cotización creada';
+      subject = `Nueva cotización recibida - ${customerName}`;
       html = `
         <h2>Nueva cotización creada</h2>
         <p><strong>ID:</strong> ${quoteId}</p>
         <p><strong>Cliente:</strong> ${customerName}</p>
         <p><strong>Email:</strong> ${customerEmail}</p>
         <p><strong>Tipo de evento:</strong> ${eventType}</p>
-        <p><strong>Total estimado:</strong> $${Number(total).toLocaleString()}</p>
+        <p><strong>Subtotal sin ITBIS:</strong> ${formatMoney(total)}</p>
+        <p><strong>ITBIS 18%:</strong> ${formatMoney(itbis)}</p>
+        <p><strong>Total con ITBIS:</strong> ${formatMoney(totalWithItbis)}</p>
         <p><strong>Notas:</strong> ${notes}</p>
         <h3>Productos</h3>
         <ul>${itemsHtml}</ul>
@@ -115,19 +140,32 @@ Deno.serve(async (request) => {
         <p><strong>Cliente:</strong> ${customerName}</p>
         <p><strong>Email:</strong> ${customerEmail}</p>
         <p><strong>Evento:</strong> ${eventType}</p>
-        <p><strong>Total:</strong> $${Number(total).toLocaleString()}</p>
+        <p><strong>Total:</strong> ${formatMoney(total)}</p>
         <p><strong>Nuevo estado:</strong> ${status}</p>
       `;
     }
 
-    const recipients = ['ericrafaelsousamorel@gmail.com'];
+    const recipients = [ADMIN_EMAIL];
+
+    const shouldNotifyCustomer =
+      type === 'meeting_status_changed' || type === 'quote_status_changed';
 
     if (
+      shouldNotifyCustomer &&
       typeof customerEmail === 'string' &&
       customerEmail.includes('@') &&
       !recipients.includes(customerEmail)
     ) {
       recipients.push(customerEmail);
+    }
+
+    if (!RESEND_API_KEY) {
+      return new Response(JSON.stringify({ error: 'RESEND_API_KEY is not configured' }), {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
     }
 
     const res = await fetch('https://api.resend.com/emails', {
