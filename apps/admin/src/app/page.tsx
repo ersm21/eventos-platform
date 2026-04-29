@@ -2008,7 +2008,18 @@ export default function AdminPage() {
           </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: 14 }}>
+        <div style={{ display: 'grid', gap: 10 }}>
+          <div style={quoteTableHeaderStyle}>
+            <span>Cliente</span>
+            <span>Evento</span>
+            <span>Estado</span>
+            <span>Subtotal</span>
+            <span>ITBIS</span>
+            <span>Total</span>
+            <span>Depósito</span>
+            <span>Acción</span>
+          </div>
+
           {paginatedQuotes.map((quote) => {
             const itemsForQuote = quoteItems.filter(
               (item) => item.quote_id === quote.id
@@ -2016,22 +2027,62 @@ export default function AdminPage() {
 
             return (
               <article key={quote.id} style={cardStyle}>
-                <div style={cardHeaderWrapStyle}>
-                  <div>
-                    <p style={smallLabelStyle}>Cotización</p>
-                    <h2 style={articleTitleStyle}>
-                      {quote.customer_name || 'Cliente sin nombre'}
-                    </h2>
-                    <p style={articleMetaStyle}>ID: {quote.id}</p>
+                <div style={quoteCompactRowStyle}>
+                  <div style={quoteCompactCustomerStyle}>
+                    <strong>{quote.customer_name || 'Cliente sin nombre'}</strong>
+                    <span>{quote.customer_email || 'Sin email'}</span>
+                    <small>ID: {quote.id.slice(0, 8)}...</small>
                   </div>
 
-                  <div style={badgeRowStyle}>
+                  <div style={quoteCompactCellStyle}>
+                    <span>{quote.event_type || '—'}</span>
+                    <small>{formatDate(quote.created_at)}</small>
+                  </div>
+
+                  <div style={quoteCompactBadgesStyle}>
                     <span style={getStatusBadgeStyle(quote.status)}>
                       {getStatusLabel(quote.status)}
                     </span>
                     <span style={getDepositBadgeStyle(quote.deposit_status)}>
-                      Depósito {getDepositLabel(quote.deposit_status)}
+                      {getDepositLabel(quote.deposit_status)}
                     </span>
+                  </div>
+
+                  <div style={quoteCompactMoneyStyle}>
+                    {hasQuoteAdminDiscount(quote, itemsForQuote) ? (
+                      <span style={quoteItemsOriginalTotalStyle}>
+                        {formatMoney(getQuoteItemsTotal(itemsForQuote))}
+                      </span>
+                    ) : (
+                      <strong>{formatMoney(getQuoteBaseTotal(quote, itemsForQuote))}</strong>
+                    )}
+                    {hasQuoteAdminDiscount(quote, itemsForQuote) && (
+                      <small>
+                        Final: {formatMoney(getQuoteBaseTotal(quote, itemsForQuote))}
+                      </small>
+                    )}
+                  </div>
+
+                  <div style={quoteCompactMoneyStyle}>
+                    <strong>
+                      {formatMoney(calculateItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
+                    </strong>
+                  </div>
+
+                  <div style={quoteCompactMoneyHighlightStyle}>
+                    <strong>
+                      {formatMoney(
+                        calculateTotalWithItbis(getQuoteBaseTotal(quote, itemsForQuote))
+                      )}
+                    </strong>
+                  </div>
+
+                  <div style={quoteCompactMoneyStyle}>
+                    <strong>{formatMoney(quote.deposit_amount)}</strong>
+                    <small>{getDepositLabel(quote.deposit_status)}</small>
+                  </div>
+
+                  <div style={quoteCompactActionStyle}>
                     <button
                       type="button"
                       onClick={() =>
@@ -2041,7 +2092,7 @@ export default function AdminPage() {
                       }
                       style={compactQuoteButtonStyle}
                     >
-                      {expandedQuoteId === quote.id ? 'Ocultar' : 'Ver cotización'}
+                      {expandedQuoteId === quote.id ? 'Ocultar' : 'Ver'}
                     </button>
                   </div>
                 </div>
@@ -3148,11 +3199,11 @@ const exportButtonsWrapStyle: React.CSSProperties = {
 
 const cardStyle: React.CSSProperties = {
   background:
-    'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(30,27,75,0.42) 52%, rgba(9,14,28,0.92) 100%)',
-  border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 20,
-  padding: 16,
-  boxShadow: '0 16px 34px rgba(0,0,0,0.20)',
+    'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(30,27,75,0.32) 52%, rgba(9,14,28,0.92) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+  borderRadius: 16,
+  padding: 12,
+  boxShadow: '0 12px 24px rgba(0,0,0,0.18)',
 };
 
 const cardTitleStyle: React.CSSProperties = {
@@ -3247,6 +3298,66 @@ const sectionToggleButtonStyle: React.CSSProperties = {
 
 const sectionToggleContentStyle: React.CSSProperties = {
   marginTop: 14,
+};
+
+const quoteTableHeaderStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns:
+    'minmax(190px, 1.4fr) minmax(130px, 0.9fr) minmax(150px, 1fr) 110px 100px 110px 100px 82px',
+  gap: 10,
+  alignItems: 'center',
+  padding: '0 12px 6px',
+  color: '#94a3b8',
+  fontSize: 11,
+  fontWeight: 900,
+  textTransform: 'uppercase',
+  letterSpacing: '0.07em',
+};
+
+const quoteCompactRowStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns:
+    'minmax(190px, 1.4fr) minmax(130px, 0.9fr) minmax(150px, 1fr) 110px 100px 110px 100px 82px',
+  gap: 10,
+  alignItems: 'center',
+};
+
+const quoteCompactCustomerStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 3,
+  minWidth: 0,
+};
+
+const quoteCompactCellStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 3,
+  color: '#d7e2ee',
+  fontSize: 13,
+};
+
+const quoteCompactBadgesStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: 6,
+  flexWrap: 'wrap',
+  alignItems: 'center',
+};
+
+const quoteCompactMoneyStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 3,
+  color: '#f8fafc',
+  fontSize: 13,
+  textAlign: 'right',
+};
+
+const quoteCompactMoneyHighlightStyle: React.CSSProperties = {
+  ...quoteCompactMoneyStyle,
+  color: '#fbbf24',
+};
+
+const quoteCompactActionStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'flex-end',
 };
 
 const compactQuoteButtonStyle: React.CSSProperties = {
