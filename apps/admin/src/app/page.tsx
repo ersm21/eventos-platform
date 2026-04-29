@@ -600,6 +600,7 @@ export default function AdminPage() {
   const [meetingStatusFilter, setMeetingStatusFilter] = useState('all');
   const [meetingSort, setMeetingSort] = useState<MeetingSort>('newest');
   const [meetingPage, setMeetingPage] = useState(1);
+  const [expandedMeetingId, setExpandedMeetingId] = useState<string | null>(null);
 
   const [slotSearch, setSlotSearch] = useState('');
   const [slotActiveFilter, setSlotActiveFilter] = useState('all');
@@ -728,6 +729,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     setMeetingPage(1);
+    setExpandedMeetingId(null);
   }, [meetingSearch, meetingStatusFilter, meetingSort]);
 
   useEffect(() => {
@@ -1829,32 +1831,61 @@ export default function AdminPage() {
           </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: 18 }}>
+        <div style={{ display: 'grid', gap: 10 }}>
+          <div style={meetingTableHeaderStyle}>
+            <span>Cliente</span>
+            <span>Fecha</span>
+            <span>Hora</span>
+            <span>Estado</span>
+            <span>Notas</span>
+            <span>Acción</span>
+          </div>
+
           {paginatedMeetings.map((meeting) => (
             <article key={meeting.id} style={cardStyle}>
-              <div style={cardHeaderWrapStyle}>
-                <div>
-                  <h3 style={articleTitleStyle}>
-                    {meeting.customer_name || 'Cliente sin nombre'}
-                  </h3>
-                  <p style={articleMetaStyle}>
-                    Email: {meeting.customer_email || '—'}
-                  </p>
-                  <p style={articleMetaStyle}>
-                    Fecha solicitada: {formatMeetingDate(meeting.requested_date)}
-                  </p>
-                  <p style={articleMetaStyle}>
-                    Hora solicitada: {meeting.requested_time}
-                  </p>
-                  <p style={articleMetaStyle}>
-                    Creada: {formatDate(meeting.created_at)}
-                  </p>
+              <div style={meetingCompactRowStyle}>
+                <div style={quoteCompactCustomerStyle}>
+                  <strong>{meeting.customer_name || 'Cliente sin nombre'}</strong>
+                  <span>{meeting.customer_email || 'Sin email'}</span>
+                  <small>ID: {meeting.id.slice(0, 8)}...</small>
                 </div>
 
-                <span style={getMeetingBadgeStyle(meeting.status)}>
-                  {getMeetingLabel(meeting.status)}
-                </span>
+                <div style={quoteCompactCellStyle}>
+                  <strong>{formatMeetingDate(meeting.requested_date)}</strong>
+                  <small>Creada: {formatDate(meeting.created_at)}</small>
+                </div>
+
+                <div style={quoteCompactCellStyle}>
+                  <strong>{meeting.requested_time}</strong>
+                </div>
+
+                <div style={quoteCompactBadgesStyle}>
+                  <span style={getMeetingBadgeStyle(meeting.status)}>
+                    {getMeetingLabel(meeting.status)}
+                  </span>
+                </div>
+
+                <div style={meetingNotesPreviewStyle}>
+                  {meeting.notes || 'Sin notas'}
+                </div>
+
+                <div style={quoteCompactActionStyle}>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandedMeetingId((current) =>
+                        current === meeting.id ? null : meeting.id
+                      )
+                    }
+                    style={compactQuoteButtonStyle}
+                  >
+                    {expandedMeetingId === meeting.id ? 'Ocultar' : 'Ver'}
+                  </button>
+                </div>
               </div>
+
+              {expandedMeetingId === meeting.id && (
+                <>
 
               <section style={subPanelStyle}>
                 <h4 style={subPanelTitleStyle}>Notas del cliente</h4>
@@ -1887,6 +1918,8 @@ export default function AdminPage() {
                   )}
                 </div>
               </section>
+                </>
+              )}
             </article>
           ))}
 
@@ -3298,6 +3331,36 @@ const sectionToggleButtonStyle: React.CSSProperties = {
 
 const sectionToggleContentStyle: React.CSSProperties = {
   marginTop: 14,
+};
+
+const meetingTableHeaderStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns:
+    'minmax(210px, 1.4fr) minmax(140px, 0.9fr) 90px minmax(110px, 0.8fr) minmax(180px, 1.2fr) 82px',
+  gap: 10,
+  alignItems: 'center',
+  padding: '0 12px 6px',
+  color: '#94a3b8',
+  fontSize: 11,
+  fontWeight: 900,
+  textTransform: 'uppercase',
+  letterSpacing: '0.07em',
+};
+
+const meetingCompactRowStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns:
+    'minmax(210px, 1.4fr) minmax(140px, 0.9fr) 90px minmax(110px, 0.8fr) minmax(180px, 1.2fr) 82px',
+  gap: 10,
+  alignItems: 'center',
+};
+
+const meetingNotesPreviewStyle: React.CSSProperties = {
+  color: '#cbd5e1',
+  fontSize: 13,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
 };
 
 const quoteTableHeaderStyle: React.CSSProperties = {
