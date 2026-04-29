@@ -31,7 +31,7 @@ Datos importantes:
 
 export async function POST(request: Request) {
   try {
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
       return NextResponse.json(
@@ -61,24 +61,34 @@ export async function POST(request: Request) {
       )
       .join('\n');
 
-    const input = `${SYSTEM_PROMPT}\n\nHistorial reciente:\n${conversationContext}\n\nCliente: ${message}\nAsistente:`;
+    const prompt = `${SYSTEM_PROMPT}\n\nHistorial reciente:\n${conversationContext}\n\nCliente: ${message}\nAsistente:`;
 
-    const response = await fetch('https://api.openai.com/v1/responses', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
-        input,
-        max_output_tokens: 220,
-      }),
-    });
+    const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: 'user',
+              parts: [{ text: prompt }],
+            },
+          ],
+          generationConfig: {
+            maxOutputTokens: 220,
+            temperature: 0.6,
+          },
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
+      console.error('Gemini API error:', errorText);
 
       return NextResponse.json(
         {
@@ -91,8 +101,7 @@ export async function POST(request: Request) {
 
     const data = await response.json();
     const reply =
-      data.output_text ||
-      data.output?.[0]?.content?.[0]?.text ||
+      data.candidates?.[0]?.content?.parts?.[0]?.text ||
       'Puedo ayudarte con catálogo, cotización, reuniones o WhatsApp. ¿Qué necesitas para tu evento?';
 
     return NextResponse.json({ reply }, { status: 200 });
