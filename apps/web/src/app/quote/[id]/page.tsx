@@ -314,8 +314,39 @@ export default function QuoteDetailPage({
 
   const finalTotal = quote.admin_final_total ?? quote.total ?? 0;
 
+  const downloadQuotePdf = () => {
+    window.print();
+  };
+
   return (
     <main style={pageStyle}>
+      <style>{`
+        @media print {
+          body {
+            background: #ffffff !important;
+          }
+
+          nav,
+          button,
+          input,
+          textarea,
+          select,
+          .no-print {
+            display: none !important;
+          }
+
+          main {
+            background: #ffffff !important;
+            color: #111827 !important;
+            padding: 0 !important;
+          }
+
+          * {
+            box-shadow: none !important;
+            text-shadow: none !important;
+          }
+        }
+      `}</style>
       <div style={containerStyle}>
         <AppNavbar ctaHref="/" ctaLabel="Volver al inicio" />
 
@@ -352,6 +383,14 @@ export default function QuoteDetailPage({
               <span style={getDepositBadgeStyle(quote.deposit_status)}>
                 Depósito {quote.deposit_status === 'paid' ? 'pagado' : 'pendiente'}
               </span>
+              <button
+                type="button"
+                onClick={downloadQuotePdf}
+                style={secondaryButtonStyle}
+                className="no-print"
+              >
+                Descargar PDF
+              </button>
             </div>
           </div>
 
@@ -746,6 +785,20 @@ const primaryButtonStyle: React.CSSProperties = {
   background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
   color: '#fff',
   boxShadow: '0 14px 26px rgba(236,72,153,0.24)',
+};
+
+const secondaryButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '8px 11px',
+  borderRadius: 12,
+  border: '1px solid rgba(250, 204, 21, 0.18)',
+  cursor: 'pointer',
+  fontWeight: 800,
+  background: 'rgba(2, 6, 23, 0.48)',
+  color: '#f8fafc',
+  textDecoration: 'none',
 };
 
 const quoteItemsHeaderStyle: React.CSSProperties = {
