@@ -564,7 +564,12 @@ export default function AdminPage() {
   const [savingId, setSavingId] = useState<string | null>(null);
   const [savingMeetingId, setSavingMeetingId] = useState<string | null>(null);
   const [savingSlotId, setSavingSlotId] = useState<string | null>(null);
+  const [savingQuoteItemId, setSavingQuoteItemId] = useState<string | null>(null);
+  const [creatingQuoteItemForId, setCreatingQuoteItemForId] = useState<string | null>(null);
   const [creatingSlot, setCreatingSlot] = useState(false);
+  const [manualQuoteItems, setManualQuoteItems] = useState<
+    Record<string, { productName: string; unitPrice: string; quantity: string }>
+  >({});
 
   const [newSlotDate, setNewSlotDate] = useState('');
   const [newSlotTime, setNewSlotTime] = useState('');
@@ -1069,6 +1074,192 @@ export default function AdminPage() {
     }
 
     setSavingId(null);
+  };
+
+  const getQuoteItemsTotal = (items: QuoteItem[]) =>
+    items.reduce((sum, item) => sum + Number(item.subtotal ?? 0), 0);
+
+  const updateQuoteItemField = (
+    itemId: string,
+    field: 'product_name' | 'unit_price' | 'quantity',
+    value: string
+  ) => {
+    setQuoteItems((prev) =>
+      prev.map((item) => {
+        if (item.id !== itemId) return item;
+
+        if (field === 'product_name') {
+          return { ...item, product_name: value };
+        }
+
+        const numericValue = value === '' ? 0 : Number(value);
+        const nextItem = {
+          ...item,
+          [field]: Number.isNaN(numericValue) ? 0 : numericValue,
+        };
+
+        return {
+          ...nextItem,
+          subtotal: Number(nextItem.unit_price || 0) * Number(nextItem.quantity || 0),
+        };
+      })
+    );
+  };
+
+  const syncQuoteTotalFromItems = async (
+    quoteId: string,
+    nextItems: QuoteItem[]
+  ) => {
+    const nextTotal = getQuoteItemsTotal(
+      nextItems.filter((item) => item.quote_id === quoteId)
+    );
+
+    const { error } = await supabase
+      .from('quotes')
+      .update({ total: nextTotal })
+      .eq('id', quoteId);
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    setQuotes((prev) =>
+      prev.map((quote) =>
+        quote.id === quoteId ? { ...quote, total: nextTotal } : quote
+      )
+    );
+  };
+
+  const saveQuoteItem = async (itemId: string) => {
+    const item = quoteItems.find((quoteItem) => quoteItem.id === itemId);
+    if (!item) return;
+
+    setSavingQuoteItemId(itemId);
+    setError(null);
+
+    const subtotal = Number(item.unit_price || 0) * Number(item.quantity || 0);
+
+    const { error } = await supabase
+      .from('quote_items')
+      .update({
+        product_name: item.product_name,
+        unit_price: Number(item.unit_price || 0),
+        quantity: Number(item.quantity || 0),
+        subtotal,
+      })
+      .eq('id', itemId);
+
+    if (error) {
+      setError(error.message);
+      setSavingQuoteItemId(null);
+      return;
+    }
+
+    const nextItems = quoteItems.map((quoteItem) =>
+      quoteItem.id === itemId ? { ...item, subtotal } : quoteItem
+    );
+
+    setQuoteItems(nextItems);
+    await syncQuoteTotalFromItems(item.quote_id, nextItems);
+    setSavingQuoteItemId(null);
+  };
+
+  const deleteQuoteItem = async (itemId: string) => {
+    const item = quoteItems.find((quoteItem) => quoteItem.id === itemId);
+    if (!item) return;
+
+    setSavingQuoteItemId(itemId);
+    setError(null);
+
+    const { error } = await supabase
+      .from('quote_items')
+      .delete()
+      .eq('id', itemId);
+
+    if (error) {
+      setError(error.message);
+      setSavingQuoteItemId(null);
+      return;
+    }
+
+    const nextItems = quoteItems.filter((quoteItem) => quoteItem.id !== itemId);
+    setQuoteItems(nextItems);
+    await syncQuoteTotalFromItems(item.quote_id, nextItems);
+    setSavingQuoteItemId(null);
+  };
+
+  const updateManualQuoteItemField = (
+    quoteId: string,
+    field: 'productName' | 'unitPrice' | 'quantity',
+    value: string
+  ) => {
+    setManualQuoteItems((prev) => ({
+      ...prev,
+      [quoteId]: {
+        productName: prev[quoteId]?.productName ?? '',
+        unitPrice: prev[quoteId]?.unitPrice ?? '',
+        quantity: prev[quoteId]?.quantity ?? '1',
+        [field]: value,
+      },
+    }));
+  };
+
+  const addManualQuoteItem = async (quoteId: string) => {
+    const manualItem = manualQuoteItems[quoteId];
+    const productName = manualItem?.productName?.trim() || '';
+    const unitPrice = Number(manualItem?.unitPrice || 0);
+    const quantity = Number(manualItem?.quantity || 1);
+
+    if (!productName) {
+      setError('Debes escribir el nombre del artículo manual.');
+      return;
+    }
+
+    if (!unitPrice || unitPrice <= 0) {
+      setError('Debes escribir un precio válido para el artículo manual.');
+      return;
+    }
+
+    if (!quantity || quantity <= 0) {
+      setError('Debes escribir una cantidad válida para el artículo manual.');
+      return;
+    }
+
+    setCreatingQuoteItemForId(quoteId);
+    setError(null);
+
+    const subtotal = unitPrice * quantity;
+
+    const { data, error } = await supabase
+      .from('quote_items')
+      .insert([
+        {
+          quote_id: quoteId,
+          product_name: productName,
+          unit_price: unitPrice,
+          quantity,
+          subtotal,
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      setError(error.message);
+      setCreatingQuoteItemForId(null);
+      return;
+    }
+
+    const nextItems = [data as QuoteItem, ...quoteItems];
+    setQuoteItems(nextItems);
+    await syncQuoteTotalFromItems(quoteId, nextItems);
+
+    setManualQuoteItems((prev) => ({
+      ...prev,
+      [quoteId]: { productName: '', unitPrice: '', quantity: '1' },
+    }));
+    setCreatingQuoteItemForId(null);
   };
 
   const updateMeetingStatus = async (
@@ -1985,28 +2176,169 @@ export default function AdminPage() {
                 </section>
 
                 <section style={{ ...subPanelStyle, marginTop: 16 }}>
-                  <h3 style={subPanelTitleStyle}>Productos solicitados</h3>
+                  <div style={quoteItemEditorHeaderStyle}>
+                    <div>
+                      <p style={smallLabelStyle}>Editar artículos</p>
+                      <h3 style={subPanelTitleStyle}>Productos solicitados</h3>
+                    </div>
+                    <strong>{formatMoney(getQuoteItemsTotal(itemsForQuote))}</strong>
+                  </div>
 
                   {itemsForQuote.length === 0 ? (
                     <p style={mutedTextStyle}>No hay productos asociados.</p>
                   ) : (
-                    <div style={productsGridStyle}>
+                    <div style={{ display: 'grid', gap: 12 }}>
                       {itemsForQuote.map((item) => (
-                        <div key={item.id} style={miniProductCardStyle}>
-                          <p style={miniProductTitleStyle}>{item.product_name}</p>
-                          <p style={miniProductMetaStyle}>
-                            Cantidad: {item.quantity}
-                          </p>
-                          <p style={miniProductMetaStyle}>
-                            Unitario: {formatMoney(item.unit_price)}
-                          </p>
-                          <p style={miniProductSubtotalStyle}>
-                            Subtotal: {formatMoney(item.subtotal)}
-                          </p>
+                        <div key={item.id} style={quoteItemEditorCardStyle}>
+                          <div style={quoteItemInputsGridStyle}>
+                            <div>
+                              <label style={labelStyle}>Artículo</label>
+                              <input
+                                type="text"
+                                value={item.product_name}
+                                onChange={(event) =>
+                                  updateQuoteItemField(
+                                    item.id,
+                                    'product_name',
+                                    event.target.value
+                                  )
+                                }
+                                style={inputStyle}
+                              />
+                            </div>
+
+                            <div>
+                              <label style={labelStyle}>Precio</label>
+                              <input
+                                type="number"
+                                value={item.unit_price}
+                                onChange={(event) =>
+                                  updateQuoteItemField(
+                                    item.id,
+                                    'unit_price',
+                                    event.target.value
+                                  )
+                                }
+                                style={inputStyle}
+                              />
+                            </div>
+
+                            <div>
+                              <label style={labelStyle}>Cantidad</label>
+                              <input
+                                type="number"
+                                value={item.quantity}
+                                onChange={(event) =>
+                                  updateQuoteItemField(
+                                    item.id,
+                                    'quantity',
+                                    event.target.value
+                                  )
+                                }
+                                style={inputStyle}
+                              />
+                            </div>
+
+                            <div>
+                              <label style={labelStyle}>Subtotal</label>
+                              <div style={subtotalPreviewStyle}>
+                                {formatMoney(item.subtotal)}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={quoteItemActionRowStyle}>
+                            <button
+                              onClick={() => saveQuoteItem(item.id)}
+                              disabled={savingQuoteItemId === item.id}
+                              style={secondaryButtonStyle}
+                            >
+                              {savingQuoteItemId === item.id
+                                ? 'Guardando...'
+                                : 'Guardar item'}
+                            </button>
+
+                            <button
+                              onClick={() => deleteQuoteItem(item.id)}
+                              disabled={savingQuoteItemId === item.id}
+                              style={dangerButtonStyle}
+                            >
+                              Eliminar
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
                   )}
+
+                  <div style={manualItemBoxStyle}>
+                    <p style={smallLabelStyle}>Agregar artículo manual</p>
+
+                    <div style={quoteItemInputsGridStyle}>
+                      <div>
+                        <label style={labelStyle}>Nombre</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: Transporte, técnico adicional, tarima especial..."
+                          value={manualQuoteItems[quote.id]?.productName ?? ''}
+                          onChange={(event) =>
+                            updateManualQuoteItemField(
+                              quote.id,
+                              'productName',
+                              event.target.value
+                            )
+                          }
+                          style={inputStyle}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={labelStyle}>Precio</label>
+                        <input
+                          type="number"
+                          placeholder="0"
+                          value={manualQuoteItems[quote.id]?.unitPrice ?? ''}
+                          onChange={(event) =>
+                            updateManualQuoteItemField(
+                              quote.id,
+                              'unitPrice',
+                              event.target.value
+                            )
+                          }
+                          style={inputStyle}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={labelStyle}>Cantidad</label>
+                        <input
+                          type="number"
+                          placeholder="1"
+                          value={manualQuoteItems[quote.id]?.quantity ?? '1'}
+                          onChange={(event) =>
+                            updateManualQuoteItemField(
+                              quote.id,
+                              'quantity',
+                              event.target.value
+                            )
+                          }
+                          style={inputStyle}
+                        />
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                        <button
+                          onClick={() => addManualQuoteItem(quote.id)}
+                          disabled={creatingQuoteItemForId === quote.id}
+                          style={{ ...primaryButtonStyle, width: '100%' }}
+                        >
+                          {creatingQuoteItemForId === quote.id
+                            ? 'Agregando...'
+                            : 'Agregar'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </section>
               </article>
             );
@@ -2314,6 +2646,69 @@ function paginationButtonStyle(disabled: boolean): React.CSSProperties {
     opacity: disabled ? 0.5 : 1,
   };
 }
+
+const quoteItemEditorHeaderStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  gap: 12,
+  marginBottom: 14,
+};
+
+const quoteItemEditorCardStyle: React.CSSProperties = {
+  padding: 14,
+  borderRadius: 18,
+  background: 'rgba(2, 6, 23, 0.36)',
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+};
+
+const quoteItemInputsGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'minmax(220px, 1.6fr) repeat(3, minmax(120px, 0.7fr))',
+  gap: 12,
+  alignItems: 'end',
+};
+
+const quoteItemActionRowStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'flex-end',
+  gap: 10,
+  flexWrap: 'wrap',
+  marginTop: 12,
+};
+
+const subtotalPreviewStyle: React.CSSProperties = {
+  minHeight: 46,
+  display: 'flex',
+  alignItems: 'center',
+  padding: '0 14px',
+  borderRadius: 14,
+  background: 'rgba(2, 6, 23, 0.48)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  color: '#f8fafc',
+  fontWeight: 900,
+};
+
+const manualItemBoxStyle: React.CSSProperties = {
+  marginTop: 16,
+  padding: 14,
+  borderRadius: 18,
+  background: 'rgba(250, 204, 21, 0.06)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+};
+
+const dangerButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '10px 14px',
+  borderRadius: 14,
+  border: '1px solid rgba(248, 113, 113, 0.32)',
+  cursor: 'pointer',
+  fontWeight: 800,
+  background: 'rgba(127, 29, 29, 0.24)',
+  color: '#fecaca',
+};
 
 const pageStyle: React.CSSProperties = {
   minHeight: '100vh',
