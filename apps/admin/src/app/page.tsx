@@ -591,6 +591,7 @@ export default function AdminPage() {
   const [depositFilter, setDepositFilter] = useState('all');
   const [quoteSort, setQuoteSort] = useState<QuoteSort>('newest');
   const [quotePage, setQuotePage] = useState(1);
+  const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null);
 
   const [meetingSearch, setMeetingSearch] = useState('');
   const [meetingStatusFilter, setMeetingStatusFilter] = useState('all');
@@ -718,6 +719,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     setQuotePage(1);
+    setExpandedQuoteId(null);
   }, [quoteSearch, quoteStatusFilter, depositFilter, quoteSort]);
 
   useEffect(() => {
@@ -1998,8 +2000,22 @@ export default function AdminPage() {
                     <span style={getDepositBadgeStyle(quote.deposit_status)}>
                       Depósito {getDepositLabel(quote.deposit_status)}
                     </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedQuoteId((current) =>
+                          current === quote.id ? null : quote.id
+                        )
+                      }
+                      style={compactQuoteButtonStyle}
+                    >
+                      {expandedQuoteId === quote.id ? 'Ocultar' : 'Ver cotización'}
+                    </button>
                   </div>
                 </div>
+
+                {expandedQuoteId === quote.id && (
+                  <>
 
                 <div style={infoGridStyle}>
                   <section style={subPanelStyle}>
@@ -2388,6 +2404,8 @@ export default function AdminPage() {
                     </div>
                   </div>
                 </section>
+                  </>
+                )}
               </article>
             );
           })}
@@ -3153,6 +3171,20 @@ const badgeRowStyle: React.CSSProperties = {
   gap: 10,
   flexWrap: 'wrap',
   alignItems: 'center',
+};
+
+
+const compactQuoteButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '8px 12px',
+  borderRadius: 999,
+  border: '1px solid rgba(250, 204, 21, 0.24)',
+  background: 'rgba(2, 6, 23, 0.50)',
+  color: '#f8fafc',
+  fontWeight: 900,
+  cursor: 'pointer',
 };
 
 const rowTextStyle: React.CSSProperties = {
