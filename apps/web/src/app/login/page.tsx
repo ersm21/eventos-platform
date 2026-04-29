@@ -59,7 +59,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'http://localhost:3000/my-quotes',
+        redirectTo: `${window.location.origin}/my-quotes`,
       },
     });
 
@@ -71,78 +71,31 @@ export default function LoginPage() {
   };
 
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        background:
-          'radial-gradient(circle at top, rgba(59,130,246,0.14), transparent 24%), linear-gradient(180deg, #0f172a 0%, #111827 50%, #0b1120 100%)',
-        color: '#e5e7eb',
-        padding: '40px 20px 80px',
-        fontFamily:
-          'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-      }}
-    >
+    <main style={pageStyle}>
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
         <AppNavbar ctaHref="/" ctaLabel="Volver al inicio" />
 
-        <section
-          style={{
-            maxWidth: 520,
-            margin: '40px auto 0',
-            background: 'rgba(15, 23, 42, 0.78)',
-            border: '1px solid rgba(148, 163, 184, 0.18)',
-            borderRadius: 24,
-            padding: 24,
-            boxShadow: '0 18px 40px rgba(0,0,0,0.18)',
-          }}
-        >
-          <p
-            style={{
-              margin: 0,
-              color: '#60a5fa',
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              fontSize: 12,
-            }}
-          >
+        <section style={loginCardStyle}>
+          <p style={eyebrowStyle}>
             Acceso cliente
           </p>
 
-          <h1 style={{ margin: '10px 0 8px', fontSize: 34 }}>
+          <h1 style={titleStyle}>
             {isLogin ? 'Iniciar sesión' : 'Crear cuenta'}
           </h1>
 
-          <p style={{ margin: 0, color: '#94a3b8' }}>
+          <p style={textStyle}>
             Accede a tus cotizaciones, comprobantes y estado de tu evento.
           </p>
 
           {error && (
-            <div
-              style={{
-                marginTop: 18,
-                padding: '14px 16px',
-                borderRadius: 14,
-                background: 'rgba(127, 29, 29, 0.30)',
-                border: '1px solid rgba(248, 113, 113, 0.32)',
-                color: '#fecaca',
-              }}
-            >
+            <div style={errorBoxStyle}>
               {error}
             </div>
           )}
 
           {message && (
-            <div
-              style={{
-                marginTop: 18,
-                padding: '14px 16px',
-                borderRadius: 14,
-                background: 'rgba(20, 83, 45, 0.35)',
-                border: '1px solid rgba(74, 222, 128, 0.28)',
-                color: '#bbf7d0',
-              }}
-            >
+            <div style={successBoxStyle}>
               {message}
             </div>
           )}
@@ -152,45 +105,21 @@ export default function LoginPage() {
               onClick={handleGoogleLogin}
               disabled={googleLoading}
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '12px 16px',
-                borderRadius: 12,
-                border: '1px solid rgba(148, 163, 184, 0.18)',
-                background: '#ffffff',
-                color: '#111827',
-                fontWeight: 800,
-                cursor: 'pointer',
+                ...googleButtonStyle,
                 opacity: googleLoading ? 0.7 : 1,
               }}
             >
               {googleLoading ? 'Abriendo Google...' : 'Continuar con Google'}
             </button>
 
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                color: '#64748b',
-                fontSize: 13,
-              }}
-            >
-              <div style={{ flex: 1, height: 1, background: 'rgba(148, 163, 184, 0.18)' }} />
+            <div style={dividerWrapStyle}>
+              <div style={dividerLineStyle} />
               <span>o continúa con email</span>
-              <div style={{ flex: 1, height: 1, background: 'rgba(148, 163, 184, 0.18)' }} />
+              <div style={dividerLineStyle} />
             </div>
 
             <div>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: 6,
-                  color: '#94a3b8',
-                  fontSize: 13,
-                }}
-              >
+              <label style={labelStyle}>
                 Email
               </label>
               <input
@@ -203,14 +132,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: 6,
-                  color: '#94a3b8',
-                  fontSize: 13,
-                }}
-              >
+              <label style={labelStyle}>
                 Contraseña
               </label>
               <input
@@ -226,16 +148,7 @@ export default function LoginPage() {
               onClick={handleAuth}
               disabled={loading}
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '12px 16px',
-                borderRadius: 12,
-                border: 'none',
-                background: '#2563eb',
-                color: '#fff',
-                fontWeight: 800,
-                cursor: 'pointer',
+                ...primaryButtonStyle,
                 opacity: loading ? 0.7 : 1,
               }}
             >
@@ -248,18 +161,7 @@ export default function LoginPage() {
 
             <button
               onClick={() => setIsLogin(!isLogin)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '12px 16px',
-                borderRadius: 12,
-                border: '1px solid rgba(148, 163, 184, 0.18)',
-                background: '#0f172a',
-                color: '#e5e7eb',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
+              style={secondaryButtonStyle}
             >
               {isLogin
                 ? 'No tengo cuenta, quiero registrarme'
@@ -272,11 +174,137 @@ export default function LoginPage() {
   );
 }
 
+const pageStyle: React.CSSProperties = {
+  minHeight: '100vh',
+  color: '#f8fafc',
+  padding: '40px 20px 80px',
+  background:
+    'radial-gradient(circle at 12% 18%, rgba(168,85,247,0.20), transparent 28%), radial-gradient(circle at 88% 12%, rgba(245,158,11,0.16), transparent 28%), linear-gradient(135deg, #020617 0%, #09090f 48%, #111827 100%)',
+  fontFamily:
+    'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+};
+
+const loginCardStyle: React.CSSProperties = {
+  maxWidth: 520,
+  margin: '40px auto 0',
+  background:
+    'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(24,24,37,0.88) 44%, rgba(30,27,75,0.74) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.16)',
+  borderRadius: 30,
+  padding: 26,
+  boxShadow: '0 30px 80px rgba(0,0,0,0.34)',
+};
+
+const eyebrowStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#fbbf24',
+  fontWeight: 900,
+  letterSpacing: '0.1em',
+  textTransform: 'uppercase',
+  fontSize: 12,
+};
+
+const titleStyle: React.CSSProperties = {
+  margin: '10px 0 8px',
+  fontSize: 36,
+  letterSpacing: '-0.03em',
+  textShadow: '0 18px 60px rgba(0,0,0,0.42)',
+};
+
+const textStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#a7b5c9',
+  lineHeight: 1.6,
+};
+
+const googleButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '12px 16px',
+  borderRadius: 14,
+  border: '1px solid rgba(250, 204, 21, 0.18)',
+  background: '#ffffff',
+  color: '#111827',
+  fontWeight: 900,
+  cursor: 'pointer',
+  boxShadow: '0 14px 28px rgba(0,0,0,0.20)',
+};
+
+const dividerWrapStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 12,
+  color: '#7c8798',
+  fontSize: 13,
+};
+
+const dividerLineStyle: React.CSSProperties = {
+  flex: 1,
+  height: 1,
+  background: 'rgba(250, 204, 21, 0.16)',
+};
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  marginBottom: 6,
+  color: '#cbd5e1',
+  fontSize: 13,
+  fontWeight: 700,
+};
+
+const primaryButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '12px 16px',
+  borderRadius: 14,
+  border: 'none',
+  background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
+  color: '#fff',
+  fontWeight: 900,
+  cursor: 'pointer',
+  boxShadow: '0 18px 34px rgba(236,72,153,0.24)',
+};
+
+const secondaryButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '12px 16px',
+  borderRadius: 14,
+  border: '1px solid rgba(250, 204, 21, 0.18)',
+  background: 'rgba(2, 6, 23, 0.48)',
+  color: '#f8fafc',
+  fontWeight: 800,
+  cursor: 'pointer',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
+};
+
+const errorBoxStyle: React.CSSProperties = {
+  marginTop: 18,
+  padding: '14px 16px',
+  borderRadius: 14,
+  background: 'rgba(127, 29, 29, 0.30)',
+  border: '1px solid rgba(248, 113, 113, 0.32)',
+  color: '#fecaca',
+};
+
+const successBoxStyle: React.CSSProperties = {
+  marginTop: 18,
+  padding: '14px 16px',
+  borderRadius: 14,
+  background: 'rgba(20, 83, 45, 0.35)',
+  border: '1px solid rgba(74, 222, 128, 0.28)',
+  color: '#bbf7d0',
+};
+
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  padding: '12px',
-  borderRadius: 12,
-  border: '1px solid rgba(148, 163, 184, 0.18)',
-  background: '#0f172a',
-  color: '#e5e7eb',
+  padding: '13px 14px',
+  borderRadius: 14,
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  background: 'rgba(2, 6, 23, 0.68)',
+  color: '#f8fafc',
+  outline: 'none',
 };
