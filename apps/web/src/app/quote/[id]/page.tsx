@@ -375,16 +375,19 @@ export default function QuoteDetailPage({
       <div style={containerStyle}>
         <section className="print-estimate" style={printEstimateStyle}>
           <header style={printHeaderStyle}>
-            <div>
+            <div style={printBrandBlockStyle}>
               <div style={printLogoStyle}>SM</div>
-              <p style={printBrandStyle}>SM Events</p>
-              <p style={printMutedStyle}>Producción técnica y montaje de eventos</p>
+              <div>
+                <p style={printBrandStyle}>SM Events</p>
+                <p style={printMutedStyle}>Producción técnica y montaje de eventos</p>
+                <p style={printContactLineStyle}>Santiago, República Dominicana</p>
+              </div>
             </div>
 
             <div style={printHeaderMetaStyle}>
               <p style={printEstimateLabelStyle}>Estimate / Cotización</p>
               <h1 style={printEstimateTitleStyle}>#{quoteNumber}</h1>
-              <p style={printMutedStyle}>{formatDate(quote.created_at)}</p>
+              <p style={printMutedStyle}>Fecha: {formatDate(quote.created_at)}</p>
             </div>
           </header>
 
@@ -403,7 +406,7 @@ export default function QuoteDetailPage({
                 Depósito: {quote.deposit_status === 'paid' ? 'Pagado' : 'Pendiente'}
               </p>
               <p style={printInfoTextStyle}>Referencia: {quote.deposit_reference || '—'}</p>
-              <p style={printInfoTextStyle}>ID completo: {quote.id}</p>
+              <p style={printInfoTextStyle}>Cotización ID: {quote.id}</p>
             </div>
           </section>
 
@@ -458,7 +461,7 @@ export default function QuoteDetailPage({
                 <span>Total con ITBIS</span>
                 <strong>{formatMoney(totalWithItbis)}</strong>
               </div>
-              <div style={printTotalRowStyle}>
+              <div style={printDepositRowStyle}>
                 <span>Depósito requerido</span>
                 <strong>{formatMoney(quote.deposit_amount)}</strong>
               </div>
@@ -466,8 +469,14 @@ export default function QuoteDetailPage({
           </section>
 
           <footer style={printFooterStyle}>
-            <p>Gracias por considerar a SM Events para tu evento.</p>
-            <p>Documento generado desde SM Events Platform.</p>
+            <div>
+              <strong>SM Events</strong>
+              <p>Gracias por considerar a SM Events para tu evento.</p>
+            </div>
+            <div style={printFooterRightStyle}>
+              <strong>Próximo paso</strong>
+              <p>La fecha se asegura con la confirmación y el depósito requerido.</p>
+            </div>
           </footer>
         </section>
 
@@ -989,99 +998,122 @@ const fileInputStyle: React.CSSProperties = {
 
 const printEstimateStyle: React.CSSProperties = {
   width: '100%',
+  minHeight: '100vh',
   background: '#ffffff',
   color: '#111827',
   fontFamily:
     'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  padding: 0,
 };
 
 const printHeaderStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
   gap: 24,
-  alignItems: 'flex-start',
-  borderBottom: '2px solid #111827',
-  paddingBottom: 18,
+  alignItems: 'stretch',
+  background: 'linear-gradient(135deg, #111827 0%, #1f2937 58%, #92400e 100%)',
+  color: '#ffffff',
+  borderRadius: 22,
+  padding: 22,
   marginBottom: 18,
 };
 
+const printBrandBlockStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: 14,
+  alignItems: 'center',
+};
+
 const printLogoStyle: React.CSSProperties = {
-  width: 52,
-  height: 52,
-  borderRadius: 14,
+  width: 58,
+  height: 58,
+  borderRadius: 18,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  background: '#111827',
-  color: '#fbbf24',
-  fontSize: 20,
-  fontWeight: 900,
-  letterSpacing: '-0.04em',
-  marginBottom: 10,
+  background: '#fbbf24',
+  color: '#111827',
+  fontSize: 22,
+  fontWeight: 950,
+  letterSpacing: '-0.05em',
+  flexShrink: 0,
 };
 
 const printBrandStyle: React.CSSProperties = {
   margin: 0,
-  color: '#111827',
-  fontSize: 24,
-  fontWeight: 900,
+  color: '#ffffff',
+  fontSize: 25,
+  fontWeight: 950,
   textTransform: 'uppercase',
   letterSpacing: '0.04em',
 };
 
 const printMutedStyle: React.CSSProperties = {
   margin: '4px 0 0',
-  color: '#6b7280',
+  color: '#e5e7eb',
   fontSize: 12,
+};
+
+const printContactLineStyle: React.CSSProperties = {
+  margin: '7px 0 0',
+  color: '#fde68a',
+  fontSize: 11,
+  fontWeight: 800,
 };
 
 const printHeaderMetaStyle: React.CSSProperties = {
   textAlign: 'right',
+  padding: 14,
+  borderRadius: 18,
+  background: 'rgba(255,255,255,0.10)',
+  minWidth: 230,
 };
 
 const printEstimateLabelStyle: React.CSSProperties = {
   margin: 0,
-  color: '#92400e',
-  fontSize: 12,
-  fontWeight: 900,
+  color: '#fde68a',
+  fontSize: 11,
+  fontWeight: 950,
   textTransform: 'uppercase',
-  letterSpacing: '0.08em',
+  letterSpacing: '0.09em',
 };
 
 const printEstimateTitleStyle: React.CSSProperties = {
-  margin: '6px 0 0',
-  color: '#111827',
-  fontSize: 30,
+  margin: '8px 0 0',
+  color: '#ffffff',
+  fontSize: 32,
   lineHeight: 1,
+  letterSpacing: '-0.04em',
 };
 
 const printInfoGridStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '1.2fr 0.8fr',
+  gridTemplateColumns: '1.15fr 0.85fr',
   gap: 14,
-  marginBottom: 18,
+  marginBottom: 16,
 };
 
 const printInfoBoxStyle: React.CSSProperties = {
   border: '1px solid #e5e7eb',
-  borderRadius: 14,
-  padding: 14,
+  borderRadius: 18,
+  padding: 16,
   background: '#f9fafb',
 };
 
 const printSectionLabelStyle: React.CSSProperties = {
-  margin: '0 0 8px',
+  margin: '0 0 10px',
   color: '#92400e',
   fontSize: 11,
-  fontWeight: 900,
+  fontWeight: 950,
   textTransform: 'uppercase',
-  letterSpacing: '0.08em',
+  letterSpacing: '0.09em',
 };
 
 const printClientNameStyle: React.CSSProperties = {
   margin: '0 0 6px',
   color: '#111827',
-  fontSize: 18,
+  fontSize: 21,
+  letterSpacing: '-0.03em',
 };
 
 const printInfoTextStyle: React.CSSProperties = {
@@ -1093,33 +1125,34 @@ const printInfoTextStyle: React.CSSProperties = {
 
 const printTableSectionStyle: React.CSSProperties = {
   border: '1px solid #e5e7eb',
-  borderRadius: 14,
+  borderRadius: 18,
   overflow: 'hidden',
-  marginBottom: 18,
+  marginBottom: 16,
 };
 
 const printTableHeaderStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '1fr 70px 105px 105px',
+  gridTemplateColumns: '1fr 70px 110px 115px',
   gap: 10,
   background: '#111827',
   color: '#ffffff',
-  padding: '10px 12px',
+  padding: '12px 14px',
   fontSize: 11,
-  fontWeight: 900,
+  fontWeight: 950,
   textTransform: 'uppercase',
-  letterSpacing: '0.06em',
+  letterSpacing: '0.07em',
 };
 
 const printTableRowStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '1fr 70px 105px 105px',
+  gridTemplateColumns: '1fr 70px 110px 115px',
   gap: 10,
-  padding: '11px 12px',
+  padding: '13px 14px',
   borderTop: '1px solid #e5e7eb',
   color: '#111827',
   fontSize: 12,
   alignItems: 'center',
+  background: '#ffffff',
 };
 
 const printTableEmptyStyle: React.CSSProperties = {
@@ -1130,22 +1163,22 @@ const printTableEmptyStyle: React.CSSProperties = {
 
 const printBottomGridStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '1fr 320px',
+  gridTemplateColumns: '1fr 330px',
   gap: 16,
   alignItems: 'start',
 };
 
 const printNotesBoxStyle: React.CSSProperties = {
   border: '1px solid #e5e7eb',
-  borderRadius: 14,
-  padding: 14,
+  borderRadius: 18,
+  padding: 16,
   background: '#ffffff',
 };
 
 const printTotalsBoxStyle: React.CSSProperties = {
-  border: '1px solid #e5e7eb',
-  borderRadius: 14,
-  padding: 14,
+  border: '1px solid #d1d5db',
+  borderRadius: 18,
+  padding: 16,
   background: '#f9fafb',
 };
 
@@ -1153,7 +1186,7 @@ const printTotalRowStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
   gap: 12,
-  padding: '7px 0',
+  padding: '8px 0',
   borderBottom: '1px solid #e5e7eb',
   color: '#374151',
   fontSize: 12,
@@ -1163,11 +1196,23 @@ const printGrandTotalRowStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
   gap: 12,
-  padding: '11px 0',
+  padding: '13px 14px',
+  margin: '8px -4px 8px',
   color: '#111827',
-  fontSize: 17,
+  fontSize: 18,
+  fontWeight: 950,
+  borderRadius: 14,
+  background: '#fbbf24',
+};
+
+const printDepositRowStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: 12,
+  padding: '9px 0 0',
+  color: '#111827',
+  fontSize: 12,
   fontWeight: 900,
-  borderBottom: '2px solid #111827',
 };
 
 const printTermsTextStyle: React.CSSProperties = {
@@ -1179,12 +1224,16 @@ const printTermsTextStyle: React.CSSProperties = {
 
 const printFooterStyle: React.CSSProperties = {
   marginTop: 20,
-  paddingTop: 12,
+  paddingTop: 14,
   borderTop: '1px solid #e5e7eb',
-  display: 'flex',
-  justifyContent: 'space-between',
-  gap: 14,
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 16,
   color: '#6b7280',
   fontSize: 11,
+};
+
+const printFooterRightStyle: React.CSSProperties = {
+  textAlign: 'right',
 };
 
