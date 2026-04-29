@@ -92,6 +92,15 @@ function formatMoney(value: number | null | undefined) {
   return `$${Number(value ?? 0).toLocaleString()}`;
 }
 
+function calculateItbis(value: number | null | undefined) {
+  return Number(value ?? 0) * 0.18;
+}
+
+function calculateTotalWithItbis(value: number | null | undefined) {
+  return Number(value ?? 0) * 1.18;
+}
+
+
 function formatDate(value: string | null | undefined) {
   if (!value) return '—';
   const date = new Date(value);
@@ -1400,7 +1409,7 @@ export default function AdminPage() {
       'Evento',
       'Estado',
       'Total inicial',
-      'Total final',
+      'Total final sin ITBIS',
       'Deposito requerido',
       'Estado deposito',
       'Referencia deposito',
@@ -1436,7 +1445,7 @@ export default function AdminPage() {
       'Evento',
       'Estado',
       'Total inicial',
-      'Total final',
+      'Total final sin ITBIS',
       'Deposito requerido',
       'Estado deposito',
       'Referencia deposito',
@@ -2069,7 +2078,7 @@ export default function AdminPage() {
                     </div>
 
                     <div>
-                      <label style={labelStyle}>Total final</label>
+                      <label style={labelStyle}>Total final sin ITBIS</label>
                       <input
                         type="number"
                         placeholder="Precio final ajustado"
@@ -2181,7 +2190,7 @@ export default function AdminPage() {
                       <p style={smallLabelStyle}>Editar artículos</p>
                       <h3 style={subPanelTitleStyle}>Productos solicitados</h3>
                     </div>
-                    <strong>{formatMoney(getQuoteItemsTotal(itemsForQuote))}</strong>
+                    <strong>Subtotal sin ITBIS: {formatMoney(getQuoteItemsTotal(itemsForQuote))}</strong>
                   </div>
 
                   {itemsForQuote.length === 0 ? (

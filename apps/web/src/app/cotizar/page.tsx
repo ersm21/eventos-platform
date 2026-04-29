@@ -25,6 +25,15 @@ function formatMoney(value: number | null | undefined) {
   return `$${Number(value ?? 0).toLocaleString()}`;
 }
 
+function calculateItbis(value: number | null | undefined) {
+  return Number(value ?? 0) * 0.18;
+}
+
+function calculateTotalWithItbis(value: number | null | undefined) {
+  return Number(value ?? 0) * 1.18;
+}
+
+
 export default function CotizarPage() {
   const router = useRouter();
 
@@ -477,8 +486,16 @@ export default function CotizarPage() {
                     <strong>{itemCount}</strong>
                   </div>
                   <div style={quoteSummaryRowStyle}>
-                    <span>Total estimado</span>
+                    <span>Subtotal sin ITBIS</span>
                     <strong>{formatMoney(total)}</strong>
+                  </div>
+                  <div style={quoteSummaryRowStyle}>
+                    <span>ITBIS 18%</span>
+                    <strong>{formatMoney(calculateItbis(total))}</strong>
+                  </div>
+                  <div style={quoteSummaryRowStyle}>
+                    <span>Total con ITBIS</span>
+                    <strong>{formatMoney(calculateTotalWithItbis(total))}</strong>
                   </div>
                 </div>
 

@@ -35,6 +35,15 @@ function formatMoney(value: number | null | undefined) {
   return `$${Number(value ?? 0).toLocaleString()}`;
 }
 
+function calculateItbis(value: number | null | undefined) {
+  return Number(value ?? 0) * 0.18;
+}
+
+function calculateTotalWithItbis(value: number | null | undefined) {
+  return Number(value ?? 0) * 1.18;
+}
+
+
 function formatDate(value: string | null | undefined) {
   if (!value) return '—';
   const date = new Date(value);
@@ -535,7 +544,7 @@ export default function QuoteDetailPage({
               <p style={eyebrowStyle}>Detalle de servicios</p>
               <h2 style={panelTitleStyle}>Productos de tu cotización</h2>
             </div>
-            <strong style={quoteItemsTotalStyle}>
+            <strong style={quoteItemsTotalStyle}>Subtotal sin ITBIS: 
               {formatMoney(
                 items.reduce((sum, item) => sum + Number(item.subtotal ?? 0), 0)
               )}

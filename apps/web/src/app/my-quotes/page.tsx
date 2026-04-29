@@ -38,6 +38,15 @@ function formatMoney(value: number | null | undefined) {
   return `$${Number(value ?? 0).toLocaleString()}`;
 }
 
+function calculateItbis(value: number | null | undefined) {
+  return Number(value ?? 0) * 0.18;
+}
+
+function calculateTotalWithItbis(value: number | null | undefined) {
+  return Number(value ?? 0) * 1.18;
+}
+
+
 function formatDate(value: string | null | undefined) {
   if (!value) return '—';
   const date = new Date(value);

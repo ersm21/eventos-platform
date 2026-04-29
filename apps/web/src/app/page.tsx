@@ -23,6 +23,15 @@ function formatMoney(value: number | null | undefined) {
   return `$${Number(value ?? 0).toLocaleString()}`;
 }
 
+function calculateItbis(value: number | null | undefined) {
+  return Number(value ?? 0) * 0.18;
+}
+
+function calculateTotalWithItbis(value: number | null | undefined) {
+  return Number(value ?? 0) * 1.18;
+}
+
+
 export default function Home() {
   const router = useRouter();
 
