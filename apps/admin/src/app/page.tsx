@@ -2317,8 +2317,10 @@ function paginationButtonStyle(disabled: boolean): React.CSSProperties {
 
 const pageStyle: React.CSSProperties = {
   minHeight: '100vh',
-  color: '#e5e7eb',
+  color: '#f8fafc',
   padding: '34px 20px 80px',
+  background:
+    'radial-gradient(circle at 12% 18%, rgba(168,85,247,0.20), transparent 28%), radial-gradient(circle at 88% 12%, rgba(245,158,11,0.16), transparent 28%), linear-gradient(135deg, #020617 0%, #09090f 48%, #111827 100%)',
   fontFamily:
     'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
 };
@@ -2329,12 +2331,14 @@ const containerStyle: React.CSSProperties = {
 };
 
 const heroCardStyle: React.CSSProperties = {
+  position: 'relative',
+  overflow: 'hidden',
   background:
-    'linear-gradient(135deg, rgba(15,23,42,0.92) 0%, rgba(9,14,28,0.94) 100%)',
-  border: '1px solid rgba(148, 163, 184, 0.16)',
-  borderRadius: 30,
-  padding: 28,
-  boxShadow: '0 24px 60px rgba(0,0,0,0.24)',
+    'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(24,24,37,0.88) 42%, rgba(30,27,75,0.86) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.16)',
+  borderRadius: 34,
+  padding: 32,
+  boxShadow: '0 30px 80px rgba(0,0,0,0.34)',
 };
 
 const heroHeaderRowStyle: React.CSSProperties = {
@@ -2347,8 +2351,8 @@ const heroHeaderRowStyle: React.CSSProperties = {
 
 const eyebrowStyle: React.CSSProperties = {
   margin: 0,
-  color: '#60a5fa',
-  fontWeight: 800,
+  color: '#fbbf24',
+  fontWeight: 900,
   letterSpacing: '0.1em',
   textTransform: 'uppercase',
   fontSize: 12,
@@ -2356,8 +2360,10 @@ const eyebrowStyle: React.CSSProperties = {
 
 const heroTitleStyle: React.CSSProperties = {
   margin: '10px 0 8px',
-  fontSize: 42,
+  fontSize: 46,
   lineHeight: 1.04,
+  letterSpacing: '-0.04em',
+  textShadow: '0 18px 60px rgba(0,0,0,0.42)',
 };
 
 const heroTextStyle: React.CSSProperties = {
@@ -2368,11 +2374,12 @@ const heroTextStyle: React.CSSProperties = {
 };
 
 const heroBadgeCardStyle: React.CSSProperties = {
-  background: 'rgba(2, 6, 23, 0.34)',
-  border: '1px solid rgba(148, 163, 184, 0.14)',
-  borderRadius: 20,
+  background: 'rgba(2, 6, 23, 0.42)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  borderRadius: 22,
   padding: 18,
   minWidth: 280,
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
 };
 
 const heroBadgeLabelStyle: React.CSSProperties = {
@@ -2426,18 +2433,20 @@ const searchInputStyle: React.CSSProperties = {
   width: '100%',
   padding: '13px 14px',
   borderRadius: 14,
-  border: '1px solid rgba(148, 163, 184, 0.16)',
-  background: '#0b1220',
-  color: '#e5e7eb',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  background: 'rgba(2, 6, 23, 0.68)',
+  color: '#f8fafc',
+  outline: 'none',
 };
 
 const filterSelectStyle: React.CSSProperties = {
   width: '100%',
   padding: '13px 14px',
   borderRadius: 14,
-  border: '1px solid rgba(148, 163, 184, 0.16)',
-  background: '#0b1220',
-  color: '#e5e7eb',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  background: 'rgba(2, 6, 23, 0.68)',
+  color: '#f8fafc',
+  outline: 'none',
 };
 
 const resultsTextStyle: React.CSSProperties = {
@@ -2455,17 +2464,20 @@ const statsGridStyle: React.CSSProperties = {
 
 const statCardStyle: React.CSSProperties = {
   background:
-    'linear-gradient(180deg, rgba(15,23,42,0.84) 0%, rgba(9,14,28,0.92) 100%)',
-  border: '1px solid rgba(148, 163, 184, 0.16)',
-  borderRadius: 20,
+    'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(30,27,75,0.42) 52%, rgba(9,14,28,0.92) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  borderRadius: 22,
   padding: 18,
-  boxShadow: '0 14px 30px rgba(0,0,0,0.16)',
+  boxShadow: '0 18px 40px rgba(0,0,0,0.22)',
 };
 
 const statLabelStyle: React.CSSProperties = {
   margin: 0,
-  color: '#94a3b8',
+  color: '#fbbf24',
   fontSize: 13,
+  fontWeight: 800,
+  letterSpacing: '0.04em',
+  textTransform: 'uppercase',
 };
 
 const statValueStyle: React.CSSProperties = {
@@ -2489,11 +2501,11 @@ const dashboardGridStyle: React.CSSProperties = {
 
 const chartCardStyle: React.CSSProperties = {
   background:
-    'linear-gradient(180deg, rgba(15,23,42,0.84) 0%, rgba(9,14,28,0.92) 100%)',
-  border: '1px solid rgba(148, 163, 184, 0.16)',
+    'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(30,27,75,0.36) 52%, rgba(9,14,28,0.92) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
   borderRadius: 24,
   padding: 20,
-  boxShadow: '0 18px 40px rgba(0,0,0,0.18)',
+  boxShadow: '0 22px 48px rgba(0,0,0,0.24)',
 };
 
 const chartTitleStyle: React.CSSProperties = {
@@ -2593,11 +2605,11 @@ const exportButtonsWrapStyle: React.CSSProperties = {
 
 const cardStyle: React.CSSProperties = {
   background:
-    'linear-gradient(180deg, rgba(15,23,42,0.84) 0%, rgba(9,14,28,0.92) 100%)',
-  border: '1px solid rgba(148, 163, 184, 0.16)',
+    'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(30,27,75,0.42) 52%, rgba(9,14,28,0.92) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
   borderRadius: 24,
   padding: 22,
-  boxShadow: '0 18px 40px rgba(0,0,0,0.18)',
+  boxShadow: '0 22px 48px rgba(0,0,0,0.24)',
 };
 
 const cardTitleStyle: React.CSSProperties = {
@@ -2738,9 +2750,10 @@ const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '13px 14px',
   borderRadius: 14,
-  border: '1px solid rgba(148, 163, 184, 0.16)',
-  background: '#0b1220',
-  color: '#e5e7eb',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  background: 'rgba(2, 6, 23, 0.68)',
+  color: '#f8fafc',
+  outline: 'none',
 };
 
 const labelStyle: React.CSSProperties = {
@@ -2767,10 +2780,10 @@ const primaryButtonStyle: React.CSSProperties = {
   borderRadius: 14,
   border: 'none',
   cursor: 'pointer',
-  fontWeight: 800,
-  background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
+  fontWeight: 900,
+  background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
   color: '#fff',
-  boxShadow: '0 14px 24px rgba(37,99,235,0.22)',
+  boxShadow: '0 18px 34px rgba(236,72,153,0.24)',
 };
 
 const secondaryButtonStyle: React.CSSProperties = {
@@ -2779,11 +2792,12 @@ const secondaryButtonStyle: React.CSSProperties = {
   justifyContent: 'center',
   padding: '10px 14px',
   borderRadius: 14,
-  border: '1px solid rgba(148, 163, 184, 0.18)',
+  border: '1px solid rgba(250, 204, 21, 0.18)',
   cursor: 'pointer',
   fontWeight: 800,
-  background: '#0f172a',
-  color: '#e5e7eb',
+  background: 'rgba(2, 6, 23, 0.48)',
+  color: '#f8fafc',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
 };
 
 const primaryLinkStyle: React.CSSProperties = {
