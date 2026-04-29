@@ -12,6 +12,55 @@ type MeetingSlot = {
   created_at: string | null;
 };
 
+function formatDateLabel(value: string) {
+  const date = new Date(`${value}T00:00:00`);
+
+  if (Number.isNaN(date.getTime())) return value;
+
+  return date.toLocaleDateString('es-DO', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  });
+}
+
+function formatShortDay(value: string) {
+  const date = new Date(`${value}T00:00:00`);
+
+  if (Number.isNaN(date.getTime())) return '';
+
+  return date.toLocaleDateString('es-DO', { weekday: 'short' });
+}
+
+function formatDayNumber(value: string) {
+  const date = new Date(`${value}T00:00:00`);
+
+  if (Number.isNaN(date.getTime())) return '';
+
+  return String(date.getDate());
+}
+
+function formatMonthLabel(value: string) {
+  const date = new Date(`${value}T00:00:00`);
+
+  if (Number.isNaN(date.getTime())) return '';
+
+  return date.toLocaleDateString('es-DO', { month: 'short' });
+}
+
+function buildNextThirtyDays() {
+  const days: string[] = [];
+  const today = new Date();
+
+  for (let index = 0; index < 30; index += 1) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + index);
+    days.push(date.toISOString().slice(0, 10));
+  }
+
+  return days;
+}
+
 export default function BookMeetingPage() {
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
@@ -19,6 +68,7 @@ export default function BookMeetingPage() {
 
   const [slots, setSlots] = useState<MeetingSlot[]>([]);
   const [selectedSlotId, setSelectedSlotId] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
   const [loadingSlots, setLoadingSlots] = useState(true);
 
   const [saving, setSaving] = useState(false);
@@ -34,6 +84,13 @@ export default function BookMeetingPage() {
         .from('meeting_slots')
         .select('*')
         .eq('is_active', true)
+        .gte('slot_date', new Date().toISOString().slice(0, 10))
+        .lte(
+          'slot_date',
+          new Date(Date.now() + 29 * 24 * 60 * 60 * 1000)
+            .toISOString()
+            .slice(0, 10)
+        )
         .order('slot_date', { ascending: true })
         .order('slot_time', { ascending: true });
 
@@ -55,6 +112,18 @@ export default function BookMeetingPage() {
     [slots, selectedSlotId]
   );
 
+  const nextThirtyDays = useMemo(() => buildNextThirtyDays(), []);
+
+  const slotsByDate = useMemo(() => {
+    return slots.reduce<Record<string, MeetingSlot[]>>((accumulator, slot) => {
+      accumulator[slot.slot_date] = accumulator[slot.slot_date] || [];
+      accumulator[slot.slot_date].push(slot);
+      return accumulator;
+    }, {});
+  }, [slots]);
+
+  const selectedDateSlots = selectedDate ? slotsByDate[selectedDate] || [] : [];
+
   const handleSubmit = async () => {
     if (!customerName.trim()) {
       setError('Debes escribir tu nombre.');
@@ -63,6 +132,11 @@ export default function BookMeetingPage() {
 
     if (!customerEmail.trim()) {
       setError('Debes escribir tu email.');
+      return;
+    }
+
+    if (!selectedDate) {
+      setError('Debes elegir una fecha disponible.');
       return;
     }
 
@@ -134,6 +208,7 @@ export default function BookMeetingPage() {
     setCustomerEmail('');
     setNotes('');
     setSelectedSlotId('');
+    setSelectedDate('');
     setSaving(false);
   };
 
@@ -200,7 +275,7 @@ export default function BookMeetingPage() {
             </div>
 
             <div style={{ gridColumn: '1 / -1' }}>
-              <label style={labelStyle}>Horario disponible</label>
+              <label style={labelStyle}>Fecha disponible</label>
 
               {loadingSlots ? (
                 <div style={infoBoxStyle}>Cargando horarios disponibles...</div>
@@ -209,18 +284,65 @@ export default function BookMeetingPage() {
                   No hay horarios disponibles en este momento.
                 </div>
               ) : (
-                <select
-                  value={selectedSlotId}
-                  onChange={(e) => setSelectedSlotId(e.target.value)}
-                  style={inputStyle}
-                >
-                  <option value="">Selecciona un horario</option>
-                  {slots.map((slot) => (
-                    <option key={slot.id} value={slot.id}>
-                      {slot.slot_date} · {slot.slot_time}
-                    </option>
-                  ))}
-                </select>
+                <>
+                  <div style={calendarGridStyle}>
+                    {nextThirtyDays.map((date) => {
+                      const availableCount = slotsByDate[date]?.length || 0;
+                      const isSelected = selectedDate === date;
+                      const isAvailable = availableCount > 0;
+
+                      return (
+                        <button
+                          key={date}
+                          type="button"
+                          onClick={() => {
+                            if (!isAvailable) return;
+                            setSelectedDate(date);
+                            setSelectedSlotId('');
+                            setError(null);
+                          }}
+                          disabled={!isAvailable}
+                          style={getCalendarDayStyle(isSelected, isAvailable)}
+                        >
+                          <span style={calendarWeekdayStyle}>{formatShortDay(date)}</span>
+                          <strong style={calendarDayNumberStyle}>
+                            {formatDayNumber(date)}
+                          </strong>
+                          <span style={calendarMonthStyle}>{formatMonthLabel(date)}</span>
+                          <small style={calendarAvailabilityStyle}>
+                            {isAvailable ? `${availableCount} horarios` : 'No disp.'}
+                          </small>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div style={selectedDatePanelStyle}>
+                    <div>
+                      <p style={selectedDateLabelStyle}>Fecha seleccionada</p>
+                      <strong>
+                        {selectedDate
+                          ? formatDateLabel(selectedDate)
+                          : 'Selecciona una fecha del calendario'}
+                      </strong>
+                    </div>
+
+                    {selectedDate && (
+                      <div style={timeSlotsGridStyle}>
+                        {selectedDateSlots.map((slot) => (
+                          <button
+                            key={slot.id}
+                            type="button"
+                            onClick={() => setSelectedSlotId(slot.id)}
+                            style={getTimeSlotStyle(selectedSlotId === slot.id)}
+                          >
+                            {slot.slot_time}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
             </div>
 
@@ -369,3 +491,102 @@ const infoBoxStyle: React.CSSProperties = {
   border: '1px solid rgba(250, 204, 21, 0.14)',
   color: '#a7b5c9',
 };
+
+const calendarGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(92px, 1fr))',
+  gap: 10,
+  marginTop: 8,
+};
+
+const calendarWeekdayStyle: React.CSSProperties = {
+  color: '#94a3b8',
+  fontSize: 11,
+  fontWeight: 900,
+  textTransform: 'uppercase',
+};
+
+const calendarDayNumberStyle: React.CSSProperties = {
+  color: '#f8fafc',
+  fontSize: 22,
+  lineHeight: 1,
+};
+
+const calendarMonthStyle: React.CSSProperties = {
+  color: '#fbbf24',
+  fontSize: 12,
+  fontWeight: 800,
+  textTransform: 'uppercase',
+};
+
+const calendarAvailabilityStyle: React.CSSProperties = {
+  color: '#a7b5c9',
+  fontSize: 11,
+};
+
+function getCalendarDayStyle(
+  selected: boolean,
+  available: boolean
+): React.CSSProperties {
+  return {
+    minHeight: 104,
+    display: 'grid',
+    gap: 5,
+    justifyItems: 'center',
+    alignContent: 'center',
+    padding: 10,
+    borderRadius: 16,
+    border: selected
+      ? '1px solid rgba(250, 204, 21, 0.52)'
+      : '1px solid rgba(250, 204, 21, 0.12)',
+    background: selected
+      ? 'linear-gradient(135deg, rgba(245,158,11,0.26) 0%, rgba(236,72,153,0.20) 100%)'
+      : available
+      ? 'rgba(2, 6, 23, 0.52)'
+      : 'rgba(15, 23, 42, 0.30)',
+    color: '#f8fafc',
+    cursor: available ? 'pointer' : 'not-allowed',
+    opacity: available ? 1 : 0.42,
+  };
+}
+
+const selectedDatePanelStyle: React.CSSProperties = {
+  marginTop: 16,
+  padding: 14,
+  borderRadius: 18,
+  background: 'rgba(2, 6, 23, 0.42)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  display: 'grid',
+  gap: 14,
+};
+
+const selectedDateLabelStyle: React.CSSProperties = {
+  margin: '0 0 5px',
+  color: '#94a3b8',
+  fontSize: 12,
+  fontWeight: 800,
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+};
+
+const timeSlotsGridStyle: React.CSSProperties = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: 8,
+};
+
+function getTimeSlotStyle(selected: boolean): React.CSSProperties {
+  return {
+    padding: '9px 12px',
+    borderRadius: 999,
+    border: selected
+      ? '1px solid rgba(250, 204, 21, 0.60)'
+      : '1px solid rgba(250, 204, 21, 0.16)',
+    background: selected
+      ? 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)'
+      : 'rgba(2, 6, 23, 0.58)',
+    color: '#fff',
+    fontWeight: 900,
+    cursor: 'pointer',
+  };
+}
