@@ -417,6 +417,48 @@ function buildDistribution(
     .sort((a, b) => b.value - a.value);
 }
 
+function buildMeetingTimeSlots() {
+  return [
+    '09:00',
+    '09:30',
+    '10:00',
+    '10:30',
+    '11:00',
+    '11:30',
+    '12:00',
+    '14:30',
+    '15:00',
+    '15:30',
+    '16:00',
+    '16:30',
+    '17:00',
+    '17:30',
+    '18:00',
+  ];
+}
+
+function buildNextThirtyDaysSlotPayload() {
+  const today = new Date();
+  const times = buildMeetingTimeSlots();
+  const payload: { slot_date: string; slot_time: string; is_active: boolean }[] = [];
+
+  for (let dayIndex = 0; dayIndex < 30; dayIndex += 1) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + dayIndex);
+    const slotDate = date.toISOString().slice(0, 10);
+
+    times.forEach((slotTime) => {
+      payload.push({
+        slot_date: slotDate,
+        slot_time: slotTime,
+        is_active: true,
+      });
+    });
+  }
+
+  return payload;
+}
+
 function BarChartCard({
   title,
   subtitle,
@@ -576,6 +618,7 @@ export default function AdminPage() {
   const [savingQuoteItemId, setSavingQuoteItemId] = useState<string | null>(null);
   const [creatingQuoteItemForId, setCreatingQuoteItemForId] = useState<string | null>(null);
   const [creatingSlot, setCreatingSlot] = useState(false);
+  const [generatingSlots, setGeneratingSlots] = useState(false);
   const [manualQuoteItems, setManualQuoteItems] = useState<
     Record<string, { productName: string; unitPrice: string; quantity: string }>
   >({});
@@ -1397,6 +1440,46 @@ export default function AdminPage() {
     setNewSlotTime('');
     setNewSlotActive(true);
     setCreatingSlot(false);
+  };
+
+  const generateNextThirtyDaysSlots = async () => {
+    setGeneratingSlots(true);
+    setError(null);
+
+    const slotPayload = buildNextThirtyDaysSlotPayload();
+    const existingKeys = new Set(
+      meetingSlots.map((slot) => `${slot.slot_date}-${slot.slot_time}`)
+    );
+    const missingSlots = slotPayload.filter(
+      (slot) => !existingKeys.has(`${slot.slot_date}-${slot.slot_time}`)
+    );
+
+    if (missingSlots.length === 0) {
+      setError('Ya existen todos los horarios de los próximos 30 días.');
+      setGeneratingSlots(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('meeting_slots')
+      .insert(missingSlots)
+      .select();
+
+    if (error) {
+      setError(error.message);
+      setGeneratingSlots(false);
+      return;
+    }
+
+    setMeetingSlots((prev) =>
+      [...prev, ...((data || []) as MeetingSlot[])].sort((a, b) => {
+        const aKey = `${a.slot_date} ${a.slot_time}`;
+        const bKey = `${b.slot_date} ${b.slot_time}`;
+        return aKey.localeCompare(bKey);
+      })
+    );
+
+    setGeneratingSlots(false);
   };
 
   const toggleMeetingSlot = async (slotId: string, nextValue: boolean) => {
@@ -2567,6 +2650,13 @@ export default function AdminPage() {
         </div>
 
         <div style={exportButtonsWrapStyle}>
+          <button
+            onClick={generateNextThirtyDaysSlots}
+            disabled={generatingSlots}
+            style={{ ...primaryButtonStyle, opacity: generatingSlots ? 0.7 : 1 }}
+          >
+            {generatingSlots ? 'Generando...' : 'Generar horarios 30 días'}
+          </button>
           <button onClick={exportSlotsCsv} style={secondaryButtonStyle}>
             Exportar CSV
           </button>
@@ -2614,8 +2704,11 @@ export default function AdminPage() {
       <div style={twoColumnStyle}>
         <section style={cardStyle}>
           <h3 style={cardTitleStyle}>Crear horario</h3>
+          <p style={mutedTextStyle}>
+            También puedes generar automáticamente horarios de 30 minutos durante los próximos 30 días: 9:00 AM a 12:00 PM y 2:30 PM a 6:00 PM.
+          </p>
 
-          <div style={{ display: 'grid', gap: 12 }}>
+          <div style={{ display: 'grid', gap: 12, marginTop: 12 }}>
             <div>
               <label style={labelStyle}>Fecha</label>
               <input
