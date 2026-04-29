@@ -2204,6 +2204,41 @@ export default function AdminPage() {
                 </section>
 
                 <section style={{ ...subPanelStyle, marginTop: 16 }}>
+                  <div style={quoteItemsTotalsStackStyle}>
+                    <div>
+                      <span style={quoteItemsTaxStyle}>Subtotal sin descuento: </span>
+                      {hasQuoteAdminDiscount(quote, itemsForQuote) ? (
+                        <span style={quoteItemsOriginalTotalStyle}>
+                          {formatMoney(getQuoteItemsTotal(itemsForQuote))}
+                        </span>
+                      ) : (
+                        <strong style={quoteItemsTotalStyle}>
+                          {formatMoney(getQuoteBaseTotal(quote, itemsForQuote))}
+                        </strong>
+                      )}
+                    </div>
+
+                    {hasQuoteAdminDiscount(quote, itemsForQuote) && (
+                      <>
+                        <div style={quoteItemsDiscountStyle}>
+                          Descuento aplicado: -{formatMoney(getQuoteItemsTotal(itemsForQuote) - getQuoteBaseTotal(quote, itemsForQuote))}
+                        </div>
+                        <strong style={quoteItemsTotalStyle}>
+                          Subtotal sin ITBIS: {formatMoney(getQuoteBaseTotal(quote, itemsForQuote))}
+                        </strong>
+                      </>
+                    )}
+
+                    <span style={quoteItemsTaxStyle}>
+                      ITBIS 18%: {formatMoney(calculateItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
+                    </span>
+                    <strong style={quoteItemsTotalStyle}>
+                      Total con ITBIS: {formatMoney(calculateTotalWithItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
+                    </strong>
+                  </div>
+                </section>
+
+                <section style={{ ...subPanelStyle, marginTop: 16 }}>
                   <div style={quoteItemEditorHeaderStyle}>
                     <div>
                       <p style={smallLabelStyle}>Editar artículos</p>
