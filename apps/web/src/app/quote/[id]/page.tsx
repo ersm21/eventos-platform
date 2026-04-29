@@ -324,7 +324,7 @@ export default function QuoteDetailPage({
             style={{
               display: 'flex',
               justifyContent: 'space-between',
-              gap: 16,
+              gap: 12,
               alignItems: 'flex-start',
               flexWrap: 'wrap',
             }}
@@ -406,7 +406,7 @@ export default function QuoteDetailPage({
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: 18,
+            gap: 14,
             marginTop: 22,
           }}
         >
@@ -446,7 +446,7 @@ export default function QuoteDetailPage({
               </p>
             </div>
 
-            <div style={{ marginTop: 18 }}>
+            <div style={{ marginTop: 14 }}>
               {quote.status === 'approved' ? (
                 <button
                   onClick={confirmQuote}
@@ -468,14 +468,14 @@ export default function QuoteDetailPage({
           </section>
         </div>
 
-        <section style={{ ...panelStyle, marginTop: 18 }}>
+        <section style={{ ...panelStyle, marginTop: 14 }}>
           <h2 style={panelTitleStyle}>Comprobante de pago</h2>
 
           <div
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: 18,
+              gap: 14,
             }}
           >
             <div>
@@ -543,7 +543,7 @@ export default function QuoteDetailPage({
           </div>
         </section>
 
-        <section style={{ ...panelStyle, marginTop: 18 }}>
+        <section style={{ ...panelStyle, marginTop: 14 }}>
           <div style={quoteItemsHeaderStyle}>
             <div>
               <p style={eyebrowStyle}>Detalle de servicios</p>
@@ -623,9 +623,9 @@ const heroCardStyle: React.CSSProperties = {
   background:
     'linear-gradient(135deg, rgba(15,23,42,0.86) 0%, rgba(24,24,37,0.82) 48%, rgba(30,27,75,0.72) 100%)',
   border: '1px solid rgba(250, 204, 21, 0.16)',
-  borderRadius: 24,
-  padding: 24,
-  boxShadow: '0 18px 40px rgba(0,0,0,0.24)',
+  borderRadius: 20,
+  padding: 14,
+  boxShadow: '0 14px 30px rgba(0,0,0,0.24)',
 };
 
 const eyebrowStyle: React.CSSProperties = {
@@ -653,8 +653,8 @@ const statCardStyle: React.CSSProperties = {
   background:
     'linear-gradient(180deg, rgba(15,23,42,0.82) 0%, rgba(9,14,28,0.82) 100%)',
   border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 18,
-  padding: 18,
+  borderRadius: 14,
+  padding: 14,
   boxShadow: '0 12px 30px rgba(0,0,0,0.20)',
 };
 
@@ -680,15 +680,15 @@ const panelStyle: React.CSSProperties = {
   background:
     'linear-gradient(180deg, rgba(15,23,42,0.82) 0%, rgba(9,14,28,0.86) 100%)',
   border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 24,
-  padding: 20,
-  boxShadow: '0 18px 40px rgba(0,0,0,0.22)',
+  borderRadius: 20,
+  padding: 12,
+  boxShadow: '0 14px 30px rgba(0,0,0,0.22)',
 };
 
 const panelTitleStyle: React.CSSProperties = {
   marginTop: 0,
   marginBottom: 16,
-  fontSize: 20,
+  fontSize: 16,
 };
 
 const detailGridStyle: React.CSSProperties = {
@@ -702,7 +702,7 @@ const detailRowStyle: React.CSSProperties = {
 };
 
 const errorBoxStyle: React.CSSProperties = {
-  marginTop: 16,
+  marginTop: 12,
   padding: '14px 16px',
   borderRadius: 14,
   background: 'rgba(127, 29, 29, 0.30)',
@@ -711,7 +711,7 @@ const errorBoxStyle: React.CSSProperties = {
 };
 
 const successBoxStyle: React.CSSProperties = {
-  marginTop: 16,
+  marginTop: 12,
   padding: '14px 16px',
   borderRadius: 14,
   background: 'rgba(20, 83, 45, 0.35)',
@@ -720,7 +720,7 @@ const successBoxStyle: React.CSSProperties = {
 };
 
 const successMiniBoxStyle: React.CSSProperties = {
-  padding: '12px 14px',
+  padding: '10px 12px',
   borderRadius: 12,
   background: 'rgba(20, 83, 45, 0.35)',
   border: '1px solid rgba(74, 222, 128, 0.28)',
@@ -729,7 +729,7 @@ const successMiniBoxStyle: React.CSSProperties = {
 };
 
 const infoMiniBoxStyle: React.CSSProperties = {
-  padding: '12px 14px',
+  padding: '10px 12px',
   borderRadius: 12,
   background: 'rgba(30, 41, 59, 0.8)',
   border: '1px solid rgba(148, 163, 184, 0.18)',
@@ -738,7 +738,7 @@ const infoMiniBoxStyle: React.CSSProperties = {
 };
 
 const primaryButtonStyle: React.CSSProperties = {
-  padding: '12px 18px',
+  padding: '10px 14px',
   borderRadius: 12,
   border: 'none',
   cursor: 'pointer',
@@ -759,7 +759,7 @@ const quoteItemsHeaderStyle: React.CSSProperties = {
 
 const quoteItemsTotalStyle: React.CSSProperties = {
   color: '#f8fafc',
-  fontSize: 18,
+  fontSize: 16,
 };
 
 const quoteItemsTotalsStackStyle: React.CSSProperties = {
@@ -784,7 +784,7 @@ const quoteItemsTableHeaderStyle: React.CSSProperties = {
   display: 'grid',
   gridTemplateColumns: 'minmax(240px, 1.6fr) 110px 130px 130px',
   gap: 12,
-  padding: '12px 14px',
+  padding: '10px 12px',
   background: 'rgba(250, 204, 21, 0.08)',
   color: '#fbbf24',
   fontSize: 12,
@@ -798,7 +798,7 @@ const quoteItemsTableRowStyle: React.CSSProperties = {
   display: 'grid',
   gridTemplateColumns: 'minmax(240px, 1.6fr) 110px 130px 130px',
   gap: 12,
-  padding: '13px 14px',
+  padding: '10px 12px',
   borderTop: '1px solid rgba(250, 204, 21, 0.10)',
   background: 'rgba(2, 6, 23, 0.28)',
   color: '#d7e2ee',

@@ -276,7 +276,7 @@ export default function MyQuotesPage() {
         )}
 
         {!loading && !error && quotes.length > 0 && (
-          <div style={{ display: 'grid', gap: 18, marginTop: 22 }}>
+          <div style={{ display: 'grid', gap: 14, marginTop: 22 }}>
             {quotes.map((quote) => (
               <article key={quote.id} style={cardStyle}>
                 <div style={cardHeaderStyle}>
@@ -340,7 +340,7 @@ export default function MyQuotesPage() {
                   </section>
                 </div>
 
-                <section style={{ ...subCardStyle, marginTop: 16 }}>
+                <section style={{ ...subCardStyle, marginTop: 12 }}>
                   <div style={quoteItemsHeaderStyle}>
                     <div>
                       <p style={smallLabelStyle}>Detalle de servicios</p>
@@ -405,7 +405,7 @@ export default function MyQuotesPage() {
                   )}
                 </section>
 
-                <section style={{ ...subCardStyle, marginTop: 16 }}>
+                <section style={{ ...subCardStyle, marginTop: 12 }}>
                   <h3 style={subCardTitleStyle}>Nota del admin</h3>
                   <p style={notesTextStyle}>{quote.admin_note || 'Sin nota todavía.'}</p>
                 </section>
@@ -491,7 +491,7 @@ const infoBoxStyle: React.CSSProperties = {
   background: 'rgba(15, 23, 42, 0.78)',
   border: '1px solid rgba(250, 204, 21, 0.14)',
   color: '#a7b5c9',
-  boxShadow: '0 18px 40px rgba(0,0,0,0.22)',
+  boxShadow: '0 14px 30px rgba(0,0,0,0.22)',
 };
 
 const errorBoxStyle: React.CSSProperties = {
@@ -507,17 +507,17 @@ const errorBoxStyle: React.CSSProperties = {
 const emptyStateStyle: React.CSSProperties = {
   marginTop: 22,
   padding: '22px 18px',
-  borderRadius: 18,
+  borderRadius: 14,
   background:
     'linear-gradient(135deg, rgba(15,23,42,0.82) 0%, rgba(30,27,75,0.38) 100%)',
   border: '1px solid rgba(250, 204, 21, 0.14)',
-  boxShadow: '0 18px 40px rgba(0,0,0,0.22)',
+  boxShadow: '0 14px 30px rgba(0,0,0,0.22)',
 };
 
 const emptyTitleStyle: React.CSSProperties = {
   margin: 0,
   fontWeight: 800,
-  fontSize: 20,
+  fontSize: 16,
 };
 
 const emptyTextStyle: React.CSSProperties = {
@@ -529,16 +529,16 @@ const cardStyle: React.CSSProperties = {
   background:
     'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(30,27,75,0.42) 52%, rgba(9,14,28,0.92) 100%)',
   border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 24,
-  padding: 22,
-  boxShadow: '0 22px 48px rgba(0,0,0,0.24)',
+  borderRadius: 20,
+  padding: 12,
+  boxShadow: '0 16px 34px rgba(0,0,0,0.24)',
 };
 
 const cardHeaderStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
-  gap: 16,
+  gap: 12,
   flexWrap: 'wrap',
   marginBottom: 18,
 };
@@ -554,7 +554,7 @@ const smallLabelStyle: React.CSSProperties = {
 
 const cardTitleStyle: React.CSSProperties = {
   margin: '8px 0 6px',
-  fontSize: 24,
+  fontSize: 16,
 };
 
 const mutedTextStyle: React.CSSProperties = {
@@ -572,14 +572,14 @@ const badgeWrapStyle: React.CSSProperties = {
 const infoGridStyle: React.CSSProperties = {
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-  gap: 16,
+  gap: 12,
 };
 
 const subCardStyle: React.CSSProperties = {
   background: 'rgba(2, 6, 23, 0.42)',
   border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 18,
-  padding: 16,
+  borderRadius: 14,
+  padding: 12,
 };
 
 const subCardTitleStyle: React.CSSProperties = {
@@ -610,7 +610,7 @@ const quoteItemsHeaderStyle: React.CSSProperties = {
 
 const quoteItemsTotalStyle: React.CSSProperties = {
   color: '#f8fafc',
-  fontSize: 18,
+  fontSize: 16,
 };
 
 const quoteItemsTableWrapStyle: React.CSSProperties = {
@@ -624,7 +624,7 @@ const quoteItemsTableHeaderStyle: React.CSSProperties = {
   display: 'grid',
   gridTemplateColumns: 'minmax(240px, 1.6fr) 110px 130px 130px',
   gap: 12,
-  padding: '12px 14px',
+  padding: '10px 12px',
   background: 'rgba(250, 204, 21, 0.08)',
   color: '#fbbf24',
   fontSize: 12,
@@ -638,7 +638,7 @@ const quoteItemsTableRowStyle: React.CSSProperties = {
   display: 'grid',
   gridTemplateColumns: 'minmax(240px, 1.6fr) 110px 130px 130px',
   gap: 12,
-  padding: '13px 14px',
+  padding: '10px 12px',
   borderTop: '1px solid rgba(250, 204, 21, 0.10)',
   background: 'rgba(2, 6, 23, 0.28)',
   color: '#d7e2ee',
@@ -678,14 +678,14 @@ const actionsRowStyle: React.CSSProperties = {
   display: 'flex',
   gap: 10,
   flexWrap: 'wrap',
-  marginTop: 18,
+  marginTop: 14,
 };
 
 const primaryLinkStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '11px 15px',
+  padding: '9px 13px',
   borderRadius: 14,
   textDecoration: 'none',
   background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
@@ -698,7 +698,7 @@ const secondaryLinkStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '11px 15px',
+  padding: '9px 13px',
   borderRadius: 14,
   textDecoration: 'none',
   background: 'rgba(2, 6, 23, 0.48)',
