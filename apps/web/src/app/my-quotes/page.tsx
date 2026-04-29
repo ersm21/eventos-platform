@@ -233,13 +233,13 @@ export default function MyQuotesPage() {
     );
 
   const hasQuoteAdminDiscount = (quote: Quote) => {
-    const getItemsSubtotalForQuote(quote.id) = getItemsSubtotalForQuote(quote.id);
+    const itemsSubtotal = getItemsSubtotalForQuote(quote.id);
 
     return (
       quote.admin_final_total !== null &&
       quote.admin_final_total !== undefined &&
-      getItemsSubtotalForQuote(quote.id) > 0 &&
-      quote.admin_final_total < getItemsSubtotalForQuote(quote.id)
+      itemsSubtotal > 0 &&
+      quote.admin_final_total < itemsSubtotal
     );
   };
 
