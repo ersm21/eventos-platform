@@ -179,7 +179,7 @@ export default function BookMeetingPage() {
       {
         user_id: user?.id ?? null,
         slot_id: selectedSlot.id,
-        customer_name: customerName,
+        customer_name: fullName,
         customer_email: customerEmail,
         requested_date: selectedSlot.slot_date,
         requested_time: selectedSlot.slot_time,
@@ -213,7 +213,7 @@ export default function BookMeetingPage() {
         },
         body: JSON.stringify({
           type: 'meeting_request',
-          customerName,
+          fullName,
           customerEmail,
           requestedDate: selectedSlot.slot_date,
           requestedTime: selectedSlot.slot_time,
