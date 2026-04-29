@@ -1088,6 +1088,20 @@ export default function AdminPage() {
   const getQuoteItemsTotal = (items: QuoteItem[]) =>
     items.reduce((sum, item) => sum + Number(item.subtotal ?? 0), 0);
 
+  const getQuoteBaseTotal = (quote: Quote, items: QuoteItem[]) =>
+    Number(quote.admin_final_total ?? quote.total ?? getQuoteItemsTotal(items));
+
+  const hasQuoteAdminDiscount = (quote: Quote, items: QuoteItem[]) => {
+    const itemsSubtotal = getQuoteItemsTotal(items);
+
+    return (
+      quote.admin_final_total !== null &&
+      quote.admin_final_total !== undefined &&
+      itemsSubtotal > 0 &&
+      quote.admin_final_total < itemsSubtotal
+    );
+  };
+
   const updateQuoteItemField = (
     itemId: string,
     field: 'product_name' | 'unit_price' | 'quantity',
@@ -2195,7 +2209,38 @@ export default function AdminPage() {
                       <p style={smallLabelStyle}>Editar artículos</p>
                       <h3 style={subPanelTitleStyle}>Productos solicitados</h3>
                     </div>
-                    <strong>Subtotal sin ITBIS: {formatMoney(getQuoteItemsTotal(itemsForQuote))}</strong>
+                    <div style={quoteItemsTotalsStackStyle}>
+                      <div>
+                        <span style={quoteItemsTaxStyle}>Subtotal sin descuento: </span>
+                        {hasQuoteAdminDiscount(quote, itemsForQuote) ? (
+                          <span style={quoteItemsOriginalTotalStyle}>
+                            {formatMoney(getQuoteItemsTotal(itemsForQuote))}
+                          </span>
+                        ) : (
+                          <strong style={quoteItemsTotalStyle}>
+                            {formatMoney(getQuoteItemsTotal(itemsForQuote))}
+                          </strong>
+                        )}
+                      </div>
+
+                      {hasQuoteAdminDiscount(quote, itemsForQuote) && (
+                        <>
+                          <div style={quoteItemsDiscountStyle}>
+                            Descuento aplicado: -{formatMoney(getQuoteItemsTotal(itemsForQuote) - getQuoteBaseTotal(quote, itemsForQuote))}
+                          </div>
+                          <strong style={quoteItemsTotalStyle}>
+                            Subtotal sin ITBIS: {formatMoney(getQuoteBaseTotal(quote, itemsForQuote))}
+                          </strong>
+                        </>
+                      )}
+
+                      <span style={quoteItemsTaxStyle}>
+                        ITBIS 18%: {formatMoney(calculateItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
+                      </span>
+                      <strong style={quoteItemsTotalStyle}>
+                        Total con ITBIS: {formatMoney(calculateTotalWithItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
+                      </strong>
+                    </div>
                   </div>
 
                   {itemsForQuote.length === 0 ? (
@@ -2667,6 +2712,35 @@ const quoteItemEditorHeaderStyle: React.CSSProperties = {
   alignItems: 'flex-start',
   gap: 12,
   marginBottom: 14,
+};
+
+const quoteItemsTotalsStackStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 6,
+  textAlign: 'right',
+};
+
+const quoteItemsTotalStyle: React.CSSProperties = {
+  color: '#f8fafc',
+  fontSize: 16,
+};
+
+const quoteItemsOriginalTotalStyle: React.CSSProperties = {
+  color: '#94a3b8',
+  fontSize: 16,
+  fontWeight: 800,
+  textDecoration: 'line-through',
+  textDecorationThickness: 2,
+};
+
+const quoteItemsDiscountStyle: React.CSSProperties = {
+  color: '#86efac',
+  fontWeight: 900,
+};
+
+const quoteItemsTaxStyle: React.CSSProperties = {
+  color: '#fbbf24',
+  fontWeight: 800,
 };
 
 const quoteItemEditorCardStyle: React.CSSProperties = {
