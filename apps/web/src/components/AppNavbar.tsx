@@ -136,15 +136,14 @@ const brandLinkStyle: React.CSSProperties = {
 };
 
 const logoStyle: React.CSSProperties = {
-  width: 72,
-  height: 52,
-  borderRadius: 18,
+  width: 80,
+  height: 60,
   display: 'grid',
   placeItems: 'center',
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(255,255,255,0.08)',
-  overflow: 'hidden',
-  boxShadow: '0 12px 24px rgba(0,0,0,0.20)',
+  background: 'transparent',
+  border: 'none',
+  overflow: 'visible',
+  boxShadow: 'none',
 };
 
 const logoImageStyle: React.CSSProperties = {
@@ -152,7 +151,7 @@ const logoImageStyle: React.CSSProperties = {
   height: '100%',
   objectFit: 'contain',
   display: 'block',
-  padding: 2,
+  padding: 0,
 };
 
 const brandNameStyle: React.CSSProperties = {
