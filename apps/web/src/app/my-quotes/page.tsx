@@ -276,7 +276,7 @@ export default function MyQuotesPage() {
         )}
 
         {!loading && !error && quotes.length > 0 && (
-          <div style={{ display: 'grid', gap: 14, marginTop: 22 }}>
+          <div style={{ display: 'grid', gap: 8, marginTop: 12 }}>
             {quotes.map((quote) => (
               <article key={quote.id} style={cardStyle}>
                 <div style={cardHeaderStyle}>
@@ -438,7 +438,7 @@ export default function MyQuotesPage() {
 const pageStyle: React.CSSProperties = {
   minHeight: '100vh',
   color: '#f8fafc',
-  padding: '34px 20px 80px',
+  padding: '24px 14px 56px',
   background:
     'radial-gradient(circle at 12% 18%, rgba(168,85,247,0.20), transparent 28%), radial-gradient(circle at 88% 12%, rgba(245,158,11,0.16), transparent 28%), linear-gradient(135deg, #020617 0%, #09090f 48%, #111827 100%)',
   fontFamily:
@@ -456,9 +456,9 @@ const heroCardStyle: React.CSSProperties = {
   background:
     'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(24,24,37,0.88) 42%, rgba(30,27,75,0.86) 100%)',
   border: '1px solid rgba(250, 204, 21, 0.16)',
-  borderRadius: 34,
-  padding: 32,
-  boxShadow: '0 30px 80px rgba(0,0,0,0.34)',
+  borderRadius: 14,
+  padding: 14,
+  boxShadow: '0 10px 24px rgba(0,0,0,0.34)',
 };
 
 const eyebrowStyle: React.CSSProperties = {
@@ -485,7 +485,7 @@ const heroTextStyle: React.CSSProperties = {
 };
 
 const infoBoxStyle: React.CSSProperties = {
-  marginTop: 22,
+  marginTop: 12,
   padding: '18px 16px',
   borderRadius: 16,
   background: 'rgba(15, 23, 42, 0.78)',
@@ -495,7 +495,7 @@ const infoBoxStyle: React.CSSProperties = {
 };
 
 const errorBoxStyle: React.CSSProperties = {
-  marginTop: 22,
+  marginTop: 12,
   padding: '14px 16px',
   borderRadius: 14,
   background: 'rgba(127, 29, 29, 0.30)',
@@ -505,7 +505,7 @@ const errorBoxStyle: React.CSSProperties = {
 };
 
 const emptyStateStyle: React.CSSProperties = {
-  marginTop: 22,
+  marginTop: 12,
   padding: '22px 18px',
   borderRadius: 14,
   background:
@@ -517,7 +517,7 @@ const emptyStateStyle: React.CSSProperties = {
 const emptyTitleStyle: React.CSSProperties = {
   margin: 0,
   fontWeight: 800,
-  fontSize: 16,
+  fontSize: 15,
 };
 
 const emptyTextStyle: React.CSSProperties = {
@@ -529,9 +529,9 @@ const cardStyle: React.CSSProperties = {
   background:
     'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(30,27,75,0.42) 52%, rgba(9,14,28,0.92) 100%)',
   border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 20,
+  borderRadius: 16,
   padding: 12,
-  boxShadow: '0 16px 34px rgba(0,0,0,0.24)',
+  boxShadow: '0 10px 24px rgba(0,0,0,0.24)',
 };
 
 const cardHeaderStyle: React.CSSProperties = {
@@ -540,7 +540,7 @@ const cardHeaderStyle: React.CSSProperties = {
   alignItems: 'flex-start',
   gap: 12,
   flexWrap: 'wrap',
-  marginBottom: 18,
+  marginBottom: 10,
 };
 
 const smallLabelStyle: React.CSSProperties = {
@@ -554,7 +554,7 @@ const smallLabelStyle: React.CSSProperties = {
 
 const cardTitleStyle: React.CSSProperties = {
   margin: '8px 0 6px',
-  fontSize: 16,
+  fontSize: 15,
 };
 
 const mutedTextStyle: React.CSSProperties = {
@@ -585,7 +585,7 @@ const subCardStyle: React.CSSProperties = {
 const subCardTitleStyle: React.CSSProperties = {
   marginTop: 0,
   marginBottom: 12,
-  fontSize: 16,
+  fontSize: 15,
 };
 
 const rowTextStyle: React.CSSProperties = {
@@ -603,14 +603,14 @@ const quoteItemsHeaderStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
-  gap: 14,
+  gap: 8,
   flexWrap: 'wrap',
-  marginBottom: 14,
+  marginBottom: 8,
 };
 
 const quoteItemsTotalStyle: React.CSSProperties = {
   color: '#f8fafc',
-  fontSize: 16,
+  fontSize: 15,
 };
 
 const quoteItemsTableWrapStyle: React.CSSProperties = {
@@ -620,9 +620,9 @@ const quoteItemsTableWrapStyle: React.CSSProperties = {
 };
 
 const quoteItemsTableHeaderStyle: React.CSSProperties = {
-  minWidth: 680,
+  minWidth: 560,
   display: 'grid',
-  gridTemplateColumns: 'minmax(240px, 1.6fr) 110px 130px 130px',
+  gridTemplateColumns: 'minmax(200px, 1.5fr) 90px 110px 110px',
   gap: 12,
   padding: '10px 12px',
   background: 'rgba(250, 204, 21, 0.08)',
@@ -634,9 +634,9 @@ const quoteItemsTableHeaderStyle: React.CSSProperties = {
 };
 
 const quoteItemsTableRowStyle: React.CSSProperties = {
-  minWidth: 680,
+  minWidth: 560,
   display: 'grid',
-  gridTemplateColumns: 'minmax(240px, 1.6fr) 110px 130px 130px',
+  gridTemplateColumns: 'minmax(200px, 1.5fr) 90px 110px 110px',
   gap: 12,
   padding: '10px 12px',
   borderTop: '1px solid rgba(250, 204, 21, 0.10)',
@@ -658,7 +658,7 @@ const quoteItemsTotalsStackStyle: React.CSSProperties = {
 
 const quoteItemsOriginalTotalStyle: React.CSSProperties = {
   color: '#94a3b8',
-  fontSize: 16,
+  fontSize: 15,
   fontWeight: 800,
   textDecoration: 'line-through',
   textDecorationThickness: 2,
