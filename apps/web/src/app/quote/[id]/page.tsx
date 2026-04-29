@@ -481,11 +481,13 @@ export default function QuoteDetailPage({
                     justifyContent: 'center',
                     padding: '10px 14px',
                     borderRadius: 10,
-                    background: '#2563eb',
+                    background:
+                      'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
                     color: '#fff',
                     fontWeight: 700,
                     textDecoration: 'none',
                     marginTop: 10,
+                    boxShadow: '0 12px 24px rgba(236,72,153,0.22)',
                   }}
                 >
                   Abrir comprobante
@@ -572,7 +574,7 @@ export default function QuoteDetailPage({
 const pageStyle: React.CSSProperties = {
   minHeight: '100vh',
   background:
-    'radial-gradient(circle at top, rgba(59,130,246,0.14), transparent 24%), linear-gradient(180deg, #0f172a 0%, #111827 50%, #0b1120 100%)',
+    'radial-gradient(circle at top left, rgba(245, 158, 11, 0.18), transparent 26%), radial-gradient(circle at top right, rgba(236, 72, 153, 0.16), transparent 24%), linear-gradient(180deg, #09090f 0%, #11101c 52%, #070711 100%)',
   color: '#e5e7eb',
   padding: '40px 20px 80px',
   fontFamily:
@@ -585,17 +587,18 @@ const containerStyle: React.CSSProperties = {
 };
 
 const heroCardStyle: React.CSSProperties = {
-  background: 'rgba(15, 23, 42, 0.78)',
-  border: '1px solid rgba(148, 163, 184, 0.18)',
+  background:
+    'linear-gradient(135deg, rgba(15,23,42,0.86) 0%, rgba(24,24,37,0.82) 48%, rgba(30,27,75,0.72) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.16)',
   borderRadius: 24,
   padding: 24,
-  boxShadow: '0 18px 40px rgba(0,0,0,0.18)',
+  boxShadow: '0 18px 40px rgba(0,0,0,0.24)',
 };
 
 const eyebrowStyle: React.CSSProperties = {
   margin: 0,
-  color: '#60a5fa',
-  fontWeight: 700,
+  color: '#fbbf24',
+  fontWeight: 800,
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
   fontSize: 12,
@@ -614,11 +617,12 @@ const heroTextStyle: React.CSSProperties = {
 };
 
 const statCardStyle: React.CSSProperties = {
-  background: 'rgba(15, 23, 42, 0.72)',
-  border: '1px solid rgba(148, 163, 184, 0.18)',
+  background:
+    'linear-gradient(180deg, rgba(15,23,42,0.82) 0%, rgba(9,14,28,0.82) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
   borderRadius: 18,
   padding: 18,
-  boxShadow: '0 12px 30px rgba(0,0,0,0.16)',
+  boxShadow: '0 12px 30px rgba(0,0,0,0.20)',
 };
 
 const statLabelStyle: React.CSSProperties = {
@@ -640,11 +644,12 @@ const statHintStyle: React.CSSProperties = {
 };
 
 const panelStyle: React.CSSProperties = {
-  background: 'rgba(15, 23, 42, 0.78)',
-  border: '1px solid rgba(148, 163, 184, 0.18)',
+  background:
+    'linear-gradient(180deg, rgba(15,23,42,0.82) 0%, rgba(9,14,28,0.86) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
   borderRadius: 24,
   padding: 20,
-  boxShadow: '0 18px 40px rgba(0,0,0,0.18)',
+  boxShadow: '0 18px 40px rgba(0,0,0,0.22)',
 };
 
 const panelTitleStyle: React.CSSProperties = {
@@ -705,8 +710,9 @@ const primaryButtonStyle: React.CSSProperties = {
   border: 'none',
   cursor: 'pointer',
   fontWeight: 800,
-  background: '#2563eb',
+  background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
   color: '#fff',
+  boxShadow: '0 14px 26px rgba(236,72,153,0.24)',
 };
 
 const quoteItemsHeaderStyle: React.CSSProperties = {
@@ -764,7 +770,7 @@ const fileInputStyle: React.CSSProperties = {
   width: '100%',
   padding: '12px',
   borderRadius: 12,
-  border: '1px solid rgba(148, 163, 184, 0.18)',
-  background: '#0f172a',
+  border: '1px solid rgba(250, 204, 21, 0.16)',
+  background: 'rgba(2, 6, 23, 0.58)',
   color: '#e5e7eb',
 };
