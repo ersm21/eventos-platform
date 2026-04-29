@@ -297,11 +297,16 @@ export default function MyQuotesPage() {
                   <section style={subCardStyle}>
                     <h3 style={subCardTitleStyle}>Montos</h3>
                     <p style={rowTextStyle}>
-                      <strong>Total inicial:</strong> {formatMoney(quote.total)}
+                      <strong>Subtotal sin ITBIS:</strong>{' '}
+                      {formatMoney(quote.admin_final_total ?? quote.total)}
                     </p>
                     <p style={rowTextStyle}>
-                      <strong>Total final:</strong>{' '}
-                      {formatMoney(quote.admin_final_total)}
+                      <strong>ITBIS 18%:</strong>{' '}
+                      {formatMoney(calculateItbis(quote.admin_final_total ?? quote.total))}
+                    </p>
+                    <p style={rowTextStyle}>
+                      <strong>Total con ITBIS:</strong>{' '}
+                      {formatMoney(calculateTotalWithItbis(quote.admin_final_total ?? quote.total))}
                     </p>
                     <p style={rowTextStyle}>
                       <strong>Depósito:</strong>{' '}

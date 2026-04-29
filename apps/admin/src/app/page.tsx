@@ -2009,12 +2009,17 @@ export default function AdminPage() {
 
                   <section style={subPanelStyle}>
                     <h3 style={subPanelTitleStyle}>Resumen económico</h3>
-                    <p style={rowTextStyle}>
-                      <strong>Total inicial:</strong> {formatMoney(quote.total)}
+                    <p style={infoLineStyle}>
+                      <strong>Subtotal sin ITBIS:</strong>{' '}
+                      {formatMoney(quote.admin_final_total ?? quote.total)}
                     </p>
-                    <p style={rowTextStyle}>
-                      <strong>Total final:</strong>{' '}
-                      {formatMoney(quote.admin_final_total)}
+                    <p style={infoLineStyle}>
+                      <strong>ITBIS 18%:</strong>{' '}
+                      {formatMoney(calculateItbis(quote.admin_final_total ?? quote.total))}
+                    </p>
+                    <p style={infoLineStyle}>
+                      <strong>Total con ITBIS:</strong>{' '}
+                      {formatMoney(calculateTotalWithItbis(quote.admin_final_total ?? quote.total))}
                     </p>
                     <p style={rowTextStyle}>
                       <strong>Depósito requerido:</strong>{' '}
