@@ -2008,7 +2008,7 @@ export default function AdminPage() {
           </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: 22 }}>
+        <div style={{ display: 'grid', gap: 14 }}>
           {paginatedQuotes.map((quote) => {
             const itemsForQuote = quoteItems.filter(
               (item) => item.quote_id === quote.id
@@ -2804,8 +2804,8 @@ const quoteItemsTaxStyle: React.CSSProperties = {
 };
 
 const quoteItemEditorCardStyle: React.CSSProperties = {
-  padding: 14,
-  borderRadius: 18,
+  padding: 10,
+  borderRadius: 14,
   background: 'rgba(2, 6, 23, 0.36)',
   border: '1px solid rgba(250, 204, 21, 0.12)',
 };
@@ -2838,9 +2838,9 @@ const subtotalPreviewStyle: React.CSSProperties = {
 };
 
 const manualItemBoxStyle: React.CSSProperties = {
-  marginTop: 16,
-  padding: 14,
-  borderRadius: 18,
+  marginTop: 12,
+  padding: 10,
+  borderRadius: 14,
   background: 'rgba(250, 204, 21, 0.06)',
   border: '1px solid rgba(250, 204, 21, 0.14)',
 };
@@ -3150,9 +3150,9 @@ const cardStyle: React.CSSProperties = {
   background:
     'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(30,27,75,0.42) 52%, rgba(9,14,28,0.92) 100%)',
   border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 24,
-  padding: 22,
-  boxShadow: '0 22px 48px rgba(0,0,0,0.24)',
+  borderRadius: 20,
+  padding: 16,
+  boxShadow: '0 16px 34px rgba(0,0,0,0.20)',
 };
 
 const cardTitleStyle: React.CSSProperties = {
@@ -3164,17 +3164,17 @@ const cardTitleStyle: React.CSSProperties = {
 const cardHeaderWrapStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
-  gap: 16,
+  gap: 12,
   alignItems: 'flex-start',
   flexWrap: 'wrap',
-  marginBottom: 18,
+  marginBottom: 10,
 };
 
 const subPanelStyle: React.CSSProperties = {
   background: 'rgba(2, 6, 23, 0.34)',
   border: '1px solid rgba(148, 163, 184, 0.14)',
-  borderRadius: 18,
-  padding: 16,
+  borderRadius: 14,
+  padding: 12,
 };
 
 const subPanelTitleStyle: React.CSSProperties = {
@@ -3202,13 +3202,14 @@ const productsGridStyle: React.CSSProperties = {
 };
 
 const articleTitleStyle: React.CSSProperties = {
-  margin: '0 0 8px',
-  fontSize: 24,
+  margin: '0 0 4px',
+  fontSize: 19,
 };
 
 const articleMetaStyle: React.CSSProperties = {
-  margin: '0 0 6px',
+  margin: '0 0 3px',
   color: '#94a3b8',
+  fontSize: 13,
 };
 
 const smallLabelStyle: React.CSSProperties = {
@@ -3262,14 +3263,16 @@ const compactQuoteButtonStyle: React.CSSProperties = {
 };
 
 const rowTextStyle: React.CSSProperties = {
-  margin: '0 0 8px',
+  margin: '0 0 5px',
   color: '#d7e2ee',
+  fontSize: 13,
 };
 
 const notesTextStyle: React.CSSProperties = {
   margin: 0,
   color: '#d7e2ee',
-  lineHeight: 1.6,
+  lineHeight: 1.45,
+  fontSize: 13,
 };
 
 const listItemStyle: React.CSSProperties = {
@@ -3326,19 +3329,20 @@ const actionRowStyle: React.CSSProperties = {
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  padding: '13px 14px',
-  borderRadius: 14,
+  padding: '10px 12px',
+  borderRadius: 12,
   border: '1px solid rgba(250, 204, 21, 0.14)',
   background: 'rgba(2, 6, 23, 0.68)',
   color: '#f8fafc',
   outline: 'none',
+  fontSize: 13,
 };
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
-  marginBottom: 7,
+  marginBottom: 5,
   color: '#a5b4c7',
-  fontSize: 13,
+  fontSize: 12,
   fontWeight: 600,
 };
 
@@ -3354,28 +3358,30 @@ const primaryButtonStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '12px 16px',
-  borderRadius: 14,
+  padding: '10px 13px',
+  borderRadius: 12,
   border: 'none',
   cursor: 'pointer',
   fontWeight: 900,
   background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
   color: '#fff',
-  boxShadow: '0 18px 34px rgba(236,72,153,0.24)',
+  boxShadow: '0 14px 26px rgba(236,72,153,0.20)',
+  fontSize: 13,
 };
 
 const secondaryButtonStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '10px 14px',
-  borderRadius: 14,
+  padding: '8px 12px',
+  borderRadius: 12,
   border: '1px solid rgba(250, 204, 21, 0.18)',
   cursor: 'pointer',
   fontWeight: 800,
   background: 'rgba(2, 6, 23, 0.48)',
   color: '#f8fafc',
   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
+  fontSize: 13,
 };
 
 const primaryLinkStyle: React.CSSProperties = {
