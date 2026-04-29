@@ -15,10 +15,19 @@ function getNoteValue(notes: string, label: string) {
   return line.slice(label.length + 1).trim();
 }
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
+
 Deno.serve(async (request) => {
+  if (request.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
   try {
     const body = await request.json();
-
     const type = body.type ?? 'generic';
 
     let subject = 'Notificación de Eventos Platform';
@@ -30,7 +39,6 @@ Deno.serve(async (request) => {
       customerEmail = body.customerEmail ?? 'Sin email';
       const requestedDate = body.requestedDate ?? 'Sin fecha';
       const requestedTime = body.requestedTime ?? 'Sin hora';
-
       const notes = body.notes ?? 'Sin notas';
       const phone = getNoteValue(notes, 'Teléfono') || 'Sin teléfono';
       const company = getNoteValue(notes, 'Empresa') || 'No aplica';
@@ -146,7 +154,6 @@ Deno.serve(async (request) => {
     }
 
     const recipients = [ADMIN_EMAIL];
-
     const shouldNotifyCustomer =
       type === 'meeting_status_changed' || type === 'quote_status_changed';
 
@@ -160,12 +167,16 @@ Deno.serve(async (request) => {
     }
 
     if (!RESEND_API_KEY) {
-      return new Response(JSON.stringify({ error: 'RESEND_API_KEY is not configured' }), {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      return new Response(
+        JSON.stringify({ error: 'RESEND_API_KEY is not configured' }),
+        {
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
     }
 
     const res = await fetch('https://api.resend.com/emails', {
@@ -185,18 +196,19 @@ Deno.serve(async (request) => {
     const data = await res.json();
 
     return new Response(JSON.stringify(data), {
-      status: 200,
+      status: res.ok ? 200 : res.status,
       headers: {
+        ...corsHeaders,
         'Content-Type': 'application/json',
       },
     });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Unexpected error';
+    const message = error instanceof Error ? error.message : 'Unexpected error';
 
     return new Response(JSON.stringify({ error: message }), {
       status: 500,
       headers: {
+        ...corsHeaders,
         'Content-Type': 'application/json',
       },
     });
