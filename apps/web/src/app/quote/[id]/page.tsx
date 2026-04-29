@@ -269,105 +269,6 @@ export default function QuoteDetailPage({
     return (
       <main style={pageStyle}>
         <div style={containerStyle}>
-        <section className="print-estimate" style={printEstimateStyle}>
-          <header style={printHeaderStyle}>
-            <div>
-              <div style={printLogoStyle}>SM</div>
-              <p style={printBrandStyle}>SM Events</p>
-              <p style={printMutedStyle}>Producción técnica y montaje de eventos</p>
-            </div>
-
-            <div style={printHeaderMetaStyle}>
-              <p style={printEstimateLabelStyle}>Estimate / Cotización</p>
-              <h1 style={printEstimateTitleStyle}>#{quoteNumber}</h1>
-              <p style={printMutedStyle}>{formatDate(quote.created_at)}</p>
-            </div>
-          </header>
-
-          <section style={printInfoGridStyle}>
-            <div style={printInfoBoxStyle}>
-              <p style={printSectionLabelStyle}>Cliente</p>
-              <h2 style={printClientNameStyle}>{quote.customer_name || 'Cliente sin nombre'}</h2>
-              <p style={printInfoTextStyle}>{quote.customer_email || 'Sin email'}</p>
-              <p style={printInfoTextStyle}>Evento: {quote.event_type || '—'}</p>
-            </div>
-
-            <div style={printInfoBoxStyle}>
-              <p style={printSectionLabelStyle}>Resumen</p>
-              <p style={printInfoTextStyle}>Estado: {getStatusLabel(quote.status)}</p>
-              <p style={printInfoTextStyle}>
-                Depósito: {quote.deposit_status === 'paid' ? 'Pagado' : 'Pendiente'}
-              </p>
-              <p style={printInfoTextStyle}>Referencia: {quote.deposit_reference || '—'}</p>
-              <p style={printInfoTextStyle}>ID completo: {quote.id}</p>
-            </div>
-          </section>
-
-          <section style={printTableSectionStyle}>
-            <div style={printTableHeaderStyle}>
-              <span>Servicio</span>
-              <span>Cant.</span>
-              <span>Precio</span>
-              <span>Total</span>
-            </div>
-
-            {items.length === 0 ? (
-              <div style={printTableEmptyStyle}>No hay servicios agregados.</div>
-            ) : (
-              items.map((item) => (
-                <div key={item.id} style={printTableRowStyle}>
-                  <strong>{item.product_name}</strong>
-                  <span>{Number(item.quantity ?? 0)}</span>
-                  <span>{formatMoney(item.unit_price)}</span>
-                  <strong>{formatMoney(item.subtotal)}</strong>
-                </div>
-              ))
-            )}
-          </section>
-
-          <section style={printBottomGridStyle}>
-            <div style={printNotesBoxStyle}>
-              <p style={printSectionLabelStyle}>Notas</p>
-              <p style={printInfoTextStyle}>{quote.notes || 'Sin notas adicionales.'}</p>
-              <p style={printInfoTextStyle}>
-                <strong>Nota del admin:</strong> {quote.admin_note || '—'}
-              </p>
-              <p style={printTermsTextStyle}>
-                Esta cotización está sujeta a disponibilidad de fecha, disponibilidad técnica y confirmación del depósito requerido.
-              </p>
-            </div>
-
-            <div style={printTotalsBoxStyle}>
-              <div style={printTotalRowStyle}>
-                <span>Subtotal de artículos</span>
-                <strong>{formatMoney(itemsSubtotal)}</strong>
-              </div>
-              <div style={printTotalRowStyle}>
-                <span>Subtotal aprobado sin ITBIS</span>
-                <strong>{formatMoney(finalTotal)}</strong>
-              </div>
-              <div style={printTotalRowStyle}>
-                <span>ITBIS 18%</span>
-                <strong>{formatMoney(itbisAmount)}</strong>
-              </div>
-              <div style={printGrandTotalRowStyle}>
-                <span>Total con ITBIS</span>
-                <strong>{formatMoney(totalWithItbis)}</strong>
-              </div>
-              <div style={printTotalRowStyle}>
-                <span>Depósito requerido</span>
-                <strong>{formatMoney(quote.deposit_amount)}</strong>
-              </div>
-            </div>
-          </section>
-
-          <footer style={printFooterStyle}>
-            <p>Gracias por considerar a SM Events para tu evento.</p>
-            <p>Documento generado desde SM Events Platform.</p>
-          </footer>
-        </section>
-
-        <div className="screen-quote">
           <AppNavbar ctaHref="/" ctaLabel="Volver al inicio" />
           <div style={heroCardStyle}>
             <p style={eyebrowStyle}>Cotización</p>
@@ -472,7 +373,106 @@ export default function QuoteDetailPage({
         }
       `}</style>
       <div style={containerStyle}>
-        <AppNavbar ctaHref="/" ctaLabel="Volver al inicio" />
+        <section className="print-estimate" style={printEstimateStyle}>
+          <header style={printHeaderStyle}>
+            <div>
+              <div style={printLogoStyle}>SM</div>
+              <p style={printBrandStyle}>SM Events</p>
+              <p style={printMutedStyle}>Producción técnica y montaje de eventos</p>
+            </div>
+
+            <div style={printHeaderMetaStyle}>
+              <p style={printEstimateLabelStyle}>Estimate / Cotización</p>
+              <h1 style={printEstimateTitleStyle}>#{quoteNumber}</h1>
+              <p style={printMutedStyle}>{formatDate(quote.created_at)}</p>
+            </div>
+          </header>
+
+          <section style={printInfoGridStyle}>
+            <div style={printInfoBoxStyle}>
+              <p style={printSectionLabelStyle}>Cliente</p>
+              <h2 style={printClientNameStyle}>{quote.customer_name || 'Cliente sin nombre'}</h2>
+              <p style={printInfoTextStyle}>{quote.customer_email || 'Sin email'}</p>
+              <p style={printInfoTextStyle}>Evento: {quote.event_type || '—'}</p>
+            </div>
+
+            <div style={printInfoBoxStyle}>
+              <p style={printSectionLabelStyle}>Resumen</p>
+              <p style={printInfoTextStyle}>Estado: {getStatusLabel(quote.status)}</p>
+              <p style={printInfoTextStyle}>
+                Depósito: {quote.deposit_status === 'paid' ? 'Pagado' : 'Pendiente'}
+              </p>
+              <p style={printInfoTextStyle}>Referencia: {quote.deposit_reference || '—'}</p>
+              <p style={printInfoTextStyle}>ID completo: {quote.id}</p>
+            </div>
+          </section>
+
+          <section style={printTableSectionStyle}>
+            <div style={printTableHeaderStyle}>
+              <span>Servicio</span>
+              <span>Cant.</span>
+              <span>Precio</span>
+              <span>Total</span>
+            </div>
+
+            {items.length === 0 ? (
+              <div style={printTableEmptyStyle}>No hay servicios agregados.</div>
+            ) : (
+              items.map((item) => (
+                <div key={item.id} style={printTableRowStyle}>
+                  <strong>{item.product_name}</strong>
+                  <span>{Number(item.quantity ?? 0)}</span>
+                  <span>{formatMoney(item.unit_price)}</span>
+                  <strong>{formatMoney(item.subtotal)}</strong>
+                </div>
+              ))
+            )}
+          </section>
+
+          <section style={printBottomGridStyle}>
+            <div style={printNotesBoxStyle}>
+              <p style={printSectionLabelStyle}>Notas</p>
+              <p style={printInfoTextStyle}>{quote.notes || 'Sin notas adicionales.'}</p>
+              <p style={printInfoTextStyle}>
+                <strong>Nota del admin:</strong> {quote.admin_note || '—'}
+              </p>
+              <p style={printTermsTextStyle}>
+                Esta cotización está sujeta a disponibilidad de fecha, disponibilidad técnica y confirmación del depósito requerido.
+              </p>
+            </div>
+
+            <div style={printTotalsBoxStyle}>
+              <div style={printTotalRowStyle}>
+                <span>Subtotal de artículos</span>
+                <strong>{formatMoney(itemsSubtotal)}</strong>
+              </div>
+              <div style={printTotalRowStyle}>
+                <span>Subtotal aprobado sin ITBIS</span>
+                <strong>{formatMoney(finalTotal)}</strong>
+              </div>
+              <div style={printTotalRowStyle}>
+                <span>ITBIS 18%</span>
+                <strong>{formatMoney(itbisAmount)}</strong>
+              </div>
+              <div style={printGrandTotalRowStyle}>
+                <span>Total con ITBIS</span>
+                <strong>{formatMoney(totalWithItbis)}</strong>
+              </div>
+              <div style={printTotalRowStyle}>
+                <span>Depósito requerido</span>
+                <strong>{formatMoney(quote.deposit_amount)}</strong>
+              </div>
+            </div>
+          </section>
+
+          <footer style={printFooterStyle}>
+            <p>Gracias por considerar a SM Events para tu evento.</p>
+            <p>Documento generado desde SM Events Platform.</p>
+          </footer>
+        </section>
+
+        <div className="screen-quote">
+          <AppNavbar ctaHref="/" ctaLabel="Volver al inicio" />
 
         <section style={heroCardStyle}>
           <div
