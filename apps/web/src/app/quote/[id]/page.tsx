@@ -528,39 +528,38 @@ export default function QuoteDetailPage({
         </section>
 
         <section style={{ ...panelStyle, marginTop: 18 }}>
-          <h2 style={panelTitleStyle}>Productos de tu cotización</h2>
+          <div style={quoteItemsHeaderStyle}>
+            <div>
+              <p style={eyebrowStyle}>Detalle de servicios</p>
+              <h2 style={panelTitleStyle}>Productos de tu cotización</h2>
+            </div>
+            <strong style={quoteItemsTotalStyle}>
+              {formatMoney(
+                items.reduce((sum, item) => sum + Number(item.subtotal ?? 0), 0)
+              )}
+            </strong>
+          </div>
 
           {items.length === 0 ? (
             <p style={{ margin: 0, color: '#94a3b8' }}>
               No hay productos en esta cotización.
             </p>
           ) : (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                gap: 12,
-              }}
-            >
+            <div style={quoteItemsTableWrapStyle}>
+              <div style={quoteItemsTableHeaderStyle}>
+                <span>Artículo</span>
+                <span>Cantidad</span>
+                <span>Unitario</span>
+                <span>Subtotal</span>
+              </div>
+
               {items.map((item) => (
-                <article key={item.id} style={productCardStyle}>
-                  <p style={{ margin: '0 0 8px', fontWeight: 800, fontSize: 16 }}>
-                    {item.product_name}
-                  </p>
-                  <p style={productMetaStyle}>Cantidad: {item.quantity}</p>
-                  <p style={productMetaStyle}>
-                    Precio unitario: {formatMoney(item.unit_price)}
-                  </p>
-                  <p
-                    style={{
-                      margin: '10px 0 0',
-                      color: '#e5e7eb',
-                      fontWeight: 800,
-                    }}
-                  >
-                    Subtotal: {formatMoney(item.subtotal)}
-                  </p>
-                </article>
+                <div key={item.id} style={quoteItemsTableRowStyle}>
+                  <span style={quoteItemNameStyle}>{item.product_name}</span>
+                  <span>{Number(item.quantity ?? 0)}</span>
+                  <span>{formatMoney(item.unit_price)}</span>
+                  <strong>{formatMoney(item.subtotal)}</strong>
+                </div>
               ))}
             </div>
           )}
@@ -710,16 +709,55 @@ const primaryButtonStyle: React.CSSProperties = {
   color: '#fff',
 };
 
-const productCardStyle: React.CSSProperties = {
-  border: '1px solid rgba(148, 163, 184, 0.14)',
-  borderRadius: 16,
-  padding: 16,
-  background: 'rgba(2, 6, 23, 0.34)',
+const quoteItemsHeaderStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  gap: 14,
+  flexWrap: 'wrap',
+  marginBottom: 14,
 };
 
-const productMetaStyle: React.CSSProperties = {
-  margin: '0 0 6px',
-  color: '#94a3b8',
+const quoteItemsTotalStyle: React.CSSProperties = {
+  color: '#f8fafc',
+  fontSize: 18,
+};
+
+const quoteItemsTableWrapStyle: React.CSSProperties = {
+  overflowX: 'auto',
+  borderRadius: 16,
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+};
+
+const quoteItemsTableHeaderStyle: React.CSSProperties = {
+  minWidth: 680,
+  display: 'grid',
+  gridTemplateColumns: 'minmax(240px, 1.6fr) 110px 130px 130px',
+  gap: 12,
+  padding: '12px 14px',
+  background: 'rgba(250, 204, 21, 0.08)',
+  color: '#fbbf24',
+  fontSize: 12,
+  fontWeight: 900,
+  textTransform: 'uppercase',
+  letterSpacing: '0.07em',
+};
+
+const quoteItemsTableRowStyle: React.CSSProperties = {
+  minWidth: 680,
+  display: 'grid',
+  gridTemplateColumns: 'minmax(240px, 1.6fr) 110px 130px 130px',
+  gap: 12,
+  padding: '13px 14px',
+  borderTop: '1px solid rgba(250, 204, 21, 0.10)',
+  background: 'rgba(2, 6, 23, 0.28)',
+  color: '#d7e2ee',
+  alignItems: 'center',
+};
+
+const quoteItemNameStyle: React.CSSProperties = {
+  color: '#f8fafc',
+  fontWeight: 800,
 };
 
 const fileInputStyle: React.CSSProperties = {
