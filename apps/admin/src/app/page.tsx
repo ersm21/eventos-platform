@@ -2023,7 +2023,7 @@ export default function AdminPage() {
 
                   <section style={subPanelStyle}>
                     <h3 style={subPanelTitleStyle}>Resumen económico</h3>
-                    <p style={infoLineStyle}>
+                    <p style={rowTextStyle}>
                       <strong>Subtotal original sin descuento:</strong>{' '}
                       {hasQuoteAdminDiscount(quote, itemsForQuote) ? (
                         <span style={quoteItemsOriginalTotalStyle}>
@@ -2034,22 +2034,22 @@ export default function AdminPage() {
                       )}
                     </p>
                     {hasQuoteAdminDiscount(quote, itemsForQuote) && (
-                      <p style={infoLineStyle}>
+                      <p style={rowTextStyle}>
                         <strong>Descuento aplicado:</strong>{' '}
                         <span style={quoteItemsDiscountStyle}>
                           -{formatMoney(getQuoteItemsTotal(itemsForQuote) - getQuoteBaseTotal(quote, itemsForQuote))}
                         </span>
                       </p>
                     )}
-                    <p style={infoLineStyle}>
+                    <p style={rowTextStyle}>
                       <strong>Subtotal sin ITBIS:</strong>{' '}
                       {formatMoney(getQuoteBaseTotal(quote, itemsForQuote))}
                     </p>
-                    <p style={infoLineStyle}>
+                    <p style={rowTextStyle}>
                       <strong>ITBIS 18%:</strong>{' '}
                       {formatMoney(calculateItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
                     </p>
-                    <p style={infoLineStyle}>
+                    <p style={rowTextStyle}>
                       <strong>Total con ITBIS:</strong>{' '}
                       {formatMoney(calculateTotalWithItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
                     </p>
