@@ -376,7 +376,13 @@ export default function QuoteDetailPage({
         <section className="print-estimate" style={printEstimateStyle}>
           <header style={printHeaderStyle}>
             <div style={printBrandBlockStyle}>
-              <div style={printLogoStyle}>SM</div>
+              <div style={printLogoStyle}>
+                <img
+                  src="/sm-logo.png"
+                  alt="SM Events"
+                  style={printLogoImageStyle}
+                />
+              </div>
               <div>
                 <p style={printBrandStyle}>SM Events</p>
                 <p style={printMutedStyle}>Producción técnica y montaje de eventos</p>
@@ -1025,18 +1031,21 @@ const printBrandBlockStyle: React.CSSProperties = {
 };
 
 const printLogoStyle: React.CSSProperties = {
-  width: 58,
-  height: 58,
-  borderRadius: 18,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  background: '#fbbf24',
-  color: '#111827',
-  fontSize: 22,
-  fontWeight: 950,
-  letterSpacing: '-0.05em',
+  width: 96,
+  height: 66,
+  display: 'grid',
+  placeItems: 'center',
+  background: 'transparent',
+  border: 'none',
+  overflow: 'visible',
   flexShrink: 0,
+};
+
+const printLogoImageStyle: React.CSSProperties = {
+  width: '100%',
+  height: '100%',
+  objectFit: 'contain',
+  display: 'block',
 };
 
 const printBrandStyle: React.CSSProperties = {
