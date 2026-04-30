@@ -447,7 +447,24 @@ export default function Home() {
               </div>
 
               <div style={reviewBoxStyle}>
-                <span style={reviewTextStyle}>¿Ya trabajaste con nosotros?</span>
+                <div>
+                  <span style={reviewTextStyle}>¿Ya trabajaste con nosotros?</span>
+                  <div style={reviewStarsStyle} aria-label="Valorar SM Events en Google">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <a
+                        key={star}
+                        href="https://www.google.com/search?q=SM+Events+C.+Penetraci%C3%B3n+Flor+de+Gurabo+Santiago+de+los+Caballeros+51000+reviews"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={reviewStarLinkStyle}
+                        aria-label={`${star} estrella${star === 1 ? '' : 's'} en Google`}
+                      >
+                        ★
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
                 <a
                   href="https://www.google.com/search?q=SM+Events+C.+Penetraci%C3%B3n+Flor+de+Gurabo+Santiago+de+los+Caballeros+51000+reviews"
                   target="_blank"
@@ -1335,4 +1352,18 @@ const reviewLinkStyle: React.CSSProperties = {
   fontSize: 12,
   fontWeight: 900,
   textDecoration: 'none',
+};
+
+const reviewStarsStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: 3,
+  marginTop: 4,
+};
+
+const reviewStarLinkStyle: React.CSSProperties = {
+  color: '#fbbf24',
+  fontSize: 18,
+  lineHeight: 1,
+  textDecoration: 'none',
+  textShadow: '0 0 18px rgba(251, 191, 36, 0.22)',
 };
