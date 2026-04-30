@@ -445,6 +445,18 @@ export default function Home() {
                   referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>
+
+              <div style={reviewBoxStyle}>
+                <span style={reviewTextStyle}>¿Ya trabajaste con nosotros?</span>
+                <a
+                  href="https://www.google.com/search?q=SM+Events+C.+Penetraci%C3%B3n+Flor+de+Gurabo+Santiago+de+los+Caballeros+51000+reviews"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={reviewLinkStyle}
+                >
+                  Déjanos una reseña en Google
+                </a>
+              </div>
             </section>
           </div>
         </section>
@@ -1297,4 +1309,30 @@ const mapFrameStyle: React.CSSProperties = {
 const mapIframeStyle: React.CSSProperties = {
   border: 0,
   display: 'block',
+};
+
+const reviewBoxStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 10,
+  flexWrap: 'wrap',
+  marginTop: 10,
+  padding: '10px 12px',
+  borderRadius: 16,
+  background: 'rgba(250, 204, 21, 0.07)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+};
+
+const reviewTextStyle: React.CSSProperties = {
+  color: '#cbd5e1',
+  fontSize: 12,
+  fontWeight: 700,
+};
+
+const reviewLinkStyle: React.CSSProperties = {
+  color: '#fbbf24',
+  fontSize: 12,
+  fontWeight: 900,
+  textDecoration: 'none',
 };
