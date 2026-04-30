@@ -95,6 +95,12 @@ export default function AppNavbar({
             Mi cuenta
           </Link>
 
+          {isLoggedIn && (
+            <Link href="/profile" style={navLinkStyle}>
+              Mi perfil
+            </Link>
+          )}
+
           {isAdmin && (
             <Link href="/admin" style={adminLinkStyle}>
               Panel admin
