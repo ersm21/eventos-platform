@@ -2232,6 +2232,14 @@ export default function AdminPage() {
                   </div>
 
                   <div style={quoteCompactActionStyle}>
+                    <a
+                      href={`/quote/${quote.id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={quoteCompactPdfButtonStyle}
+                    >
+                      PDF
+                    </a>
                     <button
                       type="button"
                       onClick={() =>
@@ -3547,6 +3555,23 @@ const quoteCompactMoneyHighlightStyle: React.CSSProperties = {
 const quoteCompactActionStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'flex-end',
+  gap: 8,
+  flexWrap: 'wrap',
+};
+
+const quoteCompactPdfButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minWidth: 54,
+  padding: '8px 12px',
+  borderRadius: 999,
+  border: '1px solid rgba(250, 204, 21, 0.32)',
+  background: 'rgba(250, 204, 21, 0.10)',
+  color: '#fde68a',
+  textDecoration: 'none',
+  fontWeight: 900,
+  fontSize: 13,
 };
 
 const compactQuoteButtonStyle: React.CSSProperties = {
