@@ -98,6 +98,7 @@ export default function FeedPage() {
 
   const [error, setError] = useState<string | null>(null);
   const [commentsOpen, setCommentsOpen] = useState<Record<string, boolean>>({});
+  const allowedAdminEmails = ['ericrafaelsousamorel@gmail.com'];
 
   const profilesByUserId = useMemo(() => {
     return profiles.reduce<Record<string, Profile>>((accumulator, profile) => {
@@ -118,13 +119,16 @@ export default function FeedPage() {
       return;
     }
 
+    const normalizedEmail = user.email?.toLowerCase().trim() || '';
+    const isHardcodedAdmin = allowedAdminEmails.includes(normalizedEmail);
+
     const { data } = await supabase
       .from('feed_admins')
       .select('user_id')
       .eq('user_id', user.id)
       .maybeSingle();
 
-    setIsAdmin(!!data);
+    setIsAdmin(isHardcodedAdmin || !!data);
   };
 
   const loadFeed = async () => {
@@ -485,22 +489,6 @@ export default function FeedPage() {
             Actualizaciones, montajes, eventos y contenido reciente de SM Events.
           </p>
         </section>
-
-        {!isAdmin && (
-          <section style={viewerHintStyle}>
-            <div>
-              <p style={sectionEyebrowStyle}>Actualizaciones</p>
-              <h2 style={viewerHintTitleStyle}>Contenido reciente de SM Events</h2>
-              <p style={viewerHintTextStyle}>
-                Aquí verás montajes, eventos, anuncios y publicaciones importantes.
-              </p>
-            </div>
-
-            <Link href="/cotizar" style={viewerHintButtonStyle}>
-              Cotizar servicio
-            </Link>
-          </section>
-        )}
 
         {isAdmin && (
           <section style={composerCardStyle}>
@@ -1017,52 +1005,6 @@ const commentButtonStyle: React.CSSProperties = {
   color: '#ffffff',
   fontWeight: 900,
   cursor: 'pointer',
-};
-
-const sectionEyebrowStyle: React.CSSProperties = {
-  margin: 0,
-  color: '#fbbf24',
-  fontWeight: 900,
-  letterSpacing: '0.09em',
-  textTransform: 'uppercase',
-  fontSize: 11,
-};
-
-const viewerHintStyle: React.CSSProperties = {
-  marginTop: 12,
-  padding: 16,
-  borderRadius: 20,
-  background: 'rgba(15, 23, 42, 0.78)',
-  border: '1px solid rgba(250, 204, 21, 0.13)',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: 12,
-  flexWrap: 'wrap',
-};
-
-const viewerHintTitleStyle: React.CSSProperties = {
-  margin: '6px 0 5px',
-  fontSize: 20,
-};
-
-const viewerHintTextStyle: React.CSSProperties = {
-  margin: 0,
-  color: '#94a3b8',
-  fontSize: 13,
-  lineHeight: 1.5,
-};
-
-const viewerHintButtonStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '10px 13px',
-  borderRadius: 14,
-  textDecoration: 'none',
-  background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
-  color: '#fff',
-  fontWeight: 900,
 };
 
 const composerToolsStyle: React.CSSProperties = {
