@@ -2240,6 +2240,14 @@ export default function AdminPage() {
                     >
                       PDF
                     </a>
+                    <a
+                      href={`https://eventos-platform-web.vercel.app/quote/${quote.id}?print=conduce`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={quoteCompactConduceButtonStyle}
+                    >
+                      Conduce
+                    </a>
                     <button
                       type="button"
                       onClick={() =>
@@ -3569,6 +3577,21 @@ const quoteCompactPdfButtonStyle: React.CSSProperties = {
   border: '1px solid rgba(250, 204, 21, 0.32)',
   background: 'rgba(250, 204, 21, 0.10)',
   color: '#fde68a',
+  textDecoration: 'none',
+  fontWeight: 900,
+  fontSize: 13,
+};
+
+const quoteCompactConduceButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minWidth: 82,
+  padding: '8px 12px',
+  borderRadius: 999,
+  border: '1px solid rgba(59, 130, 246, 0.32)',
+  background: 'rgba(59, 130, 246, 0.10)',
+  color: '#bfdbfe',
   textDecoration: 'none',
   fontWeight: 900,
   fontSize: 13,

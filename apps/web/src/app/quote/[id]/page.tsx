@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { supabase } from '../../../lib/supabase/client';
 import AppNavbar from '../../../components/AppNavbar';
 
@@ -163,6 +164,7 @@ export default function QuoteDetailPage({
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [printDocument, setPrintDocument] = useState<'quote' | 'conduce'>('quote');
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const loadQuote = async () => {
@@ -200,6 +202,15 @@ export default function QuoteDetailPage({
 
     loadQuote();
   }, [params]);
+
+  useEffect(() => {
+    if (!quote) return;
+
+    if (searchParams.get('print') === 'conduce') {
+      setPrintDocument('conduce');
+      window.setTimeout(() => window.print(), 250);
+    }
+  }, [quote, searchParams]);
 
   const confirmQuote = async () => {
     if (!quote) return;
@@ -621,14 +632,6 @@ export default function QuoteDetailPage({
                 className="no-print"
               >
                 Descargar PDF
-              </button>
-              <button
-                type="button"
-                onClick={downloadConducePdf}
-                style={secondaryButtonStyle}
-                className="no-print"
-              >
-                Descargar Conduce
               </button>
             </div>
           </div>
