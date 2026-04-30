@@ -42,50 +42,6 @@ export default function Index() {
             </View>
           </View>
 
-          <View style={styles.navRow}>
-            <Link href="/catalogo" asChild>
-              <Pressable style={styles.navPill}>
-                <Text style={styles.navPillText}>Catálogo</Text>
-              </Pressable>
-            </Link>
-
-            <Link href="/galeria" asChild>
-              <Pressable style={styles.navPill}>
-                <Text style={styles.navPillText}>Galería</Text>
-              </Pressable>
-            </Link>
-
-            <Link href="/cotizar" asChild>
-              <Pressable style={styles.navPill}>
-                <Text style={styles.navPillText}>Cotizar</Text>
-              </Pressable>
-            </Link>
-
-            <Link href="/my-quotes" asChild>
-              <Pressable style={styles.navPill}>
-                <Text style={styles.navPillText}>Cotizaciones</Text>
-              </Pressable>
-            </Link>
-
-            <Link href="/my-meetings" asChild>
-              <Pressable style={styles.navPill}>
-                <Text style={styles.navPillText}>Reuniones</Text>
-              </Pressable>
-            </Link>
-
-            <Link href="/account" asChild>
-              <Pressable style={styles.navPill}>
-                <Text style={styles.navPillText}>Cuenta</Text>
-              </Pressable>
-            </Link>
-
-            <Link href="/login" asChild>
-              <Pressable style={styles.navPillPrimary}>
-                <Text style={styles.navPillPrimaryText}>Login</Text>
-              </Pressable>
-            </Link>
-          </View>
-
           <View style={styles.heroCard}>
             <Text style={styles.eyebrow}>Producción técnica</Text>
             <Text style={styles.title}>Haz que tu evento se vea y suene como debe</Text>
@@ -183,38 +139,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     marginTop: 2,
-  },
-  navRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: -4,
-  },
-  navPill: {
-    paddingVertical: 9,
-    paddingHorizontal: 12,
-    borderRadius: 999,
-    backgroundColor: 'rgba(15, 23, 42, 0.9)',
-    borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.18)',
-  },
-  navPillText: {
-    color: '#cbd5e1',
-    fontSize: 12,
-    fontWeight: '900',
-  },
-  navPillPrimary: {
-    paddingVertical: 9,
-    paddingHorizontal: 12,
-    borderRadius: 999,
-    backgroundColor: 'rgba(249, 115, 22, 0.18)',
-    borderWidth: 1,
-    borderColor: 'rgba(249, 115, 22, 0.38)',
-  },
-  navPillPrimaryText: {
-    color: '#fed7aa',
-    fontSize: 12,
-    fontWeight: '900',
   },
   heroCard: {
     borderRadius: 28,

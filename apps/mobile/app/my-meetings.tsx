@@ -59,9 +59,9 @@ export default function MyMeetingsScreen() {
               Aquí podrás ver reuniones solicitadas, confirmadas o pendientes de asignar cuando conectemos la app con Supabase.
             </Text>
 
-            <Link href="/cotizar" asChild>
+            <Link href="/request-meeting" asChild>
               <Pressable style={styles.primaryButton}>
-                <Text style={styles.primaryButtonText}>Solicitar cotización</Text>
+                <Text style={styles.primaryButtonText}>Solicitar reunión</Text>
               </Pressable>
             </Link>
           </View>
