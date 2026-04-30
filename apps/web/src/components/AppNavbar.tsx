@@ -47,11 +47,7 @@ export default function AppNavbar({
       <div style={navbarInnerStyle}>
         <Link href="/" style={brandLinkStyle}>
           <div style={logoStyle}>
-            <img
-              src="/sm-logo.png"
-              alt="SM Events"
-              style={logoImageStyle}
-            />
+            <img src="/sm-logo.png" alt="SM Events" style={logoImageStyle} />
           </div>
 
           <div>
@@ -66,6 +62,10 @@ export default function AppNavbar({
 
           <Link href="/catalogo" style={navLinkStyle}>
             Catálogo
+          </Link>
+
+          <Link href="/galeria" style={navLinkStyle}>
+            Galería
           </Link>
 
           <Link href="/cotizar" style={navLinkStyle}>
@@ -152,15 +152,6 @@ const logoImageStyle: React.CSSProperties = {
   objectFit: 'contain',
   display: 'block',
   padding: 0,
-};
-
-const brandNameStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: 13,
-  color: '#93c5fd',
-  fontWeight: 900,
-  letterSpacing: '0.08em',
-  textTransform: 'uppercase',
 };
 
 const brandSubtitleStyle: React.CSSProperties = {

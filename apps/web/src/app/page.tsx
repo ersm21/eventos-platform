@@ -370,11 +370,11 @@ export default function Home() {
               </p>
 
               <div style={coveragePillsStyle}>
-                <a href="#fotos-eventos-sociales" style={coveragePillStyle}>Eventos sociales</a>
-                <a href="#fotos-conciertos" style={coveragePillStyle}>Conciertos</a>
-                <a href="#fotos-bodas" style={coveragePillStyle}>Bodas</a>
-                <a href="#fotos-corporativos" style={coveragePillStyle}>Corporativos</a>
-                <a href="#fotos-soporte-tecnico" style={coveragePillStyle}>Soporte técnico</a>
+                <a href="/galeria#eventos-sociales" style={coveragePillStyle}>Eventos sociales</a>
+                <a href="/galeria#conciertos" style={coveragePillStyle}>Conciertos</a>
+                <a href="/galeria#bodas" style={coveragePillStyle}>Bodas</a>
+                <a href="/galeria#corporativos" style={coveragePillStyle}>Corporativos</a>
+                <a href="/galeria#soporte-tecnico" style={coveragePillStyle}>Soporte técnico</a>
               </div>
             </section>
 
@@ -397,41 +397,6 @@ export default function Home() {
             </section>
           </div>
 
-          <section style={gallerySectionStyle}>
-            <div style={galleryHeaderStyle}>
-              <div>
-                <p style={aboutCardEyebrowStyle}>Galería por servicio</p>
-                <h3 style={galleryTitleStyle}>Mira el tipo de montaje que podemos preparar para tu evento.</h3>
-              </div>
-            </div>
-
-            <div style={galleryGridStyle}>
-              <a id="fotos-eventos-sociales" href="/catalogo" style={{ ...galleryCardStyle, backgroundImage: 'linear-gradient(180deg, rgba(2,6,23,0.18), rgba(2,6,23,0.82)), url(https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=900&q=80)' }}>
-                <span style={galleryTagStyle}>Eventos sociales</span>
-                <strong style={galleryCardTitleStyle}>Cumpleaños, actividades privadas y celebraciones.</strong>
-              </a>
-
-              <a id="fotos-conciertos" href="/catalogo" style={{ ...galleryCardStyle, backgroundImage: 'linear-gradient(180deg, rgba(2,6,23,0.18), rgba(2,6,23,0.82)), url(https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=900&q=80)' }}>
-                <span style={galleryTagStyle}>Conciertos</span>
-                <strong style={galleryCardTitleStyle}>Luces, sonido, tarimas y producción en vivo.</strong>
-              </a>
-
-              <a id="fotos-bodas" href="/catalogo" style={{ ...galleryCardStyle, backgroundImage: 'linear-gradient(180deg, rgba(2,6,23,0.18), rgba(2,6,23,0.82)), url(https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=900&q=80)' }}>
-                <span style={galleryTagStyle}>Bodas</span>
-                <strong style={galleryCardTitleStyle}>Ambientes elegantes, luces y sonido para momentos especiales.</strong>
-              </a>
-
-              <a id="fotos-corporativos" href="/catalogo" style={{ ...galleryCardStyle, backgroundImage: 'linear-gradient(180deg, rgba(2,6,23,0.18), rgba(2,6,23,0.82)), url(https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=900&q=80)' }}>
-                <span style={galleryTagStyle}>Corporativos</span>
-                <strong style={galleryCardTitleStyle}>Presentaciones, conferencias y montajes empresariales.</strong>
-              </a>
-
-              <a id="fotos-soporte-tecnico" href="/catalogo" style={{ ...galleryCardStyle, backgroundImage: 'linear-gradient(180deg, rgba(2,6,23,0.18), rgba(2,6,23,0.82)), url(https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80)' }}>
-                <span style={galleryTagStyle}>Soporte técnico</span>
-                <strong style={galleryCardTitleStyle}>Asesoría, operación y soporte para proyectos técnicos.</strong>
-              </a>
-            </div>
-          </section>
 
           <div style={locationGridStyle}>
             <section style={locationCardStyle}>
@@ -1280,67 +1245,6 @@ const coveragePillStyle: React.CSSProperties = {
   fontSize: 12,
   fontWeight: 800,
   textDecoration: 'none',
-};
-const gallerySectionStyle: React.CSSProperties = {
-  marginTop: 14,
-  background: 'rgba(2, 6, 23, 0.24)',
-  border: '1px solid rgba(148, 163, 184, 0.12)',
-  borderRadius: 24,
-  padding: 18,
-};
-
-const galleryHeaderStyle: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  gap: 14,
-  alignItems: 'flex-end',
-  flexWrap: 'wrap',
-  marginBottom: 14,
-};
-
-const galleryTitleStyle: React.CSSProperties = {
-  margin: '8px 0 0',
-  fontSize: 22,
-  lineHeight: 1.15,
-  letterSpacing: '-0.025em',
-  maxWidth: 620,
-};
-
-const galleryGridStyle: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(5, minmax(140px, 1fr))',
-  gap: 10,
-};
-
-const galleryCardStyle: React.CSSProperties = {
-  minHeight: 190,
-  borderRadius: 20,
-  padding: 14,
-  border: '1px solid rgba(255,255,255,0.12)',
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-  textDecoration: 'none',
-  color: '#ffffff',
-  overflow: 'hidden',
-};
-
-const galleryTagStyle: React.CSSProperties = {
-  alignSelf: 'flex-start',
-  padding: '6px 9px',
-  borderRadius: 999,
-  background: 'rgba(2, 6, 23, 0.68)',
-  color: '#fde68a',
-  fontSize: 11,
-  fontWeight: 900,
-};
-
-const galleryCardTitleStyle: React.CSSProperties = {
-  fontSize: 14,
-  lineHeight: 1.25,
-  textShadow: '0 8px 22px rgba(0,0,0,0.42)',
 };
 
 
