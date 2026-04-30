@@ -2233,7 +2233,7 @@ export default function AdminPage() {
 
                   <div style={quoteCompactActionStyle}>
                     <a
-                      href={`/quote/${quote.id}`}
+                      href={`https://eventos-platform-web.vercel.app/quote/${quote.id}`}
                       target="_blank"
                       rel="noreferrer"
                       style={quoteCompactPdfButtonStyle}
