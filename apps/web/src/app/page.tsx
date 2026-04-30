@@ -359,7 +359,6 @@ export default function Home() {
         <section style={aboutSectionStyle}>
           <div style={aboutHeaderStyle}>
             <p style={sectionEyebrowStyle}>Sobre nosotros</p>
-            <h2 style={aboutTitleStyle}>Producción técnica para eventos que necesitan salir bien</h2>
             <p style={aboutIntroStyle}>
               SM Events es una empresa de producción de eventos enfocada en crear experiencias visuales, sonoras y técnicas con organización, responsabilidad y soporte real antes, durante y después del montaje.
             </p>
