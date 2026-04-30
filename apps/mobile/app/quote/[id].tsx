@@ -1,6 +1,7 @@
 
 
 import { LinearGradient } from 'expo-linear-gradient';
+import * as DocumentPicker from 'expo-document-picker';
 import { Link, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -117,6 +118,7 @@ export default function QuoteDetailScreen() {
   const [items, setItems] = useState<QuoteItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirming, setConfirming] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -185,6 +187,74 @@ export default function QuoteDetailScreen() {
     setSuccessMessage('Tu cotización fue confirmada correctamente.');
     Alert.alert('Cotización confirmada', 'Tu cotización fue confirmada correctamente.');
     setConfirming(false);
+  };
+
+  const uploadPaymentProof = async () => {
+    if (!quote) return;
+
+    const webApiUrl = process.env.EXPO_PUBLIC_WEB_API_URL;
+
+    if (!webApiUrl) {
+      setError('Falta configurar EXPO_PUBLIC_WEB_API_URL en apps/mobile/.env.');
+      return;
+    }
+
+    const result = await DocumentPicker.getDocumentAsync({
+      type: ['image/*', 'application/pdf'],
+      copyToCacheDirectory: true,
+      multiple: false,
+    });
+
+    if (result.canceled || !result.assets?.[0]) return;
+
+    const asset = result.assets[0];
+
+    setUploading(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      const formData = new FormData();
+
+      formData.append('file', {
+        uri: asset.uri,
+        name: asset.name || `comprobante-${quote.id}`,
+        type: asset.mimeType || 'application/octet-stream',
+      } as unknown as Blob);
+
+      formData.append('quoteId', quote.id);
+
+      const response = await fetch(`${webApiUrl}/api/upload-payment-proof`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const uploadResult = await response.json();
+
+      if (!response.ok) {
+        setError(uploadResult.error || 'No se pudo subir el comprobante.');
+        setUploading(false);
+        return;
+      }
+
+      setQuote({
+        ...quote,
+        payment_proof_url: uploadResult.publicUrl,
+        payment_proof_name: uploadResult.fileName,
+      });
+
+      setSuccessMessage('Comprobante subido correctamente.');
+      Alert.alert('Comprobante subido', 'Tu comprobante fue subido correctamente.');
+      setUploading(false);
+    } catch (uploadError) {
+      const message =
+        uploadError instanceof Error
+          ? uploadError.message
+          : 'Error inesperado subiendo comprobante.';
+
+      setError(message);
+      setUploading(false);
+    }
   };
 
   if (loading) {
@@ -331,13 +401,23 @@ export default function QuoteDetailScreen() {
             <Text style={styles.panelTitle}>Comprobante de pago</Text>
             <Text style={styles.rowText}><Text style={styles.bold}>Archivo actual:</Text> {quote.payment_proof_name || 'No subido todavía'}</Text>
 
-            {quote.payment_proof_url ? (
-              <Pressable style={styles.primaryButton} onPress={() => Linking.openURL(quote.payment_proof_url || '')}>
-                <Text style={styles.primaryButtonText}>Abrir comprobante</Text>
+            <View style={styles.paymentActions}>
+              {quote.payment_proof_url && (
+                <Pressable style={styles.primaryButton} onPress={() => Linking.openURL(quote.payment_proof_url || '')}>
+                  <Text style={styles.primaryButtonText}>Abrir comprobante</Text>
+                </Pressable>
+              )}
+
+              <Pressable
+                onPress={uploadPaymentProof}
+                disabled={uploading}
+                style={[styles.secondaryButton, uploading && styles.buttonDisabled]}
+              >
+                <Text style={styles.secondaryButtonText}>
+                  {uploading ? 'Subiendo...' : quote.payment_proof_url ? 'Cambiar comprobante' : 'Subir comprobante'}
+                </Text>
               </Pressable>
-            ) : (
-              <Text style={styles.mutedText}>La subida de comprobante desde la app la agregaremos en el próximo paso.</Text>
-            )}
+            </View>
           </View>
 
           <View style={styles.panel}>
