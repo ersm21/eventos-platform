@@ -31,8 +31,38 @@ const preferredCategoryOrder = [
   'Truss',
   'Tarimas',
   'Efectos especiales',
-  'General',
 ];
+
+const categoryVisuals: Record<string, { label: string; description: string }> = {
+  Audio: {
+    label: 'Audio',
+    description: 'Sonido profesional, bocinas, consolas, micrófonos y soporte técnico.',
+  },
+  Iluminación: {
+    label: 'Iluminación',
+    description: 'Luces robóticas, wash, beam, ambientación y diseño visual.',
+  },
+  'Pantallas LED': {
+    label: 'Pantallas LED',
+    description: 'Pantallas para tarima, fondos visuales, contenido y producción.',
+  },
+  Truss: {
+    label: 'Truss',
+    description: 'Estructuras, soportes, torres, rigging y montaje técnico.',
+  },
+  Tarimas: {
+    label: 'Tarimas',
+    description: 'Tarimas para conciertos, bodas, corporativos y eventos privados.',
+  },
+  'Efectos especiales': {
+    label: 'Efectos especiales',
+    description: 'Confeti, humo, pirotecnia fría y detalles de impacto para eventos.',
+  },
+  General: {
+    label: 'General',
+    description: 'Servicios adicionales y soluciones especiales para tu evento.',
+  },
+};
 
 function normalizeCategory(category: string | null | undefined) {
   return category?.trim() || 'General';
@@ -82,9 +112,12 @@ export default function CatalogoPage() {
   }, [products]);
 
   const productCategories = useMemo(() => {
-    const existing = Object.keys(productsByCategory);
+    const existingCategories = Object.keys(productsByCategory);
+    const allCategories = Array.from(
+      new Set([...preferredCategoryOrder, ...existingCategories])
+    );
 
-    return existing.sort((a, b) => {
+    return allCategories.sort((a, b) => {
       const aIndex = preferredCategoryOrder.indexOf(a);
       const bIndex = preferredCategoryOrder.indexOf(b);
 
@@ -205,6 +238,10 @@ export default function CatalogoPage() {
                 {productCategories.map((category) => {
                   const isOpen = !!expandedCategories[category];
                   const categoryProducts = productsByCategory[category] || [];
+                  const categoryVisual = categoryVisuals[category] || {
+                    label: category,
+                    description: 'Servicios disponibles para esta subdivisión.',
+                  };
 
                   return (
                     <section key={category} style={categorySectionStyle}>
@@ -213,17 +250,35 @@ export default function CatalogoPage() {
                         onClick={() => toggleCategory(category)}
                         style={categoryHeaderStyle}
                       >
-                        <div>
-                          <h3 style={categoryTitleStyle}>{category}</h3>
-                          <p style={categoryCountStyle}>
-                            {categoryProducts.length} producto{categoryProducts.length === 1 ? '' : 's'}
-                          </p>
+                        <div style={categoryHeaderContentStyle}>
+                          <div style={categoryThumbStyle}>
+                            <span>{categoryVisual.label.slice(0, 2).toUpperCase()}</span>
+                          </div>
+
+                          <div>
+                            <h3 style={categoryTitleStyle}>{categoryVisual.label}</h3>
+                            <p style={categoryDescriptionStyle}>{categoryVisual.description}</p>
+                            <p style={categoryCountStyle}>
+                              {categoryProducts.length > 0
+                                ? `${categoryProducts.length} producto${categoryProducts.length === 1 ? '' : 's'}`
+                                : 'Próximamente agregaremos productos'}
+                            </p>
+                          </div>
                         </div>
 
                         <span style={categoryChevronStyle}>{isOpen ? '−' : '+'}</span>
                       </button>
 
-                      {isOpen && (
+                      {isOpen && categoryProducts.length === 0 && (
+                        <div style={emptyCategoryStyle}>
+                          <p style={emptyTitleStyle}>Esta subdivisión todavía no tiene productos.</p>
+                          <p style={emptyTextStyle}>
+                            Pronto agregaremos opciones, fotos y detalles para esta categoría.
+                          </p>
+                        </div>
+                      )}
+
+                      {isOpen && categoryProducts.length > 0 && (
                         <div style={productGridStyle}>
                           {categoryProducts.map((product) => (
                             <article key={product.id} style={productCardStyle}>
@@ -498,6 +553,42 @@ const categoryHeaderStyle: React.CSSProperties = {
   color: '#f8fafc',
   cursor: 'pointer',
   textAlign: 'left',
+};
+
+const categoryHeaderContentStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 12,
+  minWidth: 0,
+};
+
+const categoryThumbStyle: React.CSSProperties = {
+  width: 54,
+  height: 54,
+  borderRadius: 16,
+  display: 'grid',
+  placeItems: 'center',
+  flexShrink: 0,
+  background: 'linear-gradient(135deg, rgba(250,204,21,0.16), rgba(59,130,246,0.14))',
+  border: '1px solid rgba(250,204,21,0.18)',
+  color: '#fde68a',
+  fontSize: 13,
+  fontWeight: 900,
+};
+
+const categoryDescriptionStyle: React.CSSProperties = {
+  margin: '4px 0 0',
+  color: '#cbd5e1',
+  fontSize: 12,
+  lineHeight: 1.4,
+};
+
+const emptyCategoryStyle: React.CSSProperties = {
+  margin: 10,
+  padding: 14,
+  borderRadius: 16,
+  background: 'rgba(2, 6, 23, 0.38)',
+  border: '1px solid rgba(250, 204, 21, 0.11)',
 };
 
 const categoryTitleStyle: React.CSSProperties = {
