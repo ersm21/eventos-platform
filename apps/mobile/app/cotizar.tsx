@@ -1,5 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { Link, router } from 'expo-router';
+import { Link, router, useLocalSearchParams } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -28,6 +29,8 @@ type QuoteItem = Product & {
   quantity: number;
 };
 
+const QUOTE_CART_STORAGE_KEY = 'sm_events_quote_cart';
+
 function formatMoney(value: number | null | undefined) {
   return `$${Number(value ?? 0).toLocaleString()}`;
 }
@@ -41,6 +44,7 @@ function calculateTotalWithItbis(value: number | null | undefined) {
 }
 
 export default function CotizarScreen() {
+  const params = useLocalSearchParams<{ cart?: string }>();
   const [products, setProducts] = useState<Product[]>([]);
   const [quoteItems, setQuoteItems] = useState<QuoteItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,6 +59,7 @@ export default function CotizarScreen() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [sessionEmail, setSessionEmail] = useState<string | null>(null);
+  const [hasLoadedSavedCart, setHasLoadedSavedCart] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -78,6 +83,97 @@ export default function CotizarScreen() {
 
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    const loadCartFromParams = async () => {
+      if (!params.cart || products.length === 0 || quoteItems.length > 0) return;
+
+      try {
+      const cart = JSON.parse(String(params.cart)) as Array<{ id: string; quantity: number }>;
+
+      const hydratedItems = cart
+        .map((cartItem) => {
+          const product = products.find((item) => item.id === cartItem.id);
+          if (!product) return null;
+
+          return {
+            ...product,
+            quantity: Math.max(1, Number(cartItem.quantity || 1)),
+          };
+        })
+        .filter(Boolean) as QuoteItem[];
+
+      if (hydratedItems.length > 0) {
+        setQuoteItems(hydratedItems);
+        await AsyncStorage.setItem(QUOTE_CART_STORAGE_KEY, JSON.stringify(cart));
+        setHasLoadedSavedCart(true);
+      }
+      } catch {
+        // Ignoramos carritos inválidos.
+      }
+    };
+
+    loadCartFromParams();
+  }, [params.cart, products, quoteItems.length]);
+
+  useEffect(() => {
+    const loadSavedCart = async () => {
+      if (products.length === 0 || quoteItems.length > 0 || hasLoadedSavedCart) return;
+
+      try {
+        const savedCart = await AsyncStorage.getItem(QUOTE_CART_STORAGE_KEY);
+
+        if (!savedCart) {
+          setHasLoadedSavedCart(true);
+          return;
+        }
+
+        const cart = JSON.parse(savedCart) as Array<{ id: string; quantity: number }>;
+
+        const hydratedItems = cart
+          .map((cartItem) => {
+            const product = products.find((item) => item.id === cartItem.id);
+            if (!product) return null;
+
+            return {
+              ...product,
+              quantity: Math.max(1, Number(cartItem.quantity || 1)),
+            };
+          })
+          .filter(Boolean) as QuoteItem[];
+
+        if (hydratedItems.length > 0) {
+          setQuoteItems(hydratedItems);
+        }
+      } catch {
+        await AsyncStorage.removeItem(QUOTE_CART_STORAGE_KEY);
+      } finally {
+        setHasLoadedSavedCart(true);
+      }
+    };
+
+    loadSavedCart();
+  }, [products, quoteItems.length, hasLoadedSavedCart]);
+
+  useEffect(() => {
+    if (!hasLoadedSavedCart) return;
+
+    const saveCart = async () => {
+      const cart = quoteItems.map((item) => ({
+        id: item.id,
+        quantity: item.quantity,
+      }));
+
+      if (cart.length === 0) {
+        await AsyncStorage.removeItem(QUOTE_CART_STORAGE_KEY);
+        return;
+      }
+
+      await AsyncStorage.setItem(QUOTE_CART_STORAGE_KEY, JSON.stringify(cart));
+    };
+
+    saveCart();
+  }, [quoteItems, hasLoadedSavedCart]);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -526,8 +622,8 @@ const styles = StyleSheet.create({
   sessionTitle: { color: '#ffffff', fontSize: 22, fontWeight: '900' },
   sessionText: { color: '#94a3b8', fontSize: 14, lineHeight: 20 },
   primaryButton: { alignSelf: 'flex-start', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 14, backgroundColor: '#f97316' },
-  primaryButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '900' },
-  smallButton: { paddingVertical: 11, paddingHorizontal: 14, borderRadius: 14, backgroundColor: '#f97316' },
+  primaryButtonText: { color: '#ffffff', fontSize: 13, fontWeight: '900' },
+  smallButton: { paddingVertical: 9, paddingHorizontal: 12, borderRadius: 12, backgroundColor: '#f97316' },
   fullButton: { alignItems: 'center', justifyContent: 'center', paddingVertical: 15, borderRadius: 18, backgroundColor: '#f97316' },
   buttonDisabled: { opacity: 0.72 },
   errorBox: { padding: 14, borderRadius: 16, backgroundColor: 'rgba(127, 29, 29, 0.30)', borderWidth: 1, borderColor: 'rgba(248, 113, 113, 0.32)' },
@@ -536,14 +632,14 @@ const styles = StyleSheet.create({
   successText: { color: '#bbf7d0', fontWeight: '800' },
   panel: { borderRadius: 24, padding: 18, backgroundColor: 'rgba(15, 23, 42, 0.78)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 14 },
   mutedText: { color: '#94a3b8', fontSize: 14, fontWeight: '700' },
-  productGrid: { gap: 14 },
-  productCard: { minHeight: 210, borderRadius: 22, padding: 18, backgroundColor: 'rgba(15, 23, 42, 0.84)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', justifyContent: 'space-between', gap: 18 },
-  categoryBadge: { alignSelf: 'flex-start', paddingVertical: 6, paddingHorizontal: 10, borderRadius: 999, backgroundColor: 'rgba(245, 158, 11, 0.12)', color: '#fbbf24', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.24)', fontSize: 12, fontWeight: '900' },
-  productName: { color: '#ffffff', fontSize: 21, fontWeight: '900', marginTop: 14, marginBottom: 8 },
-  productDescription: { color: '#94a3b8', fontSize: 14, lineHeight: 20 },
-  productFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', gap: 12 },
-  priceLabel: { color: '#64748b', fontSize: 12, textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: '800' },
-  price: { color: '#ffffff', fontSize: 23, fontWeight: '900', marginTop: 5 },
+  productGrid: { gap: 10 },
+  productCard: { minHeight: 142, borderRadius: 18, padding: 14, backgroundColor: 'rgba(15, 23, 42, 0.84)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', justifyContent: 'space-between', gap: 12 },
+  categoryBadge: { alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 999, backgroundColor: 'rgba(245, 158, 11, 0.12)', color: '#fbbf24', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.24)', fontSize: 10, fontWeight: '900' },
+  productName: { color: '#ffffff', fontSize: 17, fontWeight: '900', marginTop: 10, marginBottom: 5 },
+  productDescription: { color: '#94a3b8', fontSize: 12, lineHeight: 17 },
+  productFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginTop: 2 },
+  priceLabel: { color: '#64748b', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: '800' },
+  price: { color: '#ffffff', fontSize: 18, fontWeight: '900', marginTop: 3 },
   panelTitle: { color: '#ffffff', fontSize: 23, fontWeight: '900', marginTop: 5 },
   panelText: { color: '#94a3b8', fontSize: 14, lineHeight: 20 },
   fieldGroup: { gap: 7 },
