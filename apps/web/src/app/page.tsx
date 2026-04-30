@@ -370,28 +370,68 @@ export default function Home() {
               </p>
 
               <div style={coveragePillsStyle}>
-                <span style={coveragePillStyle}>Eventos sociales</span>
-                <span style={coveragePillStyle}>Conciertos</span>
-                <span style={coveragePillStyle}>Bodas</span>
-                <span style={coveragePillStyle}>Corporativos</span>
-                <span style={coveragePillStyle}>Soporte técnico</span>
+                <a href="#fotos-eventos-sociales" style={coveragePillStyle}>Eventos sociales</a>
+                <a href="#fotos-conciertos" style={coveragePillStyle}>Conciertos</a>
+                <a href="#fotos-bodas" style={coveragePillStyle}>Bodas</a>
+                <a href="#fotos-corporativos" style={coveragePillStyle}>Corporativos</a>
+                <a href="#fotos-soporte-tecnico" style={coveragePillStyle}>Soporte técnico</a>
               </div>
             </section>
 
-            <section style={aboutCardStyle}>
-              <p style={aboutCardEyebrowStyle}>Misión</p>
-              <p style={aboutTextStyle}>
-                Hacer que cada evento se vea, suene y funcione como debe, ofreciendo soluciones técnicas confiables, montaje profesional y acompañamiento personalizado en cada etapa del proceso.
-              </p>
-            </section>
+            <section style={missionVisionCardStyle}>
+              <div>
+                <p style={aboutCardEyebrowStyle}>Misión</p>
+                <p style={aboutTextStyle}>
+                  Hacer que cada evento se vea, suene y funcione como debe, ofreciendo soluciones técnicas confiables, montaje profesional y acompañamiento personalizado en cada etapa del proceso.
+                </p>
+              </div>
 
-            <section style={aboutCardStyle}>
-              <p style={aboutCardEyebrowStyle}>Visión</p>
-              <p style={aboutTextStyle}>
-                Ser una de las empresas de producción técnica de eventos más confiables de República Dominicana, reconocida por su calidad, puntualidad, innovación y capacidad de resolver en cualquier escenario.
-              </p>
+              <div style={missionVisionDividerStyle} />
+
+              <div>
+                <p style={aboutCardEyebrowStyle}>Visión</p>
+                <p style={aboutTextStyle}>
+                  Ser una de las empresas de producción técnica de eventos más confiables de República Dominicana, reconocida por su calidad, puntualidad, innovación y capacidad de resolver en cualquier escenario.
+                </p>
+              </div>
             </section>
           </div>
+
+          <section style={gallerySectionStyle}>
+            <div style={galleryHeaderStyle}>
+              <div>
+                <p style={aboutCardEyebrowStyle}>Galería por servicio</p>
+                <h3 style={galleryTitleStyle}>Mira el tipo de montaje que podemos preparar para tu evento.</h3>
+              </div>
+            </div>
+
+            <div style={galleryGridStyle}>
+              <a id="fotos-eventos-sociales" href="/catalogo" style={{ ...galleryCardStyle, backgroundImage: 'linear-gradient(180deg, rgba(2,6,23,0.18), rgba(2,6,23,0.82)), url(https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=900&q=80)' }}>
+                <span style={galleryTagStyle}>Eventos sociales</span>
+                <strong style={galleryCardTitleStyle}>Cumpleaños, actividades privadas y celebraciones.</strong>
+              </a>
+
+              <a id="fotos-conciertos" href="/catalogo" style={{ ...galleryCardStyle, backgroundImage: 'linear-gradient(180deg, rgba(2,6,23,0.18), rgba(2,6,23,0.82)), url(https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=900&q=80)' }}>
+                <span style={galleryTagStyle}>Conciertos</span>
+                <strong style={galleryCardTitleStyle}>Luces, sonido, tarimas y producción en vivo.</strong>
+              </a>
+
+              <a id="fotos-bodas" href="/catalogo" style={{ ...galleryCardStyle, backgroundImage: 'linear-gradient(180deg, rgba(2,6,23,0.18), rgba(2,6,23,0.82)), url(https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=900&q=80)' }}>
+                <span style={galleryTagStyle}>Bodas</span>
+                <strong style={galleryCardTitleStyle}>Ambientes elegantes, luces y sonido para momentos especiales.</strong>
+              </a>
+
+              <a id="fotos-corporativos" href="/catalogo" style={{ ...galleryCardStyle, backgroundImage: 'linear-gradient(180deg, rgba(2,6,23,0.18), rgba(2,6,23,0.82)), url(https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=900&q=80)' }}>
+                <span style={galleryTagStyle}>Corporativos</span>
+                <strong style={galleryCardTitleStyle}>Presentaciones, conferencias y montajes empresariales.</strong>
+              </a>
+
+              <a id="fotos-soporte-tecnico" href="/catalogo" style={{ ...galleryCardStyle, backgroundImage: 'linear-gradient(180deg, rgba(2,6,23,0.18), rgba(2,6,23,0.82)), url(https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80)' }}>
+                <span style={galleryTagStyle}>Soporte técnico</span>
+                <strong style={galleryCardTitleStyle}>Asesoría, operación y soporte para proyectos técnicos.</strong>
+              </a>
+            </div>
+          </section>
 
           <div style={locationGridStyle}>
             <section style={locationCardStyle}>
@@ -1166,7 +1206,7 @@ const aboutIntroStyle: React.CSSProperties = {
 
 const aboutGridStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '1.25fr 0.85fr 0.85fr',
+  gridTemplateColumns: '1.1fr 0.9fr',
   gap: 14,
 };
 
@@ -1183,6 +1223,21 @@ const aboutCardStyle: React.CSSProperties = {
   borderRadius: 24,
   padding: 22,
 };
+const missionVisionCardStyle: React.CSSProperties = {
+  background: 'rgba(2, 6, 23, 0.34)',
+  border: '1px solid rgba(148, 163, 184, 0.14)',
+  borderRadius: 24,
+  padding: 22,
+  display: 'grid',
+  gap: 18,
+};
+
+const missionVisionDividerStyle: React.CSSProperties = {
+  height: 1,
+  width: '100%',
+  background: 'linear-gradient(90deg, transparent, rgba(250,204,21,0.28), transparent)',
+};
+
 
 const aboutCardEyebrowStyle: React.CSSProperties = {
   margin: 0,
@@ -1224,7 +1279,70 @@ const coveragePillStyle: React.CSSProperties = {
   color: '#fde68a',
   fontSize: 12,
   fontWeight: 800,
+  textDecoration: 'none',
 };
+const gallerySectionStyle: React.CSSProperties = {
+  marginTop: 14,
+  background: 'rgba(2, 6, 23, 0.24)',
+  border: '1px solid rgba(148, 163, 184, 0.12)',
+  borderRadius: 24,
+  padding: 18,
+};
+
+const galleryHeaderStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: 14,
+  alignItems: 'flex-end',
+  flexWrap: 'wrap',
+  marginBottom: 14,
+};
+
+const galleryTitleStyle: React.CSSProperties = {
+  margin: '8px 0 0',
+  fontSize: 22,
+  lineHeight: 1.15,
+  letterSpacing: '-0.025em',
+  maxWidth: 620,
+};
+
+const galleryGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(5, minmax(140px, 1fr))',
+  gap: 10,
+};
+
+const galleryCardStyle: React.CSSProperties = {
+  minHeight: 190,
+  borderRadius: 20,
+  padding: 14,
+  border: '1px solid rgba(255,255,255,0.12)',
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  textDecoration: 'none',
+  color: '#ffffff',
+  overflow: 'hidden',
+};
+
+const galleryTagStyle: React.CSSProperties = {
+  alignSelf: 'flex-start',
+  padding: '6px 9px',
+  borderRadius: 999,
+  background: 'rgba(2, 6, 23, 0.68)',
+  color: '#fde68a',
+  fontSize: 11,
+  fontWeight: 900,
+};
+
+const galleryCardTitleStyle: React.CSSProperties = {
+  fontSize: 14,
+  lineHeight: 1.25,
+  textShadow: '0 8px 22px rgba(0,0,0,0.42)',
+};
+
 
 const locationGridStyle: React.CSSProperties = {
   display: 'grid',
