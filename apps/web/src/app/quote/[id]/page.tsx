@@ -162,6 +162,7 @@ export default function QuoteDetailPage({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [printDocument, setPrintDocument] = useState<'quote' | 'conduce'>('quote');
 
   useEffect(() => {
     const loadQuote = async () => {
@@ -322,13 +323,20 @@ export default function QuoteDetailPage({
   const totalWithItbis = calculateTotalWithItbis(finalTotal);
 
   const downloadQuotePdf = () => {
-    window.print();
+    setPrintDocument('quote');
+    window.setTimeout(() => window.print(), 50);
+  };
+
+  const downloadConducePdf = () => {
+    setPrintDocument('conduce');
+    window.setTimeout(() => window.print(), 50);
   };
 
   return (
-    <main style={pageStyle}>
+    <main style={pageStyle} data-print-document={printDocument}>
       <style>{`
-        .print-estimate {
+        .print-estimate,
+        .print-conduce {
           display: none;
         }
 
@@ -356,7 +364,8 @@ export default function QuoteDetailPage({
             display: none !important;
           }
 
-          .print-estimate {
+          main[data-print-document='quote'] .print-estimate,
+          main[data-print-document='conduce'] .print-conduce {
             display: block !important;
           }
 
@@ -486,6 +495,89 @@ export default function QuoteDetailPage({
           </footer>
         </section>
 
+        <section className="print-conduce" style={conducePageStyle}>
+          <header style={conduceHeaderStyle}>
+            <div style={printBrandBlockStyle}>
+              <div style={conduceLogoStyle}>
+                <img
+                  src="/sm-logo.png"
+                  alt="SM Events"
+                  style={printLogoImageStyle}
+                />
+              </div>
+              <div>
+                <p style={conduceBrandStyle}>SM Events</p>
+                <p style={conduceMutedStyle}>Conduce interno de almacén</p>
+              </div>
+            </div>
+
+            <div style={conduceMetaStyle}>
+              <p style={conduceLabelStyle}>Conduce / Despacho</p>
+              <h1 style={conduceTitleStyle}>#{quoteNumber}</h1>
+              <p style={conduceMutedStyle}>Emitido: {formatDate(quote.created_at)}</p>
+            </div>
+          </header>
+
+          <section style={conduceInfoGridStyle}>
+            <div style={conduceInfoBoxStyle}>
+              <p style={conduceSectionLabelStyle}>Datos del evento</p>
+              <p style={conduceInfoTextStyle}><strong>Cliente:</strong> {quote.customer_name || '—'}</p>
+              <p style={conduceInfoTextStyle}><strong>Contacto:</strong> {quote.customer_email || '—'}</p>
+              <p style={conduceInfoTextStyle}><strong>Tipo de evento:</strong> {quote.event_type || '—'}</p>
+              <p style={conduceInfoTextStyle}><strong>Fecha del evento:</strong> ______________________________</p>
+              <p style={conduceInfoTextStyle}><strong>Lugar del evento:</strong> ______________________________</p>
+            </div>
+
+            <div style={conduceInfoBoxStyle}>
+              <p style={conduceSectionLabelStyle}>Control interno</p>
+              <p style={conduceInfoTextStyle}><strong>ID cotización:</strong> {quote.id}</p>
+              <p style={conduceInfoTextStyle}><strong>Preparado por:</strong> ______________________________</p>
+              <p style={conduceInfoTextStyle}><strong>Despachado por:</strong> ______________________________</p>
+              <p style={conduceInfoTextStyle}><strong>Recibido por:</strong> ______________________________</p>
+            </div>
+          </section>
+
+          <section style={conduceTableSectionStyle}>
+            <div style={conduceTableHeaderStyle}>
+              <span>Equipo / producto</span>
+              <span>Cantidad</span>
+              <span>Observaciones</span>
+            </div>
+
+            {items.length === 0 ? (
+              <div style={conduceTableEmptyStyle}>No hay productos asociados.</div>
+            ) : (
+              items.map((item) => (
+                <div key={item.id} style={conduceTableRowStyle}>
+                  <strong>{item.product_name}</strong>
+                  <span>{Number(item.quantity ?? 0)}</span>
+                  <span>______________________________</span>
+                </div>
+              ))
+            )}
+          </section>
+
+          <section style={conduceNotesStyle}>
+            <p style={conduceSectionLabelStyle}>Notas internas / condiciones de despacho</p>
+            <p style={conduceInfoTextStyle}>{quote.admin_note || 'Sin notas internas.'}</p>
+          </section>
+
+          <section style={conduceSignaturesGridStyle}>
+            <div style={conduceSignatureBoxStyle}>
+              <div style={conduceSignatureLineStyle} />
+              <p>Firma de despacho</p>
+            </div>
+            <div style={conduceSignatureBoxStyle}>
+              <div style={conduceSignatureLineStyle} />
+              <p>Firma de recibido</p>
+            </div>
+            <div style={conduceSignatureBoxStyle}>
+              <div style={conduceSignatureLineStyle} />
+              <p>Firma de retorno</p>
+            </div>
+          </section>
+        </section>
+
         <div className="screen-quote">
           <AppNavbar ctaHref="/" ctaLabel="Volver al inicio" />
 
@@ -529,6 +621,14 @@ export default function QuoteDetailPage({
                 className="no-print"
               >
                 Descargar PDF
+              </button>
+              <button
+                type="button"
+                onClick={downloadConducePdf}
+                style={secondaryButtonStyle}
+                className="no-print"
+              >
+                Descargar Conduce
               </button>
             </div>
           </div>
@@ -1244,5 +1344,167 @@ const printFooterStyle: React.CSSProperties = {
 
 const printFooterRightStyle: React.CSSProperties = {
   textAlign: 'right',
+};
+
+const conducePageStyle: React.CSSProperties = {
+  width: '100%',
+  minHeight: '100vh',
+  background: '#ffffff',
+  color: '#111827',
+  fontFamily:
+    'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+};
+
+const conduceHeaderStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: 24,
+  alignItems: 'stretch',
+  border: '2px solid #111827',
+  borderRadius: 18,
+  padding: 18,
+  marginBottom: 16,
+};
+
+const conduceLogoStyle: React.CSSProperties = {
+  width: 92,
+  height: 62,
+  display: 'grid',
+  placeItems: 'center',
+  background: '#111827',
+  borderRadius: 14,
+  padding: 6,
+  flexShrink: 0,
+};
+
+const conduceBrandStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#111827',
+  fontSize: 24,
+  fontWeight: 950,
+  textTransform: 'uppercase',
+  letterSpacing: '0.04em',
+};
+
+const conduceMutedStyle: React.CSSProperties = {
+  margin: '4px 0 0',
+  color: '#6b7280',
+  fontSize: 12,
+};
+
+const conduceMetaStyle: React.CSSProperties = {
+  textAlign: 'right',
+  minWidth: 230,
+};
+
+const conduceLabelStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#92400e',
+  fontSize: 11,
+  fontWeight: 950,
+  textTransform: 'uppercase',
+  letterSpacing: '0.09em',
+};
+
+const conduceTitleStyle: React.CSSProperties = {
+  margin: '8px 0 0',
+  color: '#111827',
+  fontSize: 30,
+  lineHeight: 1,
+  letterSpacing: '-0.04em',
+};
+
+const conduceInfoGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 14,
+  marginBottom: 16,
+};
+
+const conduceInfoBoxStyle: React.CSSProperties = {
+  border: '1px solid #d1d5db',
+  borderRadius: 16,
+  padding: 14,
+  background: '#f9fafb',
+};
+
+const conduceSectionLabelStyle: React.CSSProperties = {
+  margin: '0 0 10px',
+  color: '#92400e',
+  fontSize: 11,
+  fontWeight: 950,
+  textTransform: 'uppercase',
+  letterSpacing: '0.09em',
+};
+
+const conduceInfoTextStyle: React.CSSProperties = {
+  margin: '0 0 7px',
+  color: '#374151',
+  fontSize: 12,
+  lineHeight: 1.45,
+};
+
+const conduceTableSectionStyle: React.CSSProperties = {
+  border: '1px solid #111827',
+  borderRadius: 16,
+  overflow: 'hidden',
+  marginBottom: 16,
+};
+
+const conduceTableHeaderStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 90px 240px',
+  gap: 10,
+  background: '#111827',
+  color: '#ffffff',
+  padding: '11px 12px',
+  fontSize: 11,
+  fontWeight: 950,
+  textTransform: 'uppercase',
+  letterSpacing: '0.07em',
+};
+
+const conduceTableRowStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 90px 240px',
+  gap: 10,
+  padding: '11px 12px',
+  borderTop: '1px solid #d1d5db',
+  color: '#111827',
+  fontSize: 12,
+  alignItems: 'center',
+};
+
+const conduceTableEmptyStyle: React.CSSProperties = {
+  padding: 14,
+  color: '#6b7280',
+  fontSize: 12,
+};
+
+const conduceNotesStyle: React.CSSProperties = {
+  border: '1px solid #d1d5db',
+  borderRadius: 16,
+  padding: 14,
+  background: '#ffffff',
+  marginBottom: 28,
+};
+
+const conduceSignaturesGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, 1fr)',
+  gap: 18,
+  marginTop: 36,
+};
+
+const conduceSignatureBoxStyle: React.CSSProperties = {
+  textAlign: 'center',
+  color: '#374151',
+  fontSize: 12,
+  fontWeight: 800,
+};
+
+const conduceSignatureLineStyle: React.CSSProperties = {
+  borderTop: '1.5px solid #111827',
+  marginBottom: 8,
 };
 
