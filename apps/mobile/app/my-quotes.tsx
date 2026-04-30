@@ -113,6 +113,7 @@ export default function MyQuotesScreen() {
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [openQuoteId, setOpenQuoteId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadQuotes = async () => {
@@ -256,10 +257,14 @@ export default function MyQuotesScreen() {
                 const itemsSubtotal = getItemsSubtotalForQuote(quote.id);
                 const baseTotal = getQuoteBaseTotal(quote);
                 const hasDiscount = hasQuoteAdminDiscount(quote);
+                const isOpen = openQuoteId === quote.id;
 
                 return (
                   <View key={quote.id} style={styles.quoteCard}>
-                    <View style={styles.quoteHeader}>
+                    <Pressable
+                      onPress={() => setOpenQuoteId(isOpen ? null : quote.id)}
+                      style={styles.quoteHeader}
+                    >
                       <View style={styles.quoteHeaderText}>
                         <Text style={styles.smallLabel}>Cotización</Text>
                         <Text style={styles.quoteTitle}>{quote.event_type || 'Evento sin título'}</Text>
@@ -277,7 +282,19 @@ export default function MyQuotesScreen() {
                           </Text>
                         </View>
                       </View>
-                    </View>
+
+                      <View style={styles.compactSummaryRow}>
+                        <View>
+                          <Text style={styles.compactLabel}>Total con ITBIS</Text>
+                          <Text style={styles.compactValue}>{formatMoney(calculateTotalWithItbis(baseTotal))}</Text>
+                        </View>
+
+                        <Text style={styles.expandText}>{isOpen ? 'Ocultar ↑' : 'Ver detalles ↓'}</Text>
+                      </View>
+                    </Pressable>
+
+                    {isOpen && (
+                      <>
 
                     <View style={styles.subCard}>
                       <Text style={styles.subCardTitle}>Resumen</Text>
@@ -385,6 +402,8 @@ export default function MyQuotesScreen() {
                         </Pressable>
                       )}
                     </View>
+                      </>
+                    )}
                   </View>
                 );
               })}
@@ -416,12 +435,12 @@ const styles = StyleSheet.create({
   emptyTitle: { color: '#ffffff', fontSize: 17, fontWeight: '900' },
   emptyText: { color: '#94a3b8', fontSize: 14, lineHeight: 20 },
   quotesList: { gap: 14 },
-  quoteCard: { borderRadius: 24, padding: 16, backgroundColor: 'rgba(15,23,42,0.84)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 12 },
+  quoteCard: { borderRadius: 24, padding: 16, backgroundColor: 'rgba(15,23,42,0.94)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.20)', gap: 12 },
   quoteHeader: { gap: 12 },
   quoteHeaderText: { gap: 4 },
   smallLabel: { color: '#fbbf24', fontSize: 12, textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: '900' },
-  quoteTitle: { color: '#ffffff', fontSize: 20, fontWeight: '900' },
-  quoteId: { color: '#94a3b8', fontSize: 12, fontWeight: '700' },
+  quoteTitle: { color: '#ffffff', fontSize: 22, fontWeight: '900', letterSpacing: -0.3 },
+  quoteId: { color: '#94a3b8', fontSize: 11, fontWeight: '800' },
   badgeWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   badge: { alignSelf: 'flex-start', paddingVertical: 7, paddingHorizontal: 11, borderRadius: 999, borderWidth: 1 },
   badgeText: { color: '#f8fafc', fontSize: 12, fontWeight: '900' },
@@ -454,4 +473,8 @@ const styles = StyleSheet.create({
   primaryButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '900' },
   secondaryButton: { alignSelf: 'flex-start', paddingVertical: 11, paddingHorizontal: 14, borderRadius: 14, backgroundColor: 'rgba(2, 6, 23, 0.48)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.18)' },
   secondaryButtonText: { color: '#f8fafc', fontSize: 14, fontWeight: '900' },
+  compactSummaryRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingTop: 14, marginTop: 4, borderTopWidth: 1, borderTopColor: 'rgba(148, 163, 184, 0.16)' },
+  compactLabel: { color: '#fbbf24', fontSize: 11, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.7 },
+  compactValue: { color: '#ffffff', fontSize: 21, fontWeight: '900', marginTop: 4 },
+  expandText: { color: '#fed7aa', fontSize: 13, fontWeight: '900', paddingVertical: 8, paddingHorizontal: 10, borderRadius: 999, backgroundColor: 'rgba(249, 115, 22, 0.16)', borderWidth: 1, borderColor: 'rgba(249, 115, 22, 0.28)' },
 });

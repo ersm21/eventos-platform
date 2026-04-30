@@ -2,6 +2,7 @@
 
 import { LinearGradient } from 'expo-linear-gradient';
 import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
 import { Link, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -189,7 +190,11 @@ export default function QuoteDetailScreen() {
     setConfirming(false);
   };
 
-  const uploadPaymentProof = async () => {
+  const sendPaymentProofToApi = async (asset: {
+    uri: string;
+    name?: string | null;
+    mimeType?: string | null;
+  }) => {
     if (!quote) return;
 
     const webApiUrl = process.env.EXPO_PUBLIC_WEB_API_URL;
@@ -198,16 +203,6 @@ export default function QuoteDetailScreen() {
       setError('Falta configurar EXPO_PUBLIC_WEB_API_URL en apps/mobile/.env.');
       return;
     }
-
-    const result = await DocumentPicker.getDocumentAsync({
-      type: ['image/*', 'application/pdf'],
-      copyToCacheDirectory: true,
-      multiple: false,
-    });
-
-    if (result.canceled || !result.assets?.[0]) return;
-
-    const asset = result.assets[0];
 
     setUploading(true);
     setError(null);
@@ -218,7 +213,7 @@ export default function QuoteDetailScreen() {
 
       formData.append('file', {
         uri: asset.uri,
-        name: asset.name || `comprobante-${quote.id}`,
+        name: asset.name || `comprobante-${quote.id}.jpg`,
         type: asset.mimeType || 'application/octet-stream',
       } as unknown as Blob);
 
@@ -255,6 +250,58 @@ export default function QuoteDetailScreen() {
       setError(message);
       setUploading(false);
     }
+  };
+
+  const pickPaymentProofFromFiles = async () => {
+    const result = await DocumentPicker.getDocumentAsync({
+      type: ['image/*', 'application/pdf'],
+      copyToCacheDirectory: true,
+      multiple: false,
+    });
+
+    if (result.canceled || !result.assets?.[0]) return;
+
+    const asset = result.assets[0];
+
+    await sendPaymentProofToApi({
+      uri: asset.uri,
+      name: asset.name,
+      mimeType: asset.mimeType,
+    });
+  };
+
+  const pickPaymentProofFromGallery = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permission.granted) {
+      setError('Necesitas dar permiso para acceder a la galería.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      quality: 0.85,
+    });
+
+    if (result.canceled || !result.assets?.[0]) return;
+
+    const asset = result.assets[0];
+    const fileName = asset.fileName || `comprobante-${quote?.id}.jpg`;
+
+    await sendPaymentProofToApi({
+      uri: asset.uri,
+      name: fileName,
+      mimeType: asset.mimeType || 'image/jpeg',
+    });
+  };
+
+  const choosePaymentProofSource = () => {
+    Alert.alert('Subir comprobante', 'Elige desde dónde quieres subir el comprobante.', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Galería', onPress: pickPaymentProofFromGallery },
+      { text: 'Archivos', onPress: pickPaymentProofFromFiles },
+    ]);
   };
 
   if (loading) {
@@ -399,25 +446,33 @@ export default function QuoteDetailScreen() {
 
           <View style={styles.panel}>
             <Text style={styles.panelTitle}>Comprobante de pago</Text>
-            <Text style={styles.rowText}><Text style={styles.bold}>Archivo actual:</Text> {quote.payment_proof_name || 'No subido todavía'}</Text>
+            <Text style={styles.rowText}>
+              <Text style={styles.bold}>Archivo actual:</Text>{' '}
+              {quote.payment_proof_name || 'No subido todavía'}
+            </Text>
 
-            <View style={styles.paymentActions}>
-              {quote.payment_proof_url && (
-                <Pressable style={styles.primaryButton} onPress={() => Linking.openURL(quote.payment_proof_url || '')}>
-                  <Text style={styles.primaryButtonText}>Abrir comprobante</Text>
-                </Pressable>
-              )}
+            <Pressable
+              onPress={choosePaymentProofSource}
+              disabled={uploading}
+              style={[styles.uploadButton, uploading && styles.buttonDisabled]}
+            >
+              <Text style={styles.uploadButtonText}>
+                {uploading ? 'Subiendo...' : quote.payment_proof_url ? 'Cambiar comprobante' : 'Subir comprobante'}
+              </Text>
+            </Pressable>
 
+            {quote.payment_proof_url && (
               <Pressable
-                onPress={uploadPaymentProof}
-                disabled={uploading}
-                style={[styles.secondaryButton, uploading && styles.buttonDisabled]}
+                style={styles.secondaryButton}
+                onPress={() => Linking.openURL(quote.payment_proof_url || '')}
               >
-                <Text style={styles.secondaryButtonText}>
-                  {uploading ? 'Subiendo...' : quote.payment_proof_url ? 'Cambiar comprobante' : 'Subir comprobante'}
-                </Text>
+                <Text style={styles.secondaryButtonText}>Abrir comprobante</Text>
               </Pressable>
-            </View>
+            )}
+
+            <Text style={styles.mutedText}>
+              Puedes subir una imagen desde galería o seleccionar un PDF/imagen desde archivos.
+            </Text>
           </View>
 
           <View style={styles.panel}>
@@ -513,4 +568,9 @@ const styles = StyleSheet.create({
   itemName: { color: '#f8fafc', fontSize: 15, fontWeight: '900' },
   itemMeta: { color: '#94a3b8', fontSize: 13 },
   itemSubtotal: { color: '#ffffff', fontSize: 15, fontWeight: '900' },
+  secondaryButton: { alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 14, backgroundColor: 'rgba(2, 6, 23, 0.48)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.18)' },
+  secondaryButtonText: { color: '#f8fafc', fontSize: 14, fontWeight: '900' },
+  uploadButton: { alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', minHeight: 52, paddingVertical: 14, paddingHorizontal: 18, borderRadius: 16, backgroundColor: '#f97316', borderWidth: 1, borderColor: 'rgba(249, 115, 22, 0.64)' },
+  uploadButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '900' },
+  paymentActions: { gap: 10, marginTop: 8 },
 });
