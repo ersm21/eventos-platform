@@ -398,7 +398,7 @@ export default function Home() {
               <p style={aboutCardEyebrowStyle}>Cobertura</p>
               <h3 style={locationTitleStyle}>Estamos en Santiago y vamos a todo el país.</h3>
               <p style={aboutTextStyle}>
-                Nuestra base está en Santiago de los Caballeros, República Dominicana, pero realizamos eventos en todo el territorio nacional. También brindamos soporte técnico y asesoría para proyectos en Estados Unidos.
+                Nuestra base está en C. Penetración Flor de Gurabo, Santiago de los Caballeros 51000, pero realizamos eventos en todo el territorio nacional. También brindamos soporte técnico y asesoría para proyectos en Estados Unidos.
               </p>
 
               <div style={contactListStyle}>
@@ -411,7 +411,7 @@ export default function Home() {
 
                 <div style={contactItemStyle}>
                   <span style={contactLabelStyle}>Ubicación</span>
-                  <span style={contactValueStyle}>Santiago de los Caballeros, República Dominicana</span>
+                  <span style={contactValueStyle}>C. Penetración Flor de Gurabo, Santiago de los Caballeros 51000</span>
                 </div>
 
                 <div style={contactItemStyle}>
@@ -425,7 +425,7 @@ export default function Home() {
               <div style={mapHeaderStyle}>
                 <p style={aboutCardEyebrowStyle}>Ubicación geográfica</p>
                 <a
-                  href="https://www.google.com/maps/search/?api=1&query=Santiago+de+los+Caballeros+Dominican+Republic"
+                  href="https://www.google.com/maps/search/?api=1&query=SM+Events+C.+Penetraci%C3%B3n+Flor+de+Gurabo+Santiago+de+los+Caballeros+51000"
                   target="_blank"
                   rel="noreferrer"
                   style={mapLinkStyle}
@@ -437,7 +437,7 @@ export default function Home() {
               <div style={mapFrameStyle}>
                 <iframe
                   title="Ubicación SM Events en Santiago de los Caballeros"
-                  src="https://www.google.com/maps?q=Santiago%20de%20los%20Caballeros%2C%20Dominican%20Republic&output=embed"
+                  src="https://www.google.com/maps?q=SM%20Events%20C.%20Penetraci%C3%B3n%20Flor%20de%20Gurabo%20Santiago%20de%20los%20Caballeros%2051000&output=embed"
                   width="100%"
                   height="100%"
                   style={mapIframeStyle}
