@@ -355,6 +355,103 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <section style={aboutSectionStyle}>
+          <div style={aboutHeaderStyle}>
+            <p style={sectionEyebrowStyle}>Sobre nosotros</p>
+            <h2 style={aboutTitleStyle}>Producción técnica para eventos que necesitan salir bien</h2>
+            <p style={aboutIntroStyle}>
+              SM Events es una empresa de producción de eventos enfocada en crear experiencias visuales, sonoras y técnicas con organización, responsabilidad y soporte real antes, durante y después del montaje.
+            </p>
+          </div>
+
+          <div style={aboutGridStyle}>
+            <section style={aboutMainCardStyle}>
+              <p style={aboutCardEyebrowStyle}>Quiénes somos</p>
+              <h3 style={aboutCardTitleStyle}>Tu equipo técnico para eventos sociales, corporativos y producciones en vivo.</h3>
+              <p style={aboutTextStyle}>
+                Trabajamos con luces, sonido, pantallas LED, tarimas, techos en truss, DJs y soluciones técnicas para eventos de diferentes tamaños. Nuestro objetivo es que cada montaje se vea profesional, funcione correctamente y se ejecute con claridad desde la planificación hasta el desmontaje.
+              </p>
+
+              <div style={coveragePillsStyle}>
+                <span style={coveragePillStyle}>Eventos sociales</span>
+                <span style={coveragePillStyle}>Conciertos</span>
+                <span style={coveragePillStyle}>Bodas</span>
+                <span style={coveragePillStyle}>Corporativos</span>
+                <span style={coveragePillStyle}>Soporte técnico</span>
+              </div>
+            </section>
+
+            <section style={aboutCardStyle}>
+              <p style={aboutCardEyebrowStyle}>Misión</p>
+              <p style={aboutTextStyle}>
+                Hacer que cada evento se vea, suene y funcione como debe, ofreciendo soluciones técnicas confiables, montaje profesional y acompañamiento personalizado en cada etapa del proceso.
+              </p>
+            </section>
+
+            <section style={aboutCardStyle}>
+              <p style={aboutCardEyebrowStyle}>Visión</p>
+              <p style={aboutTextStyle}>
+                Ser una de las empresas de producción técnica de eventos más confiables de República Dominicana, reconocida por su calidad, puntualidad, innovación y capacidad de resolver en cualquier escenario.
+              </p>
+            </section>
+          </div>
+
+          <div style={locationGridStyle}>
+            <section style={locationCardStyle}>
+              <p style={aboutCardEyebrowStyle}>Cobertura</p>
+              <h3 style={locationTitleStyle}>Estamos en Santiago y vamos a todo el país.</h3>
+              <p style={aboutTextStyle}>
+                Nuestra base está en Santiago de los Caballeros, República Dominicana, pero realizamos eventos en todo el territorio nacional. También brindamos soporte técnico y asesoría para proyectos en Estados Unidos.
+              </p>
+
+              <div style={contactListStyle}>
+                <div style={contactItemStyle}>
+                  <span style={contactLabelStyle}>WhatsApp / Teléfono</span>
+                  <a href="https://wa.me/18299359774" target="_blank" rel="noreferrer" style={contactLinkStyle}>
+                    829-935-9774
+                  </a>
+                </div>
+
+                <div style={contactItemStyle}>
+                  <span style={contactLabelStyle}>Ubicación</span>
+                  <span style={contactValueStyle}>Santiago de los Caballeros, República Dominicana</span>
+                </div>
+
+                <div style={contactItemStyle}>
+                  <span style={contactLabelStyle}>Cobertura</span>
+                  <span style={contactValueStyle}>Todo República Dominicana · Soporte técnico en Estados Unidos</span>
+                </div>
+              </div>
+            </section>
+
+            <section style={mapCardStyle}>
+              <div style={mapHeaderStyle}>
+                <p style={aboutCardEyebrowStyle}>Ubicación geográfica</p>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Santiago+de+los+Caballeros+Dominican+Republic"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={mapLinkStyle}
+                >
+                  Abrir en Google Maps
+                </a>
+              </div>
+
+              <div style={mapFrameStyle}>
+                <iframe
+                  title="Ubicación SM Events en Santiago de los Caballeros"
+                  src="https://www.google.com/maps?q=Santiago%20de%20los%20Caballeros%2C%20Dominican%20Republic&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={mapIframeStyle}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+            </section>
+          </div>
+        </section>
       </div>
     </main>
   );
@@ -1011,4 +1108,197 @@ const successBoxStyle: React.CSSProperties = {
   background: 'rgba(20, 83, 45, 0.35)',
   border: '1px solid rgba(74, 222, 128, 0.28)',
   color: '#bbf7d0',
+};
+
+const aboutSectionStyle: React.CSSProperties = {
+  marginTop: 28,
+  background:
+    'linear-gradient(135deg, rgba(15,23,42,0.86) 0%, rgba(30,27,75,0.38) 52%, rgba(9,14,28,0.92) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  borderRadius: 34,
+  padding: 28,
+  boxShadow: '0 24px 58px rgba(0,0,0,0.26)',
+};
+
+const aboutHeaderStyle: React.CSSProperties = {
+  maxWidth: 860,
+  marginBottom: 20,
+};
+
+const aboutTitleStyle: React.CSSProperties = {
+  margin: '8px 0 10px',
+  fontSize: 38,
+  lineHeight: 1.08,
+  letterSpacing: '-0.035em',
+};
+
+const aboutIntroStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#a8b8ce',
+  fontSize: 16,
+  lineHeight: 1.7,
+};
+
+const aboutGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1.25fr 0.85fr 0.85fr',
+  gap: 14,
+};
+
+const aboutMainCardStyle: React.CSSProperties = {
+  background: 'rgba(2, 6, 23, 0.42)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  borderRadius: 24,
+  padding: 22,
+};
+
+const aboutCardStyle: React.CSSProperties = {
+  background: 'rgba(2, 6, 23, 0.34)',
+  border: '1px solid rgba(148, 163, 184, 0.14)',
+  borderRadius: 24,
+  padding: 22,
+};
+
+const aboutCardEyebrowStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#fbbf24',
+  fontSize: 12,
+  fontWeight: 900,
+  textTransform: 'uppercase',
+  letterSpacing: '0.09em',
+};
+
+const aboutCardTitleStyle: React.CSSProperties = {
+  margin: '10px 0 10px',
+  fontSize: 24,
+  lineHeight: 1.18,
+  letterSpacing: '-0.025em',
+};
+
+const aboutTextStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#c4d0e0',
+  lineHeight: 1.66,
+  fontSize: 14,
+};
+
+const coveragePillsStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: 8,
+  flexWrap: 'wrap',
+  marginTop: 16,
+};
+
+const coveragePillStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  padding: '7px 10px',
+  borderRadius: 999,
+  background: 'rgba(250, 204, 21, 0.08)',
+  border: '1px solid rgba(250, 204, 21, 0.16)',
+  color: '#fde68a',
+  fontSize: 12,
+  fontWeight: 800,
+};
+
+const locationGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '0.92fr 1.08fr',
+  gap: 14,
+  marginTop: 14,
+};
+
+const locationCardStyle: React.CSSProperties = {
+  background:
+    'linear-gradient(135deg, rgba(245,158,11,0.10) 0%, rgba(2,6,23,0.44) 50%, rgba(15,23,42,0.66) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.16)',
+  borderRadius: 24,
+  padding: 22,
+};
+
+const locationTitleStyle: React.CSSProperties = {
+  margin: '10px 0 10px',
+  fontSize: 26,
+  lineHeight: 1.12,
+  letterSpacing: '-0.03em',
+};
+
+const contactListStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 10,
+  marginTop: 18,
+};
+
+const contactItemStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 4,
+  padding: 12,
+  borderRadius: 16,
+  background: 'rgba(2, 6, 23, 0.34)',
+  border: '1px solid rgba(148, 163, 184, 0.12)',
+};
+
+const contactLabelStyle: React.CSSProperties = {
+  color: '#94a3b8',
+  fontSize: 12,
+  fontWeight: 800,
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+};
+
+const contactValueStyle: React.CSSProperties = {
+  color: '#f8fafc',
+  fontWeight: 800,
+  lineHeight: 1.45,
+};
+
+const contactLinkStyle: React.CSSProperties = {
+  color: '#fbbf24',
+  fontWeight: 900,
+  textDecoration: 'none',
+};
+
+const mapCardStyle: React.CSSProperties = {
+  background: 'rgba(2, 6, 23, 0.34)',
+  border: '1px solid rgba(148, 163, 184, 0.14)',
+  borderRadius: 24,
+  padding: 16,
+  minHeight: 360,
+};
+
+const mapHeaderStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: 12,
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  marginBottom: 12,
+};
+
+const mapLinkStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '9px 12px',
+  borderRadius: 999,
+  background: 'rgba(250, 204, 21, 0.10)',
+  border: '1px solid rgba(250, 204, 21, 0.20)',
+  color: '#fde68a',
+  textDecoration: 'none',
+  fontSize: 12,
+  fontWeight: 900,
+};
+
+const mapFrameStyle: React.CSSProperties = {
+  width: '100%',
+  height: 302,
+  borderRadius: 18,
+  overflow: 'hidden',
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+  background: '#0f172a',
+};
+
+const mapIframeStyle: React.CSSProperties = {
+  border: 0,
+  display: 'block',
 };
