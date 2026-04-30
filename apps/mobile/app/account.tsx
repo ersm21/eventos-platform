@@ -1,8 +1,10 @@
 
 
+import { useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Link } from 'expo-router';
+import { supabase } from '../lib/supabase';
+import { Link, router } from 'expo-router';
 import {
   Image,
   Linking,
@@ -49,6 +51,39 @@ const openWhatsApp = async () => {
 };
 
 export default function AccountScreen() {
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [checkingSession, setCheckingSession] = useState(true);
+
+  useEffect(() => {
+    const loadSession = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      setUserEmail(user?.email ?? null);
+      setCheckingSession(false);
+    };
+
+    loadSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserEmail(session?.user?.email ?? null);
+      setCheckingSession(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUserEmail(null);
+    router.replace('/login');
+  };
+
   return (
     <LinearGradient colors={['#020617', '#09090f', '#111827']} style={styles.page}>
       <SafeAreaView style={styles.safeArea}>
@@ -99,6 +134,33 @@ export default function AccountScreen() {
                 </Pressable>
               </Link>
             ))}
+          </View>
+
+          <View style={styles.sessionCard}>
+            <Text style={styles.sessionLabel}>Estado de cuenta</Text>
+            {checkingSession ? (
+              <Text style={styles.sessionText}>Revisando sesión...</Text>
+            ) : userEmail ? (
+              <>
+                <Text style={styles.sessionTitle}>Sesión iniciada</Text>
+                <Text style={styles.sessionText}>{userEmail}</Text>
+                <Pressable onPress={signOut} style={styles.logoutButton}>
+                  <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
+                </Pressable>
+              </>
+            ) : (
+              <>
+                <Text style={styles.sessionTitle}>No has iniciado sesión</Text>
+                <Text style={styles.sessionText}>
+                  Inicia sesión para ver tus cotizaciones, reuniones, confirmar propuestas y subir comprobantes.
+                </Text>
+                <Link href="/login" asChild>
+                  <Pressable style={styles.loginButton}>
+                    <Text style={styles.loginButtonText}>Iniciar sesión</Text>
+                  </Pressable>
+                </Link>
+              </>
+            )}
           </View>
 
           <View style={styles.contactCard}>
@@ -317,4 +379,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
+  sessionCard: { borderRadius: 22, padding: 16, backgroundColor: 'rgba(2, 6, 23, 0.56)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 8, marginTop: 4 },
+  sessionLabel: { color: '#fbbf24', fontSize: 11, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.8 },
+  sessionTitle: { color: '#ffffff', fontSize: 18, fontWeight: '900' },
+  sessionText: { color: '#94a3b8', fontSize: 14, lineHeight: 20 },
+  loginButton: { alignSelf: 'flex-start', paddingVertical: 11, paddingHorizontal: 14, borderRadius: 14, backgroundColor: '#f97316', marginTop: 4 },
+  loginButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '900' },
+  logoutButton: { alignSelf: 'flex-start', paddingVertical: 11, paddingHorizontal: 14, borderRadius: 14, backgroundColor: 'rgba(127, 29, 29, 0.36)', borderWidth: 1, borderColor: 'rgba(248, 113, 113, 0.30)', marginTop: 4 },
+  logoutButtonText: { color: '#fecaca', fontSize: 14, fontWeight: '900' },
 });
