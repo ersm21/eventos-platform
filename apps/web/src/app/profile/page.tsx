@@ -425,7 +425,7 @@ export default function ProfilePage() {
               </button>
 
               <Link href="/account" style={secondaryLinkStyle}>
-                Volver a mi cuenta
+                Ir a mi cuenta
               </Link>
             </div>
           </section>

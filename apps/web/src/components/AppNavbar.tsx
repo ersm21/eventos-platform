@@ -79,6 +79,10 @@ export default function AppNavbar({
             Galería
           </Link>
 
+          <Link href="/feed" style={navLinkStyle}>
+            Feed
+          </Link>
+
           <Link href="/cotizar" style={navLinkStyle}>
             Cotizar
           </Link>
@@ -89,10 +93,6 @@ export default function AppNavbar({
 
           <Link href="/my-meetings" style={navLinkStyle}>
             Mis reuniones
-          </Link>
-
-          <Link href="/account" style={navLinkStyle}>
-            Mi cuenta
           </Link>
 
           {isLoggedIn && (
