@@ -37,9 +37,9 @@ export default function CatalogoScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<CatalogCartItem[]>([]);
   const [hasLoadedSavedCart, setHasLoadedSavedCart] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -64,15 +64,42 @@ export default function CatalogoScreen() {
     loadProducts();
   }, []);
 
-  const categories = useMemo(() => {
-    const uniqueCategories = products.map((product) => product.category || 'General');
-    return ['Todos', ...Array.from(new Set(uniqueCategories))];
+  const productsByCategory = useMemo(() => {
+    return products.reduce<Record<string, Product[]>>((accumulator, product) => {
+      const category = product.category || 'General';
+
+      if (!accumulator[category]) {
+        accumulator[category] = [];
+      }
+
+      accumulator[category].push(product);
+      return accumulator;
+    }, {});
   }, [products]);
 
-  const filteredProducts = useMemo(() => {
-    if (selectedCategory === 'Todos') return products;
-    return products.filter((product) => (product.category || 'General') === selectedCategory);
-  }, [products, selectedCategory]);
+  const productCategories = useMemo(
+    () => Object.keys(productsByCategory),
+    [productsByCategory]
+  );
+
+  useEffect(() => {
+    if (productCategories.length === 0) return;
+
+    setExpandedCategories((prev) => {
+      if (Object.keys(prev).length > 0) return prev;
+
+      return {
+        [productCategories[0]]: true,
+      };
+    });
+  }, [productCategories]);
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
 
   useEffect(() => {
     const loadSavedCart = async () => {
@@ -193,7 +220,7 @@ export default function CatalogoScreen() {
             <Text style={styles.eyebrow}>Catálogo</Text>
             <Text style={styles.title}>Servicios disponibles</Text>
             <Text style={styles.description}>
-              Revisa los servicios activos de SM Events. Este catálogo se alimenta de la misma tabla de productos usada por la web y el panel admin.
+              Explora los servicios activos de SM Events y agrega lo que necesites a tu cotización.
             </Text>
           </View>
 
@@ -214,58 +241,62 @@ export default function CatalogoScreen() {
             <View style={styles.emptyCard}>
               <Text style={styles.emptyTitle}>Todavía no hay servicios activos.</Text>
               <Text style={styles.emptyText}>
-                Cuando agregues productos activos desde el panel admin, aparecerán aquí y también en Cotizar.
+                Cuando agregues productos activos desde el panel admin, aparecerán aquí.
               </Text>
             </View>
           )}
 
           {!loading && !error && products.length > 0 && (
             <>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.categoryRow}
-              >
-                {categories.map((category) => {
-                  const active = selectedCategory === category;
+              <View style={styles.categoryList}>
+                {productCategories.map((category) => {
+                  const isOpen = !!expandedCategories[category];
+                  const categoryProducts = productsByCategory[category] || [];
 
                   return (
-                    <Pressable
-                      key={category}
-                      onPress={() => setSelectedCategory(category)}
-                      style={[styles.categoryPill, active && styles.categoryPillActive]}
-                    >
-                      <Text style={[styles.categoryPillText, active && styles.categoryPillTextActive]}>
-                        {category}
-                      </Text>
-                    </Pressable>
+                    <View key={category} style={styles.categorySection}>
+                      <Pressable
+                        onPress={() => toggleCategory(category)}
+                        style={styles.categoryHeader}
+                      >
+                        <View>
+                          <Text style={styles.categoryTitle}>{category}</Text>
+                          <Text style={styles.categoryCount}>
+                            {categoryProducts.length} servicio{categoryProducts.length === 1 ? '' : 's'}
+                          </Text>
+                        </View>
+
+                        <Text style={styles.categoryChevron}>{isOpen ? '⌄' : '›'}</Text>
+                      </Pressable>
+
+                      {isOpen && (
+                        <View style={styles.productGrid}>
+                          {categoryProducts.map((product) => (
+                            <View key={product.id} style={styles.productCard}>
+                              <View>
+                                <Text style={styles.productName}>{product.name}</Text>
+                                <Text style={styles.productDescription}>
+                                  {product.description || 'Servicio disponible para cotización.'}
+                                </Text>
+                              </View>
+
+                              <View style={styles.productFooter}>
+                                <View>
+                                  <Text style={styles.priceLabel}>Desde</Text>
+                                  <Text style={styles.price}>{formatMoney(product.price)}</Text>
+                                </View>
+
+                                <Pressable onPress={() => addToCatalogCart(product)} style={styles.quoteButton}>
+                                  <Text style={styles.quoteButtonText}>Agregar</Text>
+                                </Pressable>
+                              </View>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+                    </View>
                   );
                 })}
-              </ScrollView>
-
-              <View style={styles.productGrid}>
-                {filteredProducts.map((product) => (
-                  <View key={product.id} style={styles.productCard}>
-                    <View>
-                      <Text style={styles.categoryBadge}>{product.category || 'General'}</Text>
-                      <Text style={styles.productName}>{product.name}</Text>
-                      <Text style={styles.productDescription}>
-                        {product.description || 'Servicio disponible para cotización.'}
-                      </Text>
-                    </View>
-
-                    <View style={styles.productFooter}>
-                      <View>
-                        <Text style={styles.priceLabel}>Desde</Text>
-                        <Text style={styles.price}>{formatMoney(product.price)}</Text>
-                      </View>
-
-                      <Pressable onPress={() => addToCatalogCart(product)} style={styles.quoteButton}>
-                        <Text style={styles.quoteButtonText}>Agregar</Text>
-                      </Pressable>
-                    </View>
-                  </View>
-                ))}
               </View>
 
               {cartItems.length > 0 && (
@@ -313,49 +344,52 @@ export default function CatalogoScreen() {
 const styles = StyleSheet.create({
   page: { flex: 1 },
   safeArea: { flex: 1 },
-  content: { padding: 20, paddingBottom: 118, gap: 16 },
-  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 8 },
-  backButton: { paddingVertical: 10, paddingHorizontal: 12, borderRadius: 999, backgroundColor: 'rgba(15, 23, 42, 0.82)', borderWidth: 1, borderColor: 'rgba(148, 163, 184, 0.18)' },
-  backButtonText: { color: '#e5e7eb', fontSize: 13, fontWeight: '900' },
-  logo: { width: 78, height: 54 },
-  heroCard: { borderRadius: 28, padding: 22, backgroundColor: 'rgba(15, 23, 42, 0.82)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.16)', gap: 12 },
-  eyebrow: { color: '#fbbf24', fontSize: 12, fontWeight: '900', letterSpacing: 1.2, textTransform: 'uppercase' },
-  title: { color: '#ffffff', fontSize: 34, lineHeight: 38, fontWeight: '900', letterSpacing: -1.2 },
-  description: { color: '#a8b8ce', fontSize: 15, lineHeight: 22 },
-  infoBox: { padding: 18, borderRadius: 20, backgroundColor: 'rgba(15, 23, 42, 0.78)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 10, alignItems: 'center' },
-  infoText: { color: '#a7b5c9', fontSize: 14, fontWeight: '700' },
-  errorBox: { padding: 14, borderRadius: 16, backgroundColor: 'rgba(127, 29, 29, 0.30)', borderWidth: 1, borderColor: 'rgba(248, 113, 113, 0.32)' },
+  content: { padding: 16, paddingBottom: 112, gap: 12 },
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 4 },
+  backButton: { paddingVertical: 8, paddingHorizontal: 11, borderRadius: 999, backgroundColor: 'rgba(15, 23, 42, 0.82)', borderWidth: 1, borderColor: 'rgba(148, 163, 184, 0.18)' },
+  backButtonText: { color: '#e5e7eb', fontSize: 12, fontWeight: '900' },
+  logo: { width: 58, height: 38 },
+  heroCard: { borderRadius: 24, padding: 16, backgroundColor: 'rgba(15, 23, 42, 0.82)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.16)', gap: 8 },
+  eyebrow: { color: '#fbbf24', fontSize: 11, fontWeight: '900', letterSpacing: 1, textTransform: 'uppercase' },
+  title: { color: '#ffffff', fontSize: 28, lineHeight: 31, fontWeight: '900', letterSpacing: -0.8 },
+  description: { color: '#a8b8ce', fontSize: 13, lineHeight: 19 },
+  infoBox: { padding: 14, borderRadius: 18, backgroundColor: 'rgba(15, 23, 42, 0.78)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 8, alignItems: 'center' },
+  infoText: { color: '#a7b5c9', fontSize: 12, fontWeight: '700' },
+  errorBox: { padding: 12, borderRadius: 14, backgroundColor: 'rgba(127, 29, 29, 0.30)', borderWidth: 1, borderColor: 'rgba(248, 113, 113, 0.32)' },
   errorText: { color: '#fecaca', fontWeight: '800' },
-  emptyCard: { padding: 20, borderRadius: 22, backgroundColor: 'rgba(15,23,42,0.82)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 8 },
-  emptyTitle: { color: '#ffffff', fontSize: 17, fontWeight: '900' },
-  emptyText: { color: '#94a3b8', fontSize: 14, lineHeight: 20 },
-  categoryRow: { gap: 8, paddingRight: 4 },
-  categoryPill: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 999, backgroundColor: 'rgba(15, 23, 42, 0.86)', borderWidth: 1, borderColor: 'rgba(148, 163, 184, 0.18)' },
-  categoryPillActive: { backgroundColor: 'rgba(249, 115, 22, 0.18)', borderColor: 'rgba(249, 115, 22, 0.42)' },
-  categoryPillText: { color: '#cbd5e1', fontSize: 12, fontWeight: '900' },
-  categoryPillTextActive: { color: '#fed7aa' },
-  productGrid: { gap: 10 },
-  productCard: { minHeight: 142, borderRadius: 18, padding: 14, backgroundColor: 'rgba(15, 23, 42, 0.84)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', justifyContent: 'space-between', gap: 12 },
-  categoryBadge: { alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 999, backgroundColor: 'rgba(245, 158, 11, 0.12)', color: '#fbbf24', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.24)', fontSize: 10, fontWeight: '900' },
-  productName: { color: '#ffffff', fontSize: 17, fontWeight: '900', marginTop: 10, marginBottom: 5 },
-  productDescription: { color: '#94a3b8', fontSize: 12, lineHeight: 17 },
-  productFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginTop: 2 },
-  priceLabel: { color: '#64748b', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: '800' },
-  price: { color: '#ffffff', fontSize: 18, fontWeight: '900', marginTop: 3 },
-  quoteButton: { paddingVertical: 9, paddingHorizontal: 12, borderRadius: 12, backgroundColor: '#f97316' },
-  quoteButtonText: { color: '#ffffff', fontSize: 13, fontWeight: '900' },
-  cartSummaryCard: { borderRadius: 22, padding: 14, backgroundColor: 'rgba(2, 6, 23, 0.96)', borderWidth: 1, borderColor: 'rgba(249, 115, 22, 0.34)', gap: 12 },
-  cartSummaryHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
-  cartSummaryLabel: { color: '#fbbf24', fontSize: 11, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.8 },
-  cartSummaryTitle: { color: '#ffffff', fontSize: 16, fontWeight: '900', marginTop: 4 },
-  continueButton: { paddingVertical: 10, paddingHorizontal: 13, borderRadius: 14, backgroundColor: '#f97316' },
-  continueButtonText: { color: '#ffffff', fontSize: 13, fontWeight: '900' },
-  cartItemsList: { gap: 8 },
-  cartItemRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: 10, borderRadius: 14, backgroundColor: 'rgba(15, 23, 42, 0.72)', borderWidth: 1, borderColor: 'rgba(148, 163, 184, 0.12)' },
+  emptyCard: { padding: 14, borderRadius: 18, backgroundColor: 'rgba(15,23,42,0.82)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 6 },
+  emptyTitle: { color: '#ffffff', fontSize: 15, fontWeight: '900' },
+  emptyText: { color: '#94a3b8', fontSize: 12, lineHeight: 18 },
+
+  categoryList: { gap: 10 },
+  categorySection: { borderRadius: 18, overflow: 'hidden', backgroundColor: 'rgba(15, 23, 42, 0.64)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.12)' },
+  categoryHeader: { minHeight: 54, paddingHorizontal: 13, paddingVertical: 9, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, backgroundColor: 'rgba(2, 6, 23, 0.42)' },
+  categoryTitle: { color: '#ffffff', fontSize: 15, fontWeight: '900' },
+  categoryCount: { color: '#94a3b8', fontSize: 11, fontWeight: '800', marginTop: 2 },
+  categoryChevron: { color: '#fbbf24', fontSize: 24, fontWeight: '900' },
+
+  productGrid: { gap: 9, padding: 10 },
+  productCard: { minHeight: 116, borderRadius: 16, padding: 12, backgroundColor: 'rgba(15, 23, 42, 0.84)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', justifyContent: 'space-between', gap: 9 },
+  productName: { color: '#ffffff', fontSize: 15, fontWeight: '900', marginBottom: 3 },
+  productDescription: { color: '#94a3b8', fontSize: 11, lineHeight: 15 },
+  productFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginTop: 1 },
+  priceLabel: { color: '#64748b', fontSize: 9, textTransform: 'uppercase', letterSpacing: 0.7, fontWeight: '800' },
+  price: { color: '#ffffff', fontSize: 16, fontWeight: '900', marginTop: 2 },
+  quoteButton: { paddingVertical: 8, paddingHorizontal: 11, borderRadius: 11, backgroundColor: '#f97316' },
+  quoteButtonText: { color: '#ffffff', fontSize: 12, fontWeight: '900' },
+
+  cartSummaryCard: { borderRadius: 20, padding: 12, backgroundColor: 'rgba(2, 6, 23, 0.96)', borderWidth: 1, borderColor: 'rgba(249, 115, 22, 0.34)', gap: 10 },
+  cartSummaryHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
+  cartSummaryLabel: { color: '#fbbf24', fontSize: 10, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.8 },
+  cartSummaryTitle: { color: '#ffffff', fontSize: 14, fontWeight: '900', marginTop: 3 },
+  continueButton: { paddingVertical: 9, paddingHorizontal: 12, borderRadius: 12, backgroundColor: '#f97316' },
+  continueButtonText: { color: '#ffffff', fontSize: 12, fontWeight: '900' },
+  cartItemsList: { gap: 7 },
+  cartItemRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: 9, borderRadius: 13, backgroundColor: 'rgba(15, 23, 42, 0.72)', borderWidth: 1, borderColor: 'rgba(148, 163, 184, 0.12)' },
   cartItemInfo: { flex: 1, gap: 3 },
-  cartItemName: { color: '#f8fafc', fontSize: 13, fontWeight: '900' },
-  cartItemMeta: { color: '#94a3b8', fontSize: 12, fontWeight: '700' },
+  cartItemName: { color: '#f8fafc', fontSize: 12, fontWeight: '900' },
+  cartItemMeta: { color: '#94a3b8', fontSize: 11, fontWeight: '700' },
   cartQtyActions: { flexDirection: 'row', gap: 6 },
-  cartQtyButton: { width: 30, height: 30, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(249, 115, 22, 0.18)', borderWidth: 1, borderColor: 'rgba(249, 115, 22, 0.32)' },
-  cartQtyButtonText: { color: '#fed7aa', fontSize: 16, fontWeight: '900' },
+  cartQtyButton: { width: 28, height: 28, borderRadius: 9, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(249, 115, 22, 0.18)', borderWidth: 1, borderColor: 'rgba(249, 115, 22, 0.32)' },
+  cartQtyButtonText: { color: '#fed7aa', fontSize: 15, fontWeight: '900' },
 });

@@ -43,6 +43,40 @@ function calculateTotalWithItbis(value: number | null | undefined) {
   return Number(value ?? 0) * 1.18;
 }
 
+
+async function requireCompleteProfile() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    router.replace('/login');
+    return false;
+  }
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('full_name, avatar_url')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (error || !data?.full_name?.trim() || !data?.avatar_url?.trim()) {
+    Alert.alert(
+      'Completa tu perfil',
+      'Para usar esta función debes subir una foto de perfil y completar tu nombre.',
+      [
+        {
+          text: 'Ir a mi perfil',
+          onPress: () => router.push('/profile'),
+        },
+      ]
+    );
+    return false;
+  }
+
+  return true;
+}
+
 export default function CotizarScreen() {
   const params = useLocalSearchParams<{ cart?: string }>();
   const [products, setProducts] = useState<Product[]>([]);
@@ -50,6 +84,7 @@ export default function CotizarScreen() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [customerName, setCustomerName] = useState('');
@@ -243,7 +278,47 @@ export default function CotizarScreen() {
     [quoteItems]
   );
 
+  const productsByCategory = useMemo(() => {
+    return products.reduce<Record<string, Product[]>>((accumulator, product) => {
+      const category = product.category || 'General';
+
+      if (!accumulator[category]) {
+        accumulator[category] = [];
+      }
+
+      accumulator[category].push(product);
+      return accumulator;
+    }, {});
+  }, [products]);
+
+  const productCategories = useMemo(
+    () => Object.keys(productsByCategory),
+    [productsByCategory]
+  );
+
+  useEffect(() => {
+    if (productCategories.length === 0) return;
+
+    setExpandedCategories((prev) => {
+      if (Object.keys(prev).length > 0) return prev;
+
+      return {
+        [productCategories[0]]: true,
+      };
+    });
+  }, [productCategories]);
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
+
   const saveQuote = async () => {
+    const profileOk = await requireCompleteProfile();
+
+    if (!profileOk) return;
     if (!isLoggedIn) {
       setError('Debes iniciar sesión para guardar tu cotización.');
       Alert.alert('Inicia sesión', 'Debes iniciar sesión para guardar tu cotización.', [
@@ -437,29 +512,55 @@ export default function CotizarScreen() {
               <Text style={styles.mutedText}>Todavía no hay servicios disponibles.</Text>
             </View>
           ) : (
-            <View style={styles.productGrid}>
-              {products.map((product) => (
-                <View key={product.id} style={styles.productCard}>
-                  <View>
-                    <Text style={styles.categoryBadge}>{product.category || 'General'}</Text>
-                    <Text style={styles.productName}>{product.name}</Text>
-                    <Text style={styles.productDescription}>
-                      {product.description || 'Servicio disponible para cotización.'}
-                    </Text>
-                  </View>
+            <View style={styles.categoryList}>
+              {productCategories.map((category) => {
+                const isOpen = !!expandedCategories[category];
+                const categoryProducts = productsByCategory[category] || [];
 
-                  <View style={styles.productFooter}>
-                    <View>
-                      <Text style={styles.priceLabel}>Desde</Text>
-                      <Text style={styles.price}>{formatMoney(product.price)}</Text>
-                    </View>
+                return (
+                  <View key={category} style={styles.categorySection}>
+                    <Pressable
+                      onPress={() => toggleCategory(category)}
+                      style={styles.categoryHeader}
+                    >
+                      <View>
+                        <Text style={styles.categoryTitle}>{category}</Text>
+                        <Text style={styles.categoryCount}>
+                          {categoryProducts.length} servicio{categoryProducts.length === 1 ? '' : 's'}
+                        </Text>
+                      </View>
 
-                    <Pressable onPress={() => addToQuote(product)} style={styles.smallButton}>
-                      <Text style={styles.primaryButtonText}>Agregar</Text>
+                      <Text style={styles.categoryChevron}>{isOpen ? '⌄' : '›'}</Text>
                     </Pressable>
+
+                    {isOpen && (
+                      <View style={styles.productGrid}>
+                        {categoryProducts.map((product) => (
+                          <View key={product.id} style={styles.productCard}>
+                            <View>
+                              <Text style={styles.productName}>{product.name}</Text>
+                              <Text style={styles.productDescription}>
+                                {product.description || 'Servicio disponible para cotización.'}
+                              </Text>
+                            </View>
+
+                            <View style={styles.productFooter}>
+                              <View>
+                                <Text style={styles.priceLabel}>Desde</Text>
+                                <Text style={styles.price}>{formatMoney(product.price)}</Text>
+                              </View>
+
+                              <Pressable onPress={() => addToQuote(product)} style={styles.smallButton}>
+                                <Text style={styles.primaryButtonText}>Agregar</Text>
+                              </Pressable>
+                            </View>
+                          </View>
+                        ))}
+                      </View>
+                    )}
                   </View>
-                </View>
-              ))}
+                );
+              })}
             </View>
           )}
 
@@ -604,65 +705,71 @@ export default function CotizarScreen() {
 const styles = StyleSheet.create({
   page: { flex: 1 },
   safeArea: { flex: 1 },
-  content: { padding: 20, paddingBottom: 118, gap: 16 },
-  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 8 },
-  backButton: { paddingVertical: 10, paddingHorizontal: 12, borderRadius: 999, backgroundColor: 'rgba(15, 23, 42, 0.82)', borderWidth: 1, borderColor: 'rgba(148, 163, 184, 0.18)' },
-  backButtonText: { color: '#e5e7eb', fontSize: 13, fontWeight: '900' },
-  logo: { width: 78, height: 54 },
-  heroCard: { borderRadius: 28, padding: 22, backgroundColor: 'rgba(15, 23, 42, 0.82)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.16)', gap: 12 },
-  eyebrow: { color: '#fbbf24', fontSize: 12, fontWeight: '900', letterSpacing: 1.2, textTransform: 'uppercase' },
-  title: { color: '#ffffff', fontSize: 34, lineHeight: 38, fontWeight: '900', letterSpacing: -1.2 },
-  description: { color: '#a8b8ce', fontSize: 15, lineHeight: 22 },
-  sectionBlock: { gap: 6 },
-  sectionEyebrow: { color: '#fbbf24', fontSize: 12, fontWeight: '900', letterSpacing: 1.2, textTransform: 'uppercase' },
-  sectionTitle: { color: '#ffffff', fontSize: 25, fontWeight: '900', letterSpacing: -0.6 },
-  sectionText: { color: '#94a3b8', fontSize: 14, lineHeight: 20 },
-  sessionBox: { borderRadius: 24, padding: 18, backgroundColor: 'rgba(15, 23, 42, 0.78)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 14 },
-  sessionTextBlock: { gap: 6 },
-  sessionTitle: { color: '#ffffff', fontSize: 22, fontWeight: '900' },
-  sessionText: { color: '#94a3b8', fontSize: 14, lineHeight: 20 },
-  primaryButton: { alignSelf: 'flex-start', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 14, backgroundColor: '#f97316' },
-  primaryButtonText: { color: '#ffffff', fontSize: 13, fontWeight: '900' },
-  smallButton: { paddingVertical: 9, paddingHorizontal: 12, borderRadius: 12, backgroundColor: '#f97316' },
-  fullButton: { alignItems: 'center', justifyContent: 'center', paddingVertical: 15, borderRadius: 18, backgroundColor: '#f97316' },
+  content: { padding: 16, paddingBottom: 112, gap: 12 },
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 4 },
+  backButton: { paddingVertical: 8, paddingHorizontal: 11, borderRadius: 999, backgroundColor: 'rgba(15, 23, 42, 0.82)', borderWidth: 1, borderColor: 'rgba(148, 163, 184, 0.18)' },
+  backButtonText: { color: '#e5e7eb', fontSize: 12, fontWeight: '900' },
+  logo: { width: 58, height: 38 },
+  heroCard: { borderRadius: 24, padding: 16, backgroundColor: 'rgba(15, 23, 42, 0.82)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.16)', gap: 8 },
+  eyebrow: { color: '#fbbf24', fontSize: 11, fontWeight: '900', letterSpacing: 1, textTransform: 'uppercase' },
+  title: { color: '#ffffff', fontSize: 28, lineHeight: 31, fontWeight: '900', letterSpacing: -0.8 },
+  description: { color: '#a8b8ce', fontSize: 13, lineHeight: 19 },
+  sectionBlock: { gap: 4 },
+  sectionEyebrow: { color: '#fbbf24', fontSize: 10, fontWeight: '900', letterSpacing: 1, textTransform: 'uppercase' },
+  sectionTitle: { color: '#ffffff', fontSize: 20, fontWeight: '900', letterSpacing: -0.4 },
+  sectionText: { color: '#94a3b8', fontSize: 12, lineHeight: 18 },
+  sessionBox: { borderRadius: 20, padding: 14, backgroundColor: 'rgba(15, 23, 42, 0.78)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 10 },
+  sessionTextBlock: { gap: 4 },
+  sessionTitle: { color: '#ffffff', fontSize: 18, fontWeight: '900' },
+  sessionText: { color: '#94a3b8', fontSize: 12, lineHeight: 18 },
+  primaryButton: { alignSelf: 'flex-start', paddingVertical: 10, paddingHorizontal: 13, borderRadius: 13, backgroundColor: '#f97316' },
+  primaryButtonText: { color: '#ffffff', fontSize: 12, fontWeight: '900' },
+  smallButton: { paddingVertical: 8, paddingHorizontal: 11, borderRadius: 11, backgroundColor: '#f97316' },
+  fullButton: { alignItems: 'center', justifyContent: 'center', minHeight: 48, paddingVertical: 12, borderRadius: 15, backgroundColor: '#f97316' },
   buttonDisabled: { opacity: 0.72 },
-  errorBox: { padding: 14, borderRadius: 16, backgroundColor: 'rgba(127, 29, 29, 0.30)', borderWidth: 1, borderColor: 'rgba(248, 113, 113, 0.32)' },
+  errorBox: { padding: 12, borderRadius: 14, backgroundColor: 'rgba(127, 29, 29, 0.30)', borderWidth: 1, borderColor: 'rgba(248, 113, 113, 0.32)' },
   errorText: { color: '#fecaca', fontWeight: '800' },
-  successBox: { padding: 14, borderRadius: 16, backgroundColor: 'rgba(20, 83, 45, 0.35)', borderWidth: 1, borderColor: 'rgba(74, 222, 128, 0.28)' },
+  successBox: { padding: 12, borderRadius: 14, backgroundColor: 'rgba(20, 83, 45, 0.35)', borderWidth: 1, borderColor: 'rgba(74, 222, 128, 0.28)' },
   successText: { color: '#bbf7d0', fontWeight: '800' },
-  panel: { borderRadius: 24, padding: 18, backgroundColor: 'rgba(15, 23, 42, 0.78)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 14 },
-  mutedText: { color: '#94a3b8', fontSize: 14, fontWeight: '700' },
-  productGrid: { gap: 10 },
-  productCard: { minHeight: 142, borderRadius: 18, padding: 14, backgroundColor: 'rgba(15, 23, 42, 0.84)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', justifyContent: 'space-between', gap: 12 },
-  categoryBadge: { alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 999, backgroundColor: 'rgba(245, 158, 11, 0.12)', color: '#fbbf24', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.24)', fontSize: 10, fontWeight: '900' },
-  productName: { color: '#ffffff', fontSize: 17, fontWeight: '900', marginTop: 10, marginBottom: 5 },
-  productDescription: { color: '#94a3b8', fontSize: 12, lineHeight: 17 },
-  productFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginTop: 2 },
-  priceLabel: { color: '#64748b', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: '800' },
-  price: { color: '#ffffff', fontSize: 18, fontWeight: '900', marginTop: 3 },
-  panelTitle: { color: '#ffffff', fontSize: 23, fontWeight: '900', marginTop: 5 },
-  panelText: { color: '#94a3b8', fontSize: 14, lineHeight: 20 },
-  fieldGroup: { gap: 7 },
-  label: { color: '#a5b4c7', fontSize: 13, fontWeight: '700' },
-  input: { minHeight: 48, borderRadius: 16, paddingHorizontal: 14, paddingVertical: 12, backgroundColor: 'rgba(2, 6, 23, 0.68)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', color: '#f8fafc', fontSize: 15 },
-  textArea: { minHeight: 120 },
-  quotePanel: { borderRadius: 26, padding: 18, backgroundColor: 'rgba(15,23,42,0.88)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.16)', gap: 14 },
-  emptyState: { padding: 18, borderRadius: 18, backgroundColor: 'rgba(2, 6, 23, 0.42)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)' },
-  emptyTitle: { color: '#ffffff', fontSize: 17, fontWeight: '900' },
-  emptyText: { color: '#94a3b8', fontSize: 14, lineHeight: 20, marginTop: 6 },
-  quoteItemsList: { gap: 12 },
-  quoteItemCard: { borderRadius: 18, padding: 14, backgroundColor: 'rgba(2, 6, 23, 0.42)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)' },
-  quoteItemHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 },
+  panel: { borderRadius: 20, padding: 14, backgroundColor: 'rgba(15, 23, 42, 0.78)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 11 },
+  mutedText: { color: '#94a3b8', fontSize: 12, fontWeight: '700' },
+  categoryList: { gap: 10 },
+  categorySection: { borderRadius: 18, overflow: 'hidden', backgroundColor: 'rgba(15, 23, 42, 0.64)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.12)' },
+  categoryHeader: { minHeight: 54, paddingHorizontal: 13, paddingVertical: 9, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, backgroundColor: 'rgba(2, 6, 23, 0.42)' },
+  categoryTitle: { color: '#ffffff', fontSize: 15, fontWeight: '900' },
+  categoryCount: { color: '#94a3b8', fontSize: 11, fontWeight: '800', marginTop: 2 },
+  categoryChevron: { color: '#fbbf24', fontSize: 24, fontWeight: '900' },
+  productGrid: { gap: 9, padding: 10 },
+  productCard: { minHeight: 116, borderRadius: 16, padding: 12, backgroundColor: 'rgba(15, 23, 42, 0.84)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', justifyContent: 'space-between', gap: 9 },
+  categoryBadge: { alignSelf: 'flex-start', paddingVertical: 3, paddingHorizontal: 7, borderRadius: 999, backgroundColor: 'rgba(245, 158, 11, 0.12)', color: '#fbbf24', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.24)', fontSize: 9, fontWeight: '900' },
+  productName: { color: '#ffffff', fontSize: 15, fontWeight: '900', marginTop: 7, marginBottom: 3 },
+  productDescription: { color: '#94a3b8', fontSize: 11, lineHeight: 15 },
+  productFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginTop: 1 },
+  priceLabel: { color: '#64748b', fontSize: 9, textTransform: 'uppercase', letterSpacing: 0.7, fontWeight: '800' },
+  price: { color: '#ffffff', fontSize: 16, fontWeight: '900', marginTop: 2 },
+  panelTitle: { color: '#ffffff', fontSize: 19, fontWeight: '900', marginTop: 3 },
+  panelText: { color: '#94a3b8', fontSize: 12, lineHeight: 18 },
+  fieldGroup: { gap: 5 },
+  label: { color: '#a5b4c7', fontSize: 12, fontWeight: '700' },
+  input: { minHeight: 44, borderRadius: 13, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: 'rgba(2, 6, 23, 0.68)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', color: '#f8fafc', fontSize: 13 },
+  textArea: { minHeight: 92 },
+  quotePanel: { borderRadius: 20, padding: 14, backgroundColor: 'rgba(15,23,42,0.88)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.16)', gap: 11 },
+  emptyState: { padding: 14, borderRadius: 16, backgroundColor: 'rgba(2, 6, 23, 0.42)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)' },
+  emptyTitle: { color: '#ffffff', fontSize: 15, fontWeight: '900' },
+  emptyText: { color: '#94a3b8', fontSize: 12, lineHeight: 18, marginTop: 4 },
+  quoteItemsList: { gap: 9 },
+  quoteItemCard: { borderRadius: 15, padding: 12, backgroundColor: 'rgba(2, 6, 23, 0.42)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)' },
+  quoteItemHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 9 },
   quoteItemInfo: { flex: 1 },
-  quoteItemName: { color: '#ffffff', fontSize: 16, fontWeight: '900' },
-  quoteItemMeta: { color: '#94a3b8', fontSize: 13, marginTop: 5 },
-  qtyActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  qtyButton: { width: 34, height: 34, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.18)', backgroundColor: 'rgba(15, 23, 42, 0.86)', alignItems: 'center', justifyContent: 'center' },
-  qtyButtonText: { color: '#ffffff', fontSize: 18, fontWeight: '900' },
+  quoteItemName: { color: '#ffffff', fontSize: 14, fontWeight: '900' },
+  quoteItemMeta: { color: '#94a3b8', fontSize: 11, marginTop: 3 },
+  qtyActions: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  qtyButton: { width: 30, height: 30, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.18)', backgroundColor: 'rgba(15, 23, 42, 0.86)', alignItems: 'center', justifyContent: 'center' },
+  qtyButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '900' },
   qtyValue: { color: '#ffffff', minWidth: 22, textAlign: 'center', fontWeight: '900' },
-  quoteSubtotal: { color: '#dbe7f5', fontSize: 14, fontWeight: '800', marginTop: 12 },
-  quoteSummaryBox: { borderRadius: 18, padding: 16, backgroundColor: 'rgba(245, 158, 11, 0.10)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.16)', gap: 8 },
+  quoteSubtotal: { color: '#dbe7f5', fontSize: 12, fontWeight: '800', marginTop: 8 },
+  quoteSummaryBox: { borderRadius: 16, padding: 12, backgroundColor: 'rgba(245, 158, 11, 0.10)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.16)', gap: 6 },
   quoteSummaryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
-  quoteSummaryLabel: { color: '#cbd5e1', fontSize: 13, fontWeight: '700' },
-  quoteSummaryValue: { color: '#ffffff', fontSize: 14, fontWeight: '900' },
+  quoteSummaryLabel: { color: '#cbd5e1', fontSize: 12, fontWeight: '700' },
+  quoteSummaryValue: { color: '#ffffff', fontSize: 13, fontWeight: '900' },
 });

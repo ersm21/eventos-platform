@@ -1,8 +1,9 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
-import { Link, router } from 'expo-router';
+import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
+  Linking,
   ActivityIndicator,
   Alert,
   Image,
@@ -40,6 +41,10 @@ export default function ProfileScreen() {
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loggingIn, setLoggingIn] = useState(false);
+
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -58,22 +63,18 @@ export default function ProfileScreen() {
 
     const {
       data: { user },
-      error: userError,
     } = await supabase.auth.getUser();
 
-    if (userError) {
-      setError(userError.message);
-      setLoading(false);
-      return;
-    }
-
     if (!user) {
-      router.replace('/login');
+      setUserId(null);
+      setUserEmail(null);
+      setLoading(false);
       return;
     }
 
     setUserId(user.id);
     setUserEmail(user.email ?? null);
+    setLoginEmail(user.email ?? '');
 
     const { data, error: profileError } = await supabase
       .from('profiles')
@@ -103,7 +104,69 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     loadProfile();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      loadProfile();
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
+
+  const loginFromProfile = async () => {
+    if (!loginEmail.trim()) {
+      setError('Escribe tu email.');
+      return;
+    }
+
+    if (!loginPassword.trim()) {
+      setError('Escribe tu contraseña.');
+      return;
+    }
+
+    setLoggingIn(true);
+    setError(null);
+
+    const { error: loginError } = await supabase.auth.signInWithPassword({
+      email: loginEmail.trim(),
+      password: loginPassword,
+    });
+
+    if (loginError) {
+      setError(loginError.message);
+      setLoggingIn(false);
+      return;
+    }
+
+    setLoginPassword('');
+    setLoggingIn(false);
+    await loadProfile();
+  };
+
+  const loginWithGoogleFromProfile = async () => {
+    setLoggingIn(true);
+    setError(null);
+
+    const { data, error: googleError } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        skipBrowserRedirect: true,
+      },
+    });
+
+    if (googleError) {
+      setError(googleError.message);
+      setLoggingIn(false);
+      return;
+    }
+
+    if (data?.url) {
+      await Linking.openURL(data.url);
+    }
+
+    setLoggingIn(false);
+  };
 
   const pickAvatar = async () => {
     if (!userId) return;
@@ -129,7 +192,6 @@ export default function ProfileScreen() {
 
     try {
       const asset = result.assets[0];
-
       setLocalAvatarUri(asset.uri);
 
       const response = await fetch(asset.uri);
@@ -223,7 +285,9 @@ export default function ProfileScreen() {
               <Text style={styles.eyebrow}>Cuenta</Text>
               <Text style={styles.title}>Mi perfil</Text>
               <Text style={styles.subtitle}>
-                Completa tu perfil para usar todas las funciones de cliente.
+                {userId
+                  ? 'Completa tu perfil para usar todas las funciones de cliente.'
+                  : 'Inicia sesión para acceder y completar tu perfil.'}
               </Text>
             </View>
 
@@ -237,7 +301,63 @@ export default function ProfileScreen() {
           {loading ? (
             <View style={styles.infoCard}>
               <ActivityIndicator color="#fbbf24" />
-              <Text style={styles.infoText}>Cargando perfil...</Text>
+              <Text style={styles.infoText}>Cargando...</Text>
+            </View>
+          ) : !userId ? (
+            <View style={styles.card}>
+              <Text style={styles.loginTitle}>Iniciar sesión</Text>
+              <Text style={styles.loginText}>
+                Entra con tu cuenta para ver y completar tu perfil.
+              </Text>
+
+              <View>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                  value={loginEmail}
+                  onChangeText={setLoginEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  placeholder="tuemail@email.com"
+                  placeholderTextColor="#64748b"
+                  style={styles.input}
+                />
+              </View>
+
+              <View>
+                <Text style={styles.label}>Contraseña</Text>
+                <TextInput
+                  value={loginPassword}
+                  onChangeText={setLoginPassword}
+                  secureTextEntry
+                  placeholder="Tu contraseña"
+                  placeholderTextColor="#64748b"
+                  style={styles.input}
+                />
+              </View>
+
+              {error && (
+                <View style={styles.errorBox}>
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>
+              )}
+
+              <Pressable
+                onPress={loginFromProfile}
+                disabled={loggingIn}
+                style={[styles.saveButton, loggingIn && styles.disabledButton]}
+              >
+                <Text style={styles.saveButtonText}>
+                  {loggingIn ? 'Entrando...' : 'Iniciar sesión'}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={loginWithGoogleFromProfile}
+                disabled={loggingIn}
+                style={[styles.googleButton, loggingIn && styles.disabledButton]}
+              >
+                <Text style={styles.googleButtonText}>Continuar con Google</Text>
+              </Pressable>
             </View>
           ) : (
             <View style={styles.card}>
@@ -338,6 +458,8 @@ const styles = StyleSheet.create({
   infoCard: { padding: 18, borderRadius: 22, backgroundColor: 'rgba(15,23,42,0.84)', borderWidth: 1, borderColor: 'rgba(250,204,21,0.14)', gap: 10, alignItems: 'center' },
   infoText: { color: '#cbd5e1', fontSize: 14, fontWeight: '800' },
   card: { borderRadius: 26, padding: 18, backgroundColor: 'rgba(15,23,42,0.88)', borderWidth: 1, borderColor: 'rgba(250,204,21,0.14)', gap: 16 },
+  loginTitle: { color: '#ffffff', fontSize: 24, fontWeight: '900' },
+  loginText: { color: '#94a3b8', fontSize: 14, lineHeight: 20 },
   avatarWrap: { alignItems: 'center', gap: 12 },
   avatarImage: { width: 128, height: 128, borderRadius: 64, backgroundColor: 'rgba(2,6,23,0.60)', borderWidth: 2, borderColor: 'rgba(250,204,21,0.30)' },
   avatarPlaceholder: { width: 128, height: 128, borderRadius: 64, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(2,6,23,0.60)', borderWidth: 2, borderColor: 'rgba(250,204,21,0.24)' },
@@ -355,5 +477,7 @@ const styles = StyleSheet.create({
   errorText: { color: '#fecaca', fontSize: 13, fontWeight: '800' },
   saveButton: { alignItems: 'center', justifyContent: 'center', minHeight: 50, borderRadius: 16, backgroundColor: '#f97316' },
   saveButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '900' },
+  googleButton: { alignItems: 'center', justifyContent: 'center', minHeight: 50, borderRadius: 16, backgroundColor: 'rgba(2,6,23,0.56)', borderWidth: 1, borderColor: 'rgba(148,163,184,0.22)' },
+  googleButtonText: { color: '#f8fafc', fontSize: 15, fontWeight: '900' },
   disabledButton: { opacity: 0.6 },
 });

@@ -1,12 +1,6 @@
-
-
-import { useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { supabase } from '../lib/supabase';
-import { Link, router } from 'expo-router';
+import { Link } from 'expo-router';
 import {
-  Image,
   Linking,
   Pressable,
   ScrollView,
@@ -14,24 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
-
-const accountActions = [
-  {
-    title: 'Mis cotizaciones',
-    description: 'Revisa estados, propuestas y solicitudes recientes.',
-    href: '/my-quotes',
-  },
-  {
-    title: 'Mis reuniones',
-    description: 'Consulta reuniones solicitadas o confirmadas.',
-    href: '/my-meetings',
-  },
-  {
-    title: 'Nueva cotización',
-    description: 'Solicita luces, sonido, pantallas LED, tarimas, DJs y soporte.',
-    href: '/cotizar',
-  },
-];
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const whatsappUrl = 'https://wa.me/18299359774';
 
@@ -51,89 +28,54 @@ const openWhatsApp = async () => {
 };
 
 export default function AccountScreen() {
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [checkingSession, setCheckingSession] = useState(true);
-
-  useEffect(() => {
-    const loadSession = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      setUserEmail(user?.email ?? null);
-      setCheckingSession(false);
-    };
-
-    loadSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUserEmail(session?.user?.email ?? null);
-      setCheckingSession(false);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    setUserEmail(null);
-    router.replace('/login');
-  };
-
   return (
-    <LinearGradient colors={['#020617', '#09090f', '#111827']} style={styles.page}>
+    <LinearGradient colors={['#020617', '#070914', '#111827']} style={styles.page}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-          <View style={styles.topRow}>
-            <Link href="/" asChild>
-              <Pressable style={styles.backButton}>
-                <Text style={styles.backButtonText}>← Inicio</Text>
-              </Pressable>
-            </Link>
-
-            <Image source={require('../assets/images/sm-logo.png')} style={styles.logo} resizeMode="contain" />
-          </View>
-
-          <View style={styles.profileCard}>
-            <View style={styles.avatarCircle}>
-              <Text style={styles.avatarText}>SM</Text>
+          <View style={styles.heroCard}>
+            <View style={styles.logoCircle}>
+              <Text style={styles.logoText}>SM</Text>
             </View>
 
             <Text style={styles.eyebrow}>Cuenta</Text>
-            <Text style={styles.title}>Perfil del cliente</Text>
-            <Text style={styles.description}>
-              Esta sección centraliza el acceso del cliente a sus cotizaciones, reuniones y solicitudes. Por ahora está visual; luego se conectará con Supabase Auth.
+            <Text style={styles.title}>Área del cliente</Text>
+            <Text style={styles.subtitle}>
+              Accede a tu perfil, cotizaciones, reuniones y seguimiento de solicitudes.
             </Text>
           </View>
 
-          <View style={styles.infoGrid}>
-            <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>Estado</Text>
-              <Text style={styles.infoValue}>Modo visual</Text>
+          <View style={styles.statusGrid}>
+            <View style={styles.statusCard}>
+              <Text style={styles.statusLabel}>Estado</Text>
+              <Text style={styles.statusValue}>Cliente</Text>
             </View>
 
-            <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>Acceso</Text>
-              <Text style={styles.infoValue}>Cliente</Text>
+            <View style={styles.statusCard}>
+              <Text style={styles.statusLabel}>Acceso</Text>
+              <Text style={styles.statusValue}>App</Text>
             </View>
           </View>
 
-          <View style={styles.actionsList}>
-            {accountActions.map((action) => (
-              <Link key={action.href} href={action.href} asChild>
-                <Pressable style={styles.actionCard}>
-                  <View style={styles.actionTextBlock}>
-                    <Text style={styles.actionTitle}>{action.title}</Text>
-                    <Text style={styles.actionDescription}>{action.description}</Text>
-                  </View>
-                  <Text style={styles.actionArrow}>›</Text>
-                </Pressable>
-              </Link>
-            ))}
+          <View style={styles.menuList}>
+            <Link href="/my-quotes" asChild>
+              <Pressable style={styles.menuCard}>
+                <View>
+                  <Text style={styles.menuTitle}>Mis cotizaciones</Text>
+                  <Text style={styles.menuText}>Revisa estados, propuestas y solicitudes recientes.</Text>
+                </View>
+                <Text style={styles.menuArrow}>›</Text>
+              </Pressable>
+            </Link>
+
+            <Link href="/my-meetings" asChild>
+              <Pressable style={styles.menuCard}>
+                <View>
+                  <Text style={styles.menuTitle}>Mis reuniones</Text>
+                  <Text style={styles.menuText}>Consulta reuniones solicitadas o confirmadas.</Text>
+                </View>
+                <Text style={styles.menuArrow}>›</Text>
+              </Pressable>
+            </Link>
           </View>
 
           <Link href="/profile" asChild>
@@ -142,49 +84,16 @@ export default function AccountScreen() {
             </Pressable>
           </Link>
 
-          <View style={styles.sessionCard}>
-            <Text style={styles.sessionLabel}>Estado de cuenta</Text>
-            {checkingSession ? (
-              <Text style={styles.sessionText}>Revisando sesión...</Text>
-            ) : userEmail ? (
-              <>
-                <Text style={styles.sessionTitle}>Sesión iniciada</Text>
-                <Text style={styles.sessionText}>{userEmail}</Text>
-                <Pressable onPress={signOut} style={styles.logoutButton}>
-                  <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
-                </Pressable>
-              </>
-            ) : (
-              <>
-                <Text style={styles.sessionTitle}>No has iniciado sesión</Text>
-                <Text style={styles.sessionText}>
-                  Inicia sesión para ver tus cotizaciones, reuniones, confirmar propuestas y subir comprobantes.
-                </Text>
-                <Link href="/login" asChild>
-                  <Pressable style={styles.loginButton}>
-                    <Text style={styles.loginButtonText}>Iniciar sesión</Text>
-                  </Pressable>
-                </Link>
-              </>
-            )}
-          </View>
-
           <View style={styles.contactCard}>
-            <Text style={styles.sectionEyebrow}>Contacto directo</Text>
+            <Text style={styles.contactEyebrow}>Contacto directo</Text>
             <Text style={styles.contactTitle}>¿Necesitas ayuda con tu cuenta?</Text>
             <Text style={styles.contactText}>
-              Escríbenos por WhatsApp y te ayudamos con tus cotizaciones, reuniones o datos del evento.
+              Escríbenos por WhatsApp y te ayudamos con cotizaciones, reuniones o datos del evento.
             </Text>
-            <Pressable style={styles.whatsappButton} onPress={openWhatsApp}>
-              <Text style={styles.whatsappButtonText}>829-935-9774</Text>
-            </Pressable>
-          </View>
 
-          <View style={styles.noteCard}>
-            <Text style={styles.noteTitle}>Pendiente de conexión</Text>
-            <Text style={styles.noteText}>
-              Luego conectaremos esta pantalla al usuario real de Supabase para mostrar nombre, correo, teléfono, historial y cerrar sesión.
-            </Text>
+            <Pressable style={styles.whatsappButton} onPress={openWhatsApp}>
+              <Text style={styles.whatsappButtonText}>Escribir por WhatsApp</Text>
+            </Pressable>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -193,206 +102,122 @@ export default function AccountScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: {
-    flex: 1,
+  page: { flex: 1 },
+  safeArea: { flex: 1 },
+  content: { padding: 16, paddingBottom: 112, gap: 12 },
+  heroCard: {
+    position: 'relative',
+    overflow: 'hidden',
+    borderRadius: 24,
+    padding: 16,
+    paddingTop: 20,
+    paddingLeft: 84,
+    minHeight: 132,
+    backgroundColor: 'rgba(15, 23, 42, 0.88)',
+    borderWidth: 1,
+    borderColor: 'rgba(250,204,21,0.16)',
+    gap: 7,
+    justifyContent: 'center',
   },
-  safeArea: {
-    flex: 1,
-  },
-  content: {
-    padding: 20,
-    paddingBottom: 42,
-    gap: 16,
-  },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 8,
-  },
-  backButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+  logoCircle: {
+    position: 'absolute',
+    top: 18,
+    left: 16,
+    width: 52,
+    height: 52,
     borderRadius: 999,
-    backgroundColor: 'rgba(15, 23, 42, 0.82)',
-    borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.18)',
-  },
-  backButtonText: {
-    color: '#e5e7eb',
-    fontSize: 13,
-    fontWeight: '900',
-  },
-  logo: {
-    width: 78,
-    height: 54,
-  },
-  profileCard: {
-    borderRadius: 28,
-    padding: 22,
-    backgroundColor: 'rgba(15, 23, 42, 0.82)',
-    borderWidth: 1,
-    borderColor: 'rgba(250, 204, 21, 0.16)',
-    gap: 10,
-  },
-  avatarCircle: {
-    width: 58,
-    height: 58,
-    borderRadius: 29,
-    backgroundColor: 'rgba(249, 115, 22, 0.18)',
-    borderWidth: 1,
-    borderColor: 'rgba(249, 115, 22, 0.32)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4,
+    backgroundColor: 'rgba(249,115,22,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(249,115,22,0.40)',
   },
-  avatarText: {
-    color: '#fed7aa',
-    fontSize: 18,
-    fontWeight: '900',
-  },
+  logoText: { color: '#fed7aa', fontSize: 17, fontWeight: '900' },
   eyebrow: {
     color: '#fbbf24',
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '900',
-    letterSpacing: 1.2,
+    letterSpacing: 1,
     textTransform: 'uppercase',
   },
   title: {
     color: '#ffffff',
-    fontSize: 32,
-    lineHeight: 36,
+    fontSize: 27,
+    lineHeight: 30,
     fontWeight: '900',
-    letterSpacing: -1.1,
+    letterSpacing: -0.8,
   },
-  description: {
-    color: '#a8b8ce',
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  infoGrid: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  infoBox: {
+  subtitle: { color: '#94a3b8', fontSize: 13, lineHeight: 19 },
+  statusGrid: { flexDirection: 'row', gap: 10 },
+  statusCard: {
     flex: 1,
-    padding: 14,
-    borderRadius: 20,
-    backgroundColor: 'rgba(2, 6, 23, 0.56)',
+    minHeight: 72,
+    borderRadius: 18,
+    padding: 12,
+    backgroundColor: 'rgba(2,6,23,0.42)',
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.14)',
+    borderColor: 'rgba(148,163,184,0.14)',
+    justifyContent: 'center',
+    gap: 4,
   },
-  infoLabel: {
+  statusLabel: {
     color: '#94a3b8',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '900',
+    letterSpacing: 1,
     textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 5,
   },
-  infoValue: {
-    color: '#f8fafc',
-    fontSize: 16,
-    fontWeight: '900',
-  },
-  actionsList: {
-    gap: 12,
-  },
-  actionCard: {
-    padding: 18,
-    borderRadius: 22,
-    backgroundColor: 'rgba(2, 6, 23, 0.56)',
+  statusValue: { color: '#ffffff', fontSize: 17, fontWeight: '900' },
+  menuList: { gap: 10 },
+  menuCard: {
+    minHeight: 84,
+    borderRadius: 18,
+    padding: 14,
+    backgroundColor: 'rgba(2,6,23,0.44)',
     borderWidth: 1,
-    borderColor: 'rgba(148, 163, 184, 0.14)',
+    borderColor: 'rgba(148,163,184,0.14)',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
     alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
   },
-  actionTextBlock: {
-    flex: 1,
-    gap: 5,
+  menuTitle: { color: '#ffffff', fontSize: 18, fontWeight: '900' },
+  menuText: { color: '#94a3b8', fontSize: 12, lineHeight: 17, marginTop: 4 },
+  menuArrow: { color: '#fbbf24', fontSize: 32, fontWeight: '700' },
+  profileButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 50,
+    borderRadius: 16,
+    backgroundColor: '#f97316',
   },
-  actionTitle: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  actionDescription: {
-    color: '#a8b8ce',
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  actionArrow: {
-    color: '#fbbf24',
-    fontSize: 34,
-    fontWeight: '300',
-  },
+  profileButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '900' },
   contactCard: {
-    padding: 18,
-    borderRadius: 24,
-    backgroundColor: 'rgba(37, 99, 235, 0.16)',
+    borderRadius: 20,
+    padding: 15,
+    backgroundColor: 'rgba(37,99,235,0.16)',
     borderWidth: 1,
-    borderColor: 'rgba(96, 165, 250, 0.22)',
-    gap: 8,
+    borderColor: 'rgba(96,165,250,0.22)',
+    gap: 7,
   },
-  sectionEyebrow: {
+  contactEyebrow: {
     color: '#60a5fa',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '900',
-    letterSpacing: 1.2,
+    letterSpacing: 1,
     textTransform: 'uppercase',
   },
-  contactTitle: {
-    color: '#ffffff',
-    fontSize: 22,
-    fontWeight: '900',
-  },
-  contactText: {
-    color: '#bfdbfe',
-    fontSize: 14,
-    lineHeight: 20,
-  },
+  contactTitle: { color: '#ffffff', fontSize: 20, lineHeight: 23, fontWeight: '900' },
+  contactText: { color: '#bfdbfe', fontSize: 12, lineHeight: 18 },
   whatsappButton: {
     alignSelf: 'flex-start',
-    marginTop: 6,
-    paddingVertical: 11,
-    paddingHorizontal: 14,
+    marginTop: 4,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
     borderRadius: 999,
-    backgroundColor: 'rgba(250, 204, 21, 0.12)',
+    backgroundColor: 'rgba(250,204,21,0.12)',
     borderWidth: 1,
-    borderColor: 'rgba(250, 204, 21, 0.2)',
+    borderColor: 'rgba(250,204,21,0.20)',
   },
-  whatsappButtonText: {
-    color: '#fde68a',
-    fontWeight: '900',
-  },
-  noteCard: {
-    padding: 16,
-    borderRadius: 22,
-    backgroundColor: 'rgba(250, 204, 21, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(250, 204, 21, 0.14)',
-    gap: 6,
-  },
-  noteTitle: {
-    color: '#fde68a',
-    fontSize: 17,
-    fontWeight: '900',
-  },
-  noteText: {
-    color: '#cbd5e1',
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  sessionCard: { borderRadius: 22, padding: 16, backgroundColor: 'rgba(2, 6, 23, 0.56)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 8, marginTop: 4 },
-  sessionLabel: { color: '#fbbf24', fontSize: 11, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.8 },
-  sessionTitle: { color: '#ffffff', fontSize: 18, fontWeight: '900' },
-  sessionText: { color: '#94a3b8', fontSize: 14, lineHeight: 20 },
-  loginButton: { alignSelf: 'flex-start', paddingVertical: 11, paddingHorizontal: 14, borderRadius: 14, backgroundColor: '#f97316', marginTop: 4 },
-  loginButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '900' },
-  logoutButton: { alignSelf: 'flex-start', paddingVertical: 11, paddingHorizontal: 14, borderRadius: 14, backgroundColor: 'rgba(127, 29, 29, 0.36)', borderWidth: 1, borderColor: 'rgba(248, 113, 113, 0.30)', marginTop: 4 },
-  logoutButtonText: { color: '#fecaca', fontSize: 14, fontWeight: '900' },
-  profileButton: { alignItems: 'center', justifyContent: 'center', minHeight: 50, borderRadius: 16, backgroundColor: '#f97316', marginTop: 8 },
-  profileButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '900' },
+  whatsappButtonText: { color: '#fde68a', fontWeight: '900' },
 });

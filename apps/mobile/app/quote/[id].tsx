@@ -111,6 +111,40 @@ function getDepositStyle(status: string | null | undefined) {
   return status === 'paid' ? styles.depositPaid : styles.depositPending;
 }
 
+
+async function requireCompleteProfile() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    router.replace('/login');
+    return false;
+  }
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('full_name, avatar_url')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (error || !data?.full_name?.trim() || !data?.avatar_url?.trim()) {
+    Alert.alert(
+      'Completa tu perfil',
+      'Para usar esta función debes subir una foto de perfil y completar tu nombre.',
+      [
+        {
+          text: 'Ir a mi perfil',
+          onPress: () => router.push('/profile'),
+        },
+      ]
+    );
+    return false;
+  }
+
+  return true;
+}
+
 export default function QuoteDetailScreen() {
   const params = useLocalSearchParams<{ id: string }>();
   const quoteId = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -296,7 +330,10 @@ export default function QuoteDetailScreen() {
     });
   };
 
-  const choosePaymentProofSource = () => {
+  const choosePaymentProofSource = async () => {
+    const profileOk = await requireCompleteProfile();
+
+    if (!profileOk) return;
     Alert.alert('Subir comprobante', 'Elige desde dónde quieres subir el comprobante.', [
       { text: 'Cancelar', style: 'cancel' },
       { text: 'Galería', onPress: pickPaymentProofFromGallery },

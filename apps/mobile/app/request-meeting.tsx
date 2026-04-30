@@ -15,6 +15,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
 
+function toLocalDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
 type MeetingSlot = {
   id: string;
   slot_date: string;
@@ -59,7 +67,7 @@ function buildNextThirtyDays() {
   for (let index = 0; index < 30; index += 1) {
     const date = new Date(today);
     date.setDate(today.getDate() + index);
-    days.push(date.toISOString().slice(0, 10));
+    days.push(toLocalDateKey(date));
   }
 
   return days;
@@ -87,10 +95,12 @@ export default function RequestMeetingScreen() {
       setLoadingSlots(true);
       setError(null);
 
-      const today = new Date().toISOString().slice(0, 10);
-      const endDate = new Date(Date.now() + 29 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .slice(0, 10);
+      const todayDate = new Date();
+      const endDateObject = new Date(todayDate);
+      endDateObject.setDate(todayDate.getDate() + 29);
+
+      const today = toLocalDateKey(todayDate);
+      const endDate = toLocalDateKey(endDateObject);
 
       const { data, error: slotsError } = await supabase
         .from('meeting_slots')

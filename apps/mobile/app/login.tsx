@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Linking from 'expo-linking';
-import { Link, router } from 'expo-router';
+import { Link, router, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import {
@@ -28,6 +28,7 @@ function getTokensFromUrl(url: string) {
 }
 
 export default function LoginScreen() {
+  const { redirect } = useLocalSearchParams<{ redirect?: string }>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ export default function LoginScreen() {
       } = await supabase.auth.getUser();
 
       if (user) {
-        router.replace('/account');
+        router.replace(redirect || '/account');
         return;
       }
 
@@ -75,7 +76,7 @@ export default function LoginScreen() {
 
     setSuccessMessage('Sesión iniciada correctamente.');
     setLoading(false);
-    router.replace('/account');
+    router.replace(redirect || '/account');
   };
 
   const createAccountWithEmail = async () => {
@@ -157,7 +158,7 @@ export default function LoginScreen() {
 
     setSuccessMessage('Sesión iniciada con Google.');
     setLoading(false);
-    router.replace('/account');
+    router.replace(redirect || '/account');
   };
 
   if (checkingSession) {

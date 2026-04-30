@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import * as DocumentPicker from 'expo-document-picker';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -67,6 +67,40 @@ function getMediaType(mimeType: string | null | undefined): 'image' | 'video' | 
   if (mimeType.startsWith('image/')) return 'image';
   if (mimeType.startsWith('video/')) return 'video';
   return 'none';
+}
+
+
+async function requireCompleteProfile() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    router.replace('/login');
+    return false;
+  }
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('full_name, avatar_url')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (error || !data?.full_name?.trim() || !data?.avatar_url?.trim()) {
+    Alert.alert(
+      'Completa tu perfil',
+      'Para usar esta función debes subir una foto de perfil y completar tu nombre.',
+      [
+        {
+          text: 'Ir a mi perfil',
+          onPress: () => router.push('/profile'),
+        },
+      ]
+    );
+    return false;
+  }
+
+  return true;
 }
 
 export default function FeedScreen() {
@@ -339,6 +373,10 @@ export default function FeedScreen() {
   };
 
   const submitComment = async (postId: string) => {
+    const profileOk = await requireCompleteProfile();
+
+    if (!profileOk) return;
+
     if (!currentUserId) {
       setError('Debes iniciar sesión para comentar.');
       return;
