@@ -136,6 +136,12 @@ export default function AccountScreen() {
             ))}
           </View>
 
+          <Link href="/profile" asChild>
+            <Pressable style={styles.profileButton}>
+              <Text style={styles.profileButtonText}>Mi perfil</Text>
+            </Pressable>
+          </Link>
+
           <View style={styles.sessionCard}>
             <Text style={styles.sessionLabel}>Estado de cuenta</Text>
             {checkingSession ? (
@@ -387,4 +393,6 @@ const styles = StyleSheet.create({
   loginButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '900' },
   logoutButton: { alignSelf: 'flex-start', paddingVertical: 11, paddingHorizontal: 14, borderRadius: 14, backgroundColor: 'rgba(127, 29, 29, 0.36)', borderWidth: 1, borderColor: 'rgba(248, 113, 113, 0.30)', marginTop: 4 },
   logoutButtonText: { color: '#fecaca', fontSize: 14, fontWeight: '900' },
+  profileButton: { alignItems: 'center', justifyContent: 'center', minHeight: 50, borderRadius: 16, backgroundColor: '#f97316', marginTop: 8 },
+  profileButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '900' },
 });

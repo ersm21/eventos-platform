@@ -4,8 +4,8 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const tabs = [
   { label: 'Inicio', href: '/' },
+  { label: 'Feed', href: '/feed' },
   { label: 'Catálogo', href: '/catalogo' },
-  { label: 'Galería', href: '/galeria' },
   { label: 'Cotizar', href: '/cotizar' },
   { label: 'Citas', href: '/my-meetings' },
   { label: 'Cuenta', href: '/account' },
@@ -34,10 +34,10 @@ function BottomNav() {
               <Text style={[styles.tabIcon, active && styles.tabTextActive]}>
                 {tab.label === 'Inicio'
                   ? '⌂'
-                  : tab.label === 'Catálogo'
-                    ? '▦'
-                    : tab.label === 'Galería'
-                      ? '▧'
+                  : tab.label === 'Feed'
+                    ? '◌'
+                    : tab.label === 'Catálogo'
+                      ? '▦'
                       : tab.label === 'Cotizar'
                         ? '+'
                         : tab.label === 'Citas'
@@ -83,18 +83,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 6,
-    paddingTop: 8,
-    paddingBottom: 6,
+    paddingHorizontal: 5,
+    paddingTop: 7,
+    paddingBottom: 5,
     backgroundColor: 'rgba(2, 6, 23, 0.98)',
   },
   tabButton: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 3,
-    paddingVertical: 8,
-    borderRadius: 16,
+    gap: 2,
+    paddingVertical: 7,
+    borderRadius: 15,
   },
   tabButtonActive: {
     backgroundColor: 'rgba(249, 115, 22, 0.14)',
@@ -103,9 +103,9 @@ const styles = StyleSheet.create({
   },
   tabIcon: {
     color: '#94a3b8',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '900',
-    lineHeight: 20,
+    lineHeight: 19,
   },
   tabLabel: {
     color: '#94a3b8',

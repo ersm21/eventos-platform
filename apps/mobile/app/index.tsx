@@ -94,7 +94,7 @@ export default function Index() {
             <Text style={styles.heroEyebrow}>Producción de eventos</Text>
             <Text style={styles.heroTitle}>Haz que tu evento se vea y suene como debe</Text>
             <Text style={styles.heroText}>
-              Coordina luces, sonido, LED, tarimas y soporte técnico desde una app pensada para organizar tu evento con claridad.
+              Producción técnica para eventos sociales, corporativos y producciones en vivo. Luces, sonido, pantallas LED, tarimas y soporte técnico con un proceso claro.
             </Text>
 
             <View style={styles.heroActions}>
@@ -103,58 +103,14 @@ export default function Index() {
                   <Text style={styles.primaryButtonText}>Solicitar reunión</Text>
                 </Pressable>
               </Link>
-
-              <Link href="/catalogo" asChild>
-                <Pressable style={styles.secondaryButton}>
-                  <Text style={styles.secondaryButtonText}>Ver catálogo</Text>
-                </Pressable>
-              </Link>
             </View>
-          </View>
-
-          <View style={styles.appActionsGrid}>
-            <Link href="/cotizar" asChild>
-              <Pressable style={styles.actionCardPrimary}>
-                <Text style={styles.actionIcon}>＋</Text>
-                <Text style={styles.actionTitle}>Cotizar</Text>
-                <Text style={styles.actionText}>Arma una solicitud rápida.</Text>
-              </Pressable>
-            </Link>
-
-            <Link href="/my-quotes" asChild>
-              <Pressable style={styles.actionCard}>
-                <Text style={styles.actionIcon}>▤</Text>
-                <Text style={styles.actionTitle}>Cotizaciones</Text>
-                <Text style={styles.actionText}>Estados y montos.</Text>
-              </Pressable>
-            </Link>
-
-            <Link href="/my-meetings" asChild>
-              <Pressable style={styles.actionCard}>
-                <Text style={styles.actionIcon}>◷</Text>
-                <Text style={styles.actionTitle}>Citas</Text>
-                <Text style={styles.actionText}>Revisa reuniones.</Text>
-              </Pressable>
-            </Link>
-
-            <Pressable style={styles.actionCard} onPress={openWhatsApp}>
-              <Text style={styles.actionIcon}>☏</Text>
-              <Text style={styles.actionTitle}>WhatsApp</Text>
-              <Text style={styles.actionText}>Habla con nosotros.</Text>
-            </Pressable>
           </View>
 
           <View style={styles.sectionHeaderRow}>
             <View>
               <Text style={styles.sectionEyebrow}>Servicios</Text>
-              <Text style={styles.sectionTitle}>Lo que hacemos</Text>
+              <Text style={styles.sectionTitle}>Producción técnica</Text>
             </View>
-
-            <Link href="/galeria" asChild>
-              <Pressable style={styles.smallLinkButton}>
-                <Text style={styles.smallLinkButtonText}>Galería</Text>
-              </Pressable>
-            </Link>
           </View>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.serviceCarousel}>
@@ -265,7 +221,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   page: { flex: 1 },
   safeArea: { flex: 1 },
-  content: { padding: 18, paddingBottom: 118, gap: 14 },
+  content: { padding: 18, paddingBottom: 118, gap: 13 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 6 },
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 11 },
   logo: { width: 70, height: 46 },
@@ -274,40 +230,32 @@ const styles = StyleSheet.create({
   accountPill: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 999, backgroundColor: 'rgba(15,23,42,0.86)', borderWidth: 1, borderColor: 'rgba(250,204,21,0.16)' },
   accountPillText: { color: '#fde68a', fontSize: 12, fontWeight: '900' },
 
-  heroCard: { position: 'relative', overflow: 'hidden', borderRadius: 28, padding: 20, backgroundColor: 'rgba(15, 23, 42, 0.90)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.16)', gap: 11 },
+  heroCard: { position: 'relative', overflow: 'hidden', borderRadius: 30, padding: 22, backgroundColor: 'rgba(15, 23, 42, 0.90)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.16)', gap: 12 },
   heroGlowOne: { position: 'absolute', width: 220, height: 220, borderRadius: 999, right: -72, top: -78, backgroundColor: 'rgba(245,158,11,0.15)' },
   heroGlowTwo: { position: 'absolute', width: 180, height: 180, borderRadius: 999, left: -88, bottom: -96, backgroundColor: 'rgba(59,130,246,0.10)' },
   heroEyebrow: { color: '#fbbf24', fontSize: 12, fontWeight: '900', letterSpacing: 1.1, textTransform: 'uppercase' },
-  heroTitle: { color: '#ffffff', fontSize: 32, lineHeight: 35, fontWeight: '900', letterSpacing: -1.2 },
+  heroTitle: { color: '#ffffff', fontSize: 33, lineHeight: 36, fontWeight: '900', letterSpacing: -1.2 },
   heroText: { color: '#a8b8ce', fontSize: 14, lineHeight: 21 },
-  heroActions: { flexDirection: 'row', gap: 9, flexWrap: 'wrap', marginTop: 4 },
+  heroActions: { flexDirection: 'row', gap: 9, flexWrap: 'wrap', marginTop: 5 },
 
   primaryButton: { backgroundColor: '#f97316', paddingVertical: 12, paddingHorizontal: 15, borderRadius: 15 },
   primaryButtonText: { color: '#ffffff', fontWeight: '900', fontSize: 14 },
   secondaryButton: { backgroundColor: 'rgba(2,6,23,0.46)', borderWidth: 1, borderColor: 'rgba(250,204,21,0.22)', paddingVertical: 12, paddingHorizontal: 15, borderRadius: 15 },
   secondaryButtonText: { color: '#f8fafc', fontWeight: '900', fontSize: 14 },
 
-  appActionsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  actionCardPrimary: { width: '48.5%', minHeight: 114, borderRadius: 22, padding: 14, backgroundColor: 'rgba(249,115,22,0.16)', borderWidth: 1, borderColor: 'rgba(249,115,22,0.28)', justifyContent: 'space-between' },
-  actionCard: { width: '48.5%', minHeight: 114, borderRadius: 22, padding: 14, backgroundColor: 'rgba(2,6,23,0.54)', borderWidth: 1, borderColor: 'rgba(148,163,184,0.14)', justifyContent: 'space-between' },
-  actionIcon: { color: '#fbbf24', fontSize: 20, fontWeight: '900' },
-  actionTitle: { color: '#ffffff', fontSize: 17, fontWeight: '900' },
-  actionText: { color: '#94a3b8', fontSize: 12, lineHeight: 17 },
 
-  sectionHeaderRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, marginTop: 2 },
+  sectionHeaderRow: { marginTop: 2, gap: 3 },
   sectionEyebrow: { color: '#60a5fa', fontSize: 11, fontWeight: '900', letterSpacing: 1.1, textTransform: 'uppercase' },
   sectionEyebrowGold: { color: '#fbbf24', fontSize: 11, fontWeight: '900', letterSpacing: 1.1, textTransform: 'uppercase' },
   sectionTitle: { color: '#f8fafc', fontSize: 22, fontWeight: '900', letterSpacing: -0.5, marginTop: 3 },
-  smallLinkButton: { paddingVertical: 8, paddingHorizontal: 11, borderRadius: 999, backgroundColor: 'rgba(96,165,250,0.12)', borderWidth: 1, borderColor: 'rgba(96,165,250,0.20)' },
-  smallLinkButtonText: { color: '#bfdbfe', fontSize: 12, fontWeight: '900' },
 
   serviceCarousel: { gap: 10, paddingRight: 2 },
-  serviceCard: { width: 148, height: 164, borderRadius: 22, overflow: 'hidden', backgroundColor: 'rgba(15,23,42,0.84)', borderWidth: 1, borderColor: 'rgba(148,163,184,0.14)' },
+  serviceCard: { width: 156, height: 174, borderRadius: 24, overflow: 'hidden', backgroundColor: 'rgba(15,23,42,0.84)', borderWidth: 1, borderColor: 'rgba(148,163,184,0.14)' },
   serviceImage: { borderRadius: 22 },
   serviceOverlay: { flex: 1, justifyContent: 'flex-end', padding: 12 },
   serviceLabel: { alignSelf: 'flex-start', paddingVertical: 7, paddingHorizontal: 10, borderRadius: 999, backgroundColor: 'rgba(2,6,23,0.72)', borderWidth: 1, borderColor: 'rgba(250,204,21,0.24)', color: '#f8fafc', fontSize: 12, fontWeight: '900' },
 
-  infoCard: { borderRadius: 22, padding: 16, backgroundColor: 'rgba(15,23,42,0.84)', borderWidth: 1, borderColor: 'rgba(250,204,21,0.14)', gap: 8 },
+  infoCard: { borderRadius: 24, padding: 17, backgroundColor: 'rgba(15,23,42,0.84)', borderWidth: 1, borderColor: 'rgba(250,204,21,0.14)', gap: 8 },
   infoEyebrow: { color: '#fbbf24', fontSize: 11, fontWeight: '900', letterSpacing: 0.9, textTransform: 'uppercase' },
   infoTitle: { color: '#ffffff', fontSize: 22, lineHeight: 26, fontWeight: '900', letterSpacing: -0.4 },
   infoText: { color: '#c4d0e0', fontSize: 13, lineHeight: 19 },
