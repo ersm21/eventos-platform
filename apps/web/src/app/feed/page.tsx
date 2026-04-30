@@ -66,6 +66,17 @@ function normalizeSupabasePublicUrl(url: string) {
     .replace('http://localhost:54321', supabaseUrl);
 }
 
+function getInitials(name: string | null | undefined) {
+  if (!name?.trim()) return 'CL';
+
+  return name
+    .trim()
+    .split(' ')
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('');
+}
+
 export default function FeedPage() {
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [likes, setLikes] = useState<FeedLike[]>([]);
@@ -86,6 +97,7 @@ export default function FeedPage() {
   const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
 
   const [error, setError] = useState<string | null>(null);
+  const [commentsOpen, setCommentsOpen] = useState<Record<string, boolean>>({});
 
   const profilesByUserId = useMemo(() => {
     return profiles.reduce<Record<string, Profile>>((accumulator, profile) => {
@@ -133,6 +145,16 @@ export default function FeedPage() {
 
     const loadedPosts = (postsData || []) as FeedPost[];
     setPosts(loadedPosts);
+
+    setCommentsOpen((prev) => {
+      const next = { ...prev };
+
+      loadedPosts.forEach((post) => {
+        if (next[post.id] === undefined) next[post.id] = false;
+      });
+
+      return next;
+    });
 
     const postIds = loadedPosts.map((post) => post.id);
     const userIds = Array.from(
@@ -464,6 +486,22 @@ export default function FeedPage() {
           </p>
         </section>
 
+        {!isAdmin && (
+          <section style={viewerHintStyle}>
+            <div>
+              <p style={sectionEyebrowStyle}>Actualizaciones</p>
+              <h2 style={viewerHintTitleStyle}>Contenido reciente de SM Events</h2>
+              <p style={viewerHintTextStyle}>
+                Aquí verás montajes, eventos, anuncios y publicaciones importantes.
+              </p>
+            </div>
+
+            <Link href="/cotizar" style={viewerHintButtonStyle}>
+              Cotizar servicio
+            </Link>
+          </section>
+        )}
+
         {isAdmin && (
           <section style={composerCardStyle}>
             <div style={composerHeaderStyle}>
@@ -481,16 +519,19 @@ export default function FeedPage() {
               style={composerInputStyle}
             />
 
-            <div style={composerActionsStyle}>
-              <input
-                type="file"
-                accept="image/*,video/*"
-                onChange={(event) => {
-                  const file = event.target.files?.[0] || null;
-                  setSelectedMediaFile(file);
-                }}
-                style={fileInputStyle}
-              />
+            <div style={composerToolsStyle}>
+              <label style={filePickerLabelStyle}>
+                Foto / video
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0] || null;
+                    setSelectedMediaFile(file);
+                  }}
+                  style={hiddenFileInputStyle}
+                />
+              </label>
 
               <button
                 type="button"
@@ -507,7 +548,15 @@ export default function FeedPage() {
 
             {selectedMediaFile && (
               <div style={selectedMediaBoxStyle}>
-                Archivo seleccionado: {selectedMediaFile.name}
+                <span>Archivo seleccionado: {selectedMediaFile.name}</span>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedMediaFile(null)}
+                  style={removeMediaButtonStyle}
+                >
+                  Quitar
+                </button>
               </div>
             )}
           </section>
@@ -573,9 +622,18 @@ export default function FeedPage() {
                     {hasLikedPost(post.id) ? '♥' : '♡'} {getLikesCount(post.id)}
                   </button>
 
-                  <span style={feedActionButtonStyle}>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCommentsOpen((prev) => ({
+                        ...prev,
+                        [post.id]: !prev[post.id],
+                      }))
+                    }
+                    style={feedActionButtonStyle}
+                  >
                     💬 {getCommentsCount(post.id)}
-                  </span>
+                  </button>
 
                   {(isAdmin || post.user_id === currentUserId) && (
                     <button
@@ -589,8 +647,9 @@ export default function FeedPage() {
                   )}
                 </div>
 
-                <div style={commentsBoxStyle}>
-                  {getPostComments(post.id).length > 0 && (
+                {commentsOpen[post.id] && (
+                  <div style={commentsBoxStyle}>
+                    {getPostComments(post.id).length > 0 && (
                     <div style={commentsListStyle}>
                       {getPostComments(post.id).slice(-5).map((comment) => {
                         const avatarUrl = getProfileAvatar(comment.user_id);
@@ -605,7 +664,7 @@ export default function FeedPage() {
                               />
                             ) : (
                               <div style={commentAvatarFallbackStyle}>
-                                {getProfileName(comment.user_id).slice(0, 1).toUpperCase()}
+                                {getInitials(getProfileName(comment.user_id))}
                               </div>
                             )}
 
@@ -642,8 +701,9 @@ export default function FeedPage() {
                     >
                       {submittingCommentId === post.id ? '...' : 'Enviar'}
                     </button>
+                    </div>
                   </div>
-                </div>
+                )}
               </article>
             ))}
           </section>
@@ -656,7 +716,7 @@ export default function FeedPage() {
 const pageStyle: React.CSSProperties = {
   minHeight: '100vh',
   color: '#f8fafc',
-  padding: '34px 20px 80px',
+  padding: '24px 14px 64px',
   background:
     'radial-gradient(circle at 12% 18%, rgba(168,85,247,0.20), transparent 28%), radial-gradient(circle at 88% 12%, rgba(245,158,11,0.16), transparent 28%), linear-gradient(135deg, #020617 0%, #09090f 48%, #111827 100%)',
   fontFamily:
@@ -664,7 +724,7 @@ const pageStyle: React.CSSProperties = {
 };
 
 const containerStyle: React.CSSProperties = {
-  maxWidth: 820,
+  maxWidth: 980,
   margin: '0 auto',
 };
 
@@ -672,8 +732,8 @@ const heroCardStyle: React.CSSProperties = {
   background:
     'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(24,24,37,0.88) 42%, rgba(30,27,75,0.86) 100%)',
   border: '1px solid rgba(250, 204, 21, 0.16)',
-  borderRadius: 28,
-  padding: 24,
+  borderRadius: 24,
+  padding: 20,
   boxShadow: '0 24px 58px rgba(0,0,0,0.30)',
 };
 
@@ -688,7 +748,7 @@ const eyebrowStyle: React.CSSProperties = {
 
 const heroTitleStyle: React.CSSProperties = {
   margin: '10px 0 8px',
-  fontSize: 42,
+  fontSize: 36,
   lineHeight: 1.04,
   letterSpacing: '-0.04em',
 };
@@ -757,6 +817,11 @@ const selectedMediaBoxStyle: React.CSSProperties = {
   border: '1px solid rgba(250,204,21,0.16)',
   color: '#fde68a',
   fontWeight: 800,
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  gap: 10,
+  flexWrap: 'wrap',
 };
 
 const feedListStyle: React.CSSProperties = {
@@ -772,6 +837,7 @@ const postCardStyle: React.CSSProperties = {
   border: '1px solid rgba(250,204,21,0.14)',
   display: 'grid',
   gap: 12,
+  boxShadow: '0 14px 28px rgba(0,0,0,0.22)',
 };
 
 const postHeaderStyle: React.CSSProperties = {
@@ -949,6 +1015,87 @@ const commentButtonStyle: React.CSSProperties = {
   border: 'none',
   background: '#f97316',
   color: '#ffffff',
+  fontWeight: 900,
+  cursor: 'pointer',
+};
+
+const sectionEyebrowStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#fbbf24',
+  fontWeight: 900,
+  letterSpacing: '0.09em',
+  textTransform: 'uppercase',
+  fontSize: 11,
+};
+
+const viewerHintStyle: React.CSSProperties = {
+  marginTop: 12,
+  padding: 16,
+  borderRadius: 20,
+  background: 'rgba(15, 23, 42, 0.78)',
+  border: '1px solid rgba(250, 204, 21, 0.13)',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  gap: 12,
+  flexWrap: 'wrap',
+};
+
+const viewerHintTitleStyle: React.CSSProperties = {
+  margin: '6px 0 5px',
+  fontSize: 20,
+};
+
+const viewerHintTextStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#94a3b8',
+  fontSize: 13,
+  lineHeight: 1.5,
+};
+
+const viewerHintButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '10px 13px',
+  borderRadius: 14,
+  textDecoration: 'none',
+  background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
+  color: '#fff',
+  fontWeight: 900,
+};
+
+const composerToolsStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: 10,
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+};
+
+const filePickerLabelStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '11px 14px',
+  borderRadius: 14,
+  border: '1px solid rgba(250,204,21,0.16)',
+  background: 'rgba(2,6,23,0.52)',
+  color: '#fde68a',
+  fontWeight: 900,
+  cursor: 'pointer',
+};
+
+const hiddenFileInputStyle: React.CSSProperties = {
+  display: 'none',
+};
+
+const removeMediaButtonStyle: React.CSSProperties = {
+  border: '1px solid rgba(248,113,113,0.28)',
+  background: 'rgba(127,29,29,0.24)',
+  color: '#fecaca',
+  borderRadius: 999,
+  padding: '7px 10px',
   fontWeight: 900,
   cursor: 'pointer',
 };
