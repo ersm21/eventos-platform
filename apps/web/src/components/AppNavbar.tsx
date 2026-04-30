@@ -14,8 +14,6 @@ export default function AppNavbar({
   ctaLabel = 'Cotizar ahora',
 }: AppNavbarProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const allowedAdminEmails = ['ericrafaelsousamorel@gmail.com'];
 
   useEffect(() => {
     const checkUser = async () => {
@@ -24,10 +22,6 @@ export default function AppNavbar({
       } = await supabase.auth.getUser();
 
       setIsLoggedIn(!!user);
-      setIsAdmin(
-        !!user?.email &&
-          allowedAdminEmails.includes(user.email.toLowerCase().trim())
-      );
     };
 
     checkUser();
@@ -36,10 +30,6 @@ export default function AppNavbar({
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session?.user);
-      setIsAdmin(
-        !!session?.user?.email &&
-          allowedAdminEmails.includes(session.user.email.toLowerCase().trim())
-      );
     });
 
     return () => {
@@ -49,7 +39,6 @@ export default function AppNavbar({
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    setIsAdmin(false);
     window.location.href = '/';
   };
 
@@ -98,12 +87,6 @@ export default function AppNavbar({
           {isLoggedIn && (
             <Link href="/profile" style={navLinkStyle}>
               Mi perfil
-            </Link>
-          )}
-
-          {isAdmin && (
-            <Link href="/admin" style={adminLinkStyle}>
-              Panel admin
             </Link>
           )}
 
@@ -202,20 +185,6 @@ const navLinkStyle: React.CSSProperties = {
   background: 'transparent',
   border: '1px solid transparent',
 };
-
-const adminLinkStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '10px 12px',
-  borderRadius: 12,
-  textDecoration: 'none',
-  background: 'rgba(250, 204, 21, 0.12)',
-  color: '#fde68a',
-  fontWeight: 900,
-  border: '1px solid rgba(250, 204, 21, 0.24)',
-};
-
 const ctaButtonStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',

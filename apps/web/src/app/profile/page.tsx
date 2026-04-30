@@ -28,6 +28,7 @@ function normalizeSupabasePublicUrl(url: string) {
 export default function ProfilePage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -59,6 +60,7 @@ export default function ProfilePage() {
     if (!user) {
       setUserId(null);
       setUserEmail(null);
+      setIsAdmin(false);
       setLoading(false);
       return;
     }
@@ -66,6 +68,10 @@ export default function ProfilePage() {
     setUserId(user.id);
     setUserEmail(user.email ?? null);
     setLoginEmail(user.email ?? '');
+
+    const allowedAdminEmails = ['ericrafaelsousamorel@gmail.com'];
+    const normalizedEmail = user.email?.toLowerCase().trim() || '';
+    setIsAdmin(allowedAdminEmails.includes(normalizedEmail));
 
     const { data, error: profileError } = await supabase
       .from('profiles')
@@ -427,6 +433,12 @@ export default function ProfilePage() {
               <Link href="/account" style={secondaryLinkStyle}>
                 Ir a mi cuenta
               </Link>
+
+              {isAdmin && (
+                <Link href="/admin" style={adminProfileButtonStyle}>
+                  Entrar al panel admin
+                </Link>
+              )}
             </div>
           </section>
         )}
@@ -602,6 +614,20 @@ const secondaryButtonStyle: React.CSSProperties = {
 const secondaryLinkStyle: React.CSSProperties = {
   ...secondaryButtonStyle,
   textDecoration: 'none',
+};
+
+const adminProfileButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '11px 15px',
+  borderRadius: 14,
+  textDecoration: 'none',
+  background: 'rgba(250, 204, 21, 0.10)',
+  color: '#fde68a',
+  fontWeight: 900,
+  border: '1px solid rgba(250, 204, 21, 0.30)',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
 };
 
 const infoBoxStyle: React.CSSProperties = {
