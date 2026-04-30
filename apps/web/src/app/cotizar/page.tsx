@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import Link from 'next/link';
@@ -33,12 +31,12 @@ function calculateTotalWithItbis(value: number | null | undefined) {
   return Number(value ?? 0) * 1.18;
 }
 
-
 export default function CotizarPage() {
   const router = useRouter();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [quoteItems, setQuoteItems] = useState<QuoteItem[]>([]);
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,6 +95,43 @@ export default function CotizarPage() {
       subscription.unsubscribe();
     };
   }, []);
+
+  const productsByCategory = useMemo(() => {
+    return products.reduce<Record<string, Product[]>>((accumulator, product) => {
+      const category = product.category || 'General';
+
+      if (!accumulator[category]) {
+        accumulator[category] = [];
+      }
+
+      accumulator[category].push(product);
+      return accumulator;
+    }, {});
+  }, [products]);
+
+  const productCategories = useMemo(
+    () => Object.keys(productsByCategory),
+    [productsByCategory]
+  );
+
+  useEffect(() => {
+    if (productCategories.length === 0) return;
+
+    setExpandedCategories((prev) => {
+      if (Object.keys(prev).length > 0) return prev;
+
+      return {
+        [productCategories[0]]: true,
+      };
+    });
+  }, [productCategories]);
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
 
   const addToQuote = (product: Product) => {
     setQuoteItems((prev) => {
@@ -252,12 +287,10 @@ export default function CotizarPage() {
         }),
       });
     } catch {
-      // no bloqueamos al usuario si el correo falla
+      // No bloqueamos al usuario si el correo falla.
     }
 
-    setSuccessMessage(
-      `Tu cotización fue enviada correctamente. ID: ${quoteData.id}`
-    );
+    setSuccessMessage(`Tu cotización fue enviada correctamente. ID: ${quoteData.id}`);
 
     setQuoteItems([]);
     setCustomerName('');
@@ -279,8 +312,7 @@ export default function CotizarPage() {
           <p style={eyebrowStyle}>Cotizar</p>
           <h1 style={heroTitleStyle}>Arma tu cotización</h1>
           <p style={heroTextStyle}>
-            Selecciona los servicios que necesitas, cuéntanos sobre tu evento y
-            envíanos la solicitud para revisarla con claridad.
+            Selecciona servicios por categoría y envíanos los detalles de tu evento.
           </p>
         </section>
 
@@ -290,8 +322,7 @@ export default function CotizarPage() {
               <p style={sectionEyebrowStyle}>Tu cuenta</p>
               <h2 style={sessionTitleStyle}>Inicia sesión para cotizar</h2>
               <p style={sessionTextStyle}>
-                Para guardar tu cotización y darle seguimiento necesitas entrar
-                con tu cuenta.
+                Para guardar tu cotización y darle seguimiento necesitas entrar con tu cuenta.
               </p>
             </div>
 
@@ -307,8 +338,7 @@ export default function CotizarPage() {
               <p style={sectionEyebrowStyle}>Sesión activa</p>
               <h2 style={sessionTitleStyle}>Cotizando como cliente</h2>
               <p style={sessionTextStyle}>
-                Entraste como {sessionEmail}. Esta cotización quedará vinculada
-                a tu cuenta.
+                Entraste como {sessionEmail}. Esta cotización quedará vinculada a tu cuenta.
               </p>
             </div>
           </section>
@@ -317,148 +347,110 @@ export default function CotizarPage() {
         {error && <div style={errorBoxStyle}>{error}</div>}
         {successMessage && <div style={successBoxStyle}>{successMessage}</div>}
 
-        <section style={sectionStyle}>
-          <div style={sectionHeaderStyle}>
-            <div>
-              <p style={sectionEyebrowStyle}>Servicios</p>
-              <h2 style={sectionTitleStyle}>Selecciona lo que necesitas</h2>
-              <p style={sectionTextStyle}>
-                Agrega servicios a tu cotización y ajusta las cantidades antes
-                de enviarla.
-              </p>
-            </div>
-          </div>
-
-          {loading ? (
-            <div style={panelStyle}>
-              <p style={mutedTextStyle}>Cargando servicios...</p>
-            </div>
-          ) : products.length === 0 ? (
-            <div style={panelStyle}>
-              <p style={mutedTextStyle}>Todavía no hay servicios disponibles.</p>
-            </div>
-          ) : (
-            <div style={productGridStyle}>
-              {products.map((product) => (
-                <article key={product.id} style={productCardStyle}>
-                  <div>
-                    <span style={categoryBadgeStyle}>
-                      {product.category || 'General'}
-                    </span>
-                    <h3 style={productNameStyle}>{product.name}</h3>
-                    <p style={productDescriptionStyle}>
-                      {product.description || 'Servicio disponible para cotización.'}
-                    </p>
-                  </div>
-
-                  <div style={productFooterStyle}>
-                    <div>
-                      <p style={priceLabelStyle}>Desde</p>
-                      <p style={priceStyle}>{formatMoney(product.price)}</p>
-                    </div>
-                    <button
-                      onClick={() => addToQuote(product)}
-                      style={primaryButtonStyle}
-                    >
-                      Agregar
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
-
-        <div style={twoColumnLayoutStyle}>
+        <div style={mainGridStyle}>
           <section style={panelStyle}>
             <div style={panelHeaderStyle}>
-              <div>
-                <p style={sectionEyebrowStyle}>Datos del cliente</p>
-                <h2 style={panelTitleStyle}>Cuéntanos sobre tu evento</h2>
-                <p style={panelTextStyle}>
-                  Completa tus datos para revisar tu solicitud y responderte con claridad.
-                </p>
-              </div>
+              <p style={sectionEyebrowStyle}>Servicios</p>
+              <h2 style={panelTitleStyle}>Selecciona lo que necesitas</h2>
+              <p style={panelTextStyle}>
+                Abre una categoría, agrega servicios y ajusta cantidades en el resumen.
+              </p>
             </div>
 
-            <div style={formGridStyle}>
-              <div>
-                <label style={labelStyle}>Nombre</label>
-                <input
-                  type="text"
-                  placeholder="Tu nombre"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  style={inputStyle}
-                />
+            {loading ? (
+              <div style={softBoxStyle}>
+                <p style={mutedTextStyle}>Cargando servicios...</p>
               </div>
+            ) : products.length === 0 ? (
+              <div style={softBoxStyle}>
+                <p style={mutedTextStyle}>Todavía no hay servicios disponibles.</p>
+              </div>
+            ) : (
+              <div style={categoryListStyle}>
+                {productCategories.map((category) => {
+                  const isOpen = !!expandedCategories[category];
+                  const categoryProducts = productsByCategory[category] || [];
 
-              <div>
-                <label style={labelStyle}>Email</label>
-                <input
-                  type="email"
-                  placeholder="Tu email"
-                  value={customerEmail}
-                  onChange={(e) => setCustomerEmail(e.target.value)}
-                  style={inputStyle}
-                />
-              </div>
+                  return (
+                    <section key={category} style={categorySectionStyle}>
+                      <button
+                        type="button"
+                        onClick={() => toggleCategory(category)}
+                        style={categoryHeaderStyle}
+                      >
+                        <div>
+                          <h3 style={categoryTitleStyle}>{category}</h3>
+                          <p style={categoryCountStyle}>
+                            {categoryProducts.length} servicio{categoryProducts.length === 1 ? '' : 's'}
+                          </p>
+                        </div>
 
-              <div style={{ gridColumn: '1 / -1' }}>
-                <label style={labelStyle}>Tipo de evento</label>
-                <input
-                  type="text"
-                  placeholder="Boda, concierto, corporativo, DJ set, cumpleaños..."
-                  value={eventType}
-                  onChange={(e) => setEventType(e.target.value)}
-                  style={inputStyle}
-                />
-              </div>
+                        <span style={categoryChevronStyle}>{isOpen ? '−' : '+'}</span>
+                      </button>
 
-              <div style={{ gridColumn: '1 / -1' }}>
-                <label style={labelStyle}>Notas adicionales</label>
-                <textarea
-                  placeholder="Fecha, lugar, duración, montaje, luces, sonido, pantalla o cualquier detalle importante"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  style={textareaStyle}
-                />
+                      {isOpen && (
+                        <div style={productListStyle}>
+                          {categoryProducts.map((product) => (
+                            <article key={product.id} style={productCardStyle}>
+                              <div>
+                                <h4 style={productNameStyle}>{product.name}</h4>
+                                <p style={productDescriptionStyle}>
+                                  {product.description || 'Servicio disponible para cotización.'}
+                                </p>
+                              </div>
+
+                              <div style={productFooterStyle}>
+                                <div>
+                                  <p style={priceLabelStyle}>Desde</p>
+                                  <p style={priceStyle}>{formatMoney(product.price)}</p>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => addToQuote(product)}
+                                  style={smallButtonStyle}
+                                >
+                                  Agregar
+                                </button>
+                              </div>
+                            </article>
+                          ))}
+                        </div>
+                      )}
+                    </section>
+                  );
+                })}
               </div>
-            </div>
+            )}
           </section>
 
-          <section style={quotePanelStyle}>
+          <aside style={quotePanelStyle}>
             <div style={panelHeaderStyle}>
-              <div>
-                <p style={sectionEyebrowStyle}>Mi cotización</p>
-                <h2 style={panelTitleStyle}>Resumen de tu selección</h2>
-                <p style={panelTextStyle}>
-                  Revisa tu selección antes de enviarla.
-                </p>
-              </div>
+              <p style={sectionEyebrowStyle}>Mi cotización</p>
+              <h2 style={panelTitleStyle}>Resumen</h2>
+              <p style={panelTextStyle}>Revisa tu selección antes de enviarla.</p>
             </div>
 
             {quoteItems.length === 0 ? (
               <div style={emptyStateStyle}>
-                <p style={emptyTitleStyle}>Todavía no has agregado servicios</p>
-                <p style={emptyTextStyle}>
-                  Empieza eligiendo servicios para construir tu cotización.
-                </p>
+                <p style={emptyTitleStyle}>No has agregado servicios</p>
+                <p style={emptyTextStyle}>Elige una categoría y agrega servicios.</p>
               </div>
             ) : (
-              <div style={{ display: 'grid', gap: 12 }}>
+              <div style={quoteStackStyle}>
                 {quoteItems.map((item) => (
                   <div key={item.id} style={quoteItemCardStyle}>
                     <div style={quoteItemHeaderStyle}>
                       <div>
                         <p style={quoteItemNameStyle}>{item.name}</p>
                         <p style={quoteItemMetaStyle}>
-                          Unitario: {formatMoney(item.price)}
+                          {formatMoney(item.price)} por unidad
                         </p>
                       </div>
 
                       <div style={quoteItemActionsStyle}>
                         <button
+                          type="button"
                           onClick={() => decreaseQuantity(item.id)}
                           style={qtyButtonStyle}
                         >
@@ -466,6 +458,7 @@ export default function CotizarPage() {
                         </button>
                         <span style={qtyValueStyle}>{item.quantity}</span>
                         <button
+                          type="button"
                           onClick={() => increaseQuantity(item.id)}
                           style={qtyButtonStyle}
                         >
@@ -493,42 +486,91 @@ export default function CotizarPage() {
                     <span>ITBIS 18%</span>
                     <strong>{formatMoney(calculateItbis(total))}</strong>
                   </div>
-                  <div style={quoteSummaryRowStyle}>
+                  <div style={quoteSummaryTotalRowStyle}>
                     <span>Total con ITBIS</span>
                     <strong>{formatMoney(calculateTotalWithItbis(total))}</strong>
                   </div>
                 </div>
-
-                {!isLoggedIn ? (
-                  <Link
-                    href="/login"
-                    style={{
-                      ...primaryLinkButtonStyle,
-                      width: '100%',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    Inicia sesión para guardar tu cotización
-                  </Link>
-                ) : (
-                  <button
-                    onClick={saveQuote}
-                    disabled={saving}
-                    style={{
-                      ...primaryButtonStyle,
-                      width: '100%',
-                      justifyContent: 'center',
-                      opacity: saving ? 0.72 : 1,
-                      cursor: saving ? 'not-allowed' : 'pointer',
-                    }}
-                  >
-                    {saving ? 'Enviando...' : 'Enviar cotización'}
-                  </button>
-                )}
               </div>
             )}
-          </section>
+          </aside>
         </div>
+
+        <section style={panelStyle}>
+          <div style={panelHeaderStyle}>
+            <p style={sectionEyebrowStyle}>Datos del cliente</p>
+            <h2 style={panelTitleStyle}>Cuéntanos sobre tu evento</h2>
+            <p style={panelTextStyle}>
+              Completa estos datos para poder revisar tu solicitud correctamente.
+            </p>
+          </div>
+
+          <div style={formGridStyle}>
+            <div>
+              <label style={labelStyle}>Nombre</label>
+              <input
+                type="text"
+                placeholder="Tu nombre"
+                value={customerName}
+                onChange={(event) => setCustomerName(event.target.value)}
+                style={inputStyle}
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Email</label>
+              <input
+                type="email"
+                placeholder="Tu email"
+                value={customerEmail}
+                onChange={(event) => setCustomerEmail(event.target.value)}
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={labelStyle}>Tipo de evento</label>
+              <input
+                type="text"
+                placeholder="Boda, concierto, corporativo, DJ set, cumpleaños..."
+                value={eventType}
+                onChange={(event) => setEventType(event.target.value)}
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={labelStyle}>Notas adicionales</label>
+              <textarea
+                placeholder="Fecha, lugar, duración, montaje, luces, sonido, pantalla o cualquier detalle importante"
+                value={notes}
+                onChange={(event) => setNotes(event.target.value)}
+                style={textareaStyle}
+              />
+            </div>
+          </div>
+
+          <div style={submitWrapStyle}>
+            {!isLoggedIn ? (
+              <Link href="/login" style={primaryLinkButtonStyle}>
+                Inicia sesión para guardar tu cotización
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={saveQuote}
+                disabled={saving}
+                style={{
+                  ...primaryButtonStyle,
+                  opacity: saving ? 0.72 : 1,
+                  cursor: saving ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {saving ? 'Enviando...' : 'Enviar cotización'}
+              </button>
+            )}
+          </div>
+        </section>
       </div>
     </main>
   );
@@ -537,7 +579,7 @@ export default function CotizarPage() {
 const pageStyle: React.CSSProperties = {
   minHeight: '100vh',
   color: '#f8fafc',
-  padding: '34px 20px 80px',
+  padding: '24px 14px 64px',
   background:
     'radial-gradient(circle at 12% 18%, rgba(168,85,247,0.20), transparent 28%), radial-gradient(circle at 88% 12%, rgba(245,158,11,0.16), transparent 28%), linear-gradient(135deg, #020617 0%, #09090f 48%, #111827 100%)',
   fontFamily:
@@ -545,19 +587,17 @@ const pageStyle: React.CSSProperties = {
 };
 
 const containerStyle: React.CSSProperties = {
-  maxWidth: 1240,
+  maxWidth: 1080,
   margin: '0 auto',
 };
 
 const heroCardStyle: React.CSSProperties = {
-  position: 'relative',
-  overflow: 'hidden',
   background:
     'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(24,24,37,0.88) 42%, rgba(30,27,75,0.86) 100%)',
   border: '1px solid rgba(250, 204, 21, 0.16)',
-  borderRadius: 34,
-  padding: 32,
-  boxShadow: '0 30px 80px rgba(0,0,0,0.34)',
+  borderRadius: 24,
+  padding: 20,
+  boxShadow: '0 16px 34px rgba(0,0,0,0.28)',
 };
 
 const eyebrowStyle: React.CSSProperties = {
@@ -566,124 +606,106 @@ const eyebrowStyle: React.CSSProperties = {
   fontWeight: 900,
   letterSpacing: '0.1em',
   textTransform: 'uppercase',
-  fontSize: 14,
+  fontSize: 12,
 };
 
 const heroTitleStyle: React.CSSProperties = {
-  margin: '12px 0 10px',
-  fontSize: 48,
-  lineHeight: 1.04,
+  margin: '8px 0 6px',
+  fontSize: 36,
+  lineHeight: 1.02,
   letterSpacing: '-0.04em',
-  textShadow: '0 18px 60px rgba(0,0,0,0.42)',
 };
 
 const heroTextStyle: React.CSSProperties = {
   margin: 0,
-  color: '#9fb1c8',
-  fontSize: 17,
-  lineHeight: 1.65,
-  maxWidth: 760,
+  color: '#94a3b8',
+  lineHeight: 1.55,
+  fontSize: 14,
 };
 
-const sectionStyle: React.CSSProperties = {
-  marginTop: 32,
-};
-
-const sectionHeaderStyle: React.CSSProperties = {
-  marginBottom: 16,
+const sessionBoxStyle: React.CSSProperties = {
+  marginTop: 12,
+  background: 'rgba(15, 23, 42, 0.78)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  borderRadius: 20,
+  padding: 16,
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  gap: 12,
+  flexWrap: 'wrap',
 };
 
 const sectionEyebrowStyle: React.CSSProperties = {
   margin: 0,
   color: '#fbbf24',
   fontWeight: 900,
-  letterSpacing: '0.1em',
+  letterSpacing: '0.09em',
   textTransform: 'uppercase',
-  fontSize: 12,
-};
-
-const sectionTitleStyle: React.CSSProperties = {
-  margin: '8px 0 8px',
-  fontSize: 32,
-  letterSpacing: '-0.02em',
-};
-
-const sectionTextStyle: React.CSSProperties = {
-  margin: 0,
-  color: '#94a3b8',
-  lineHeight: 1.6,
-};
-
-const sessionBoxStyle: React.CSSProperties = {
-  marginTop: 24,
-  background:
-    'linear-gradient(135deg, rgba(15,23,42,0.82) 0%, rgba(30,27,75,0.38) 100%)',
-  border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 24,
-  padding: 24,
-  boxShadow: '0 18px 40px rgba(0,0,0,0.22)',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: 16,
-  flexWrap: 'wrap',
+  fontSize: 11,
 };
 
 const sessionTitleStyle: React.CSSProperties = {
-  margin: '8px 0 8px',
-  fontSize: 30,
+  margin: '6px 0 5px',
+  fontSize: 20,
 };
 
 const sessionTextStyle: React.CSSProperties = {
   margin: 0,
   color: '#94a3b8',
-  maxWidth: 760,
-  lineHeight: 1.6,
+  lineHeight: 1.5,
+  fontSize: 13,
 };
 
-const primaryLinkButtonStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '12px 16px',
-  borderRadius: 14,
-  textDecoration: 'none',
-  background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
-  color: '#fff',
-  fontWeight: 900,
-  boxShadow: '0 18px 34px rgba(236,72,153,0.26)',
+const mainGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr) 360px',
+  gap: 14,
+  marginTop: 14,
+  alignItems: 'start',
 };
 
 const panelStyle: React.CSSProperties = {
+  marginTop: 14,
   background: 'rgba(15, 23, 42, 0.78)',
-  border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 26,
-  padding: 22,
-  boxShadow: '0 18px 40px rgba(0,0,0,0.22)',
+  border: '1px solid rgba(250, 204, 21, 0.13)',
+  borderRadius: 22,
+  padding: 16,
+  boxShadow: '0 14px 26px rgba(0,0,0,0.20)',
 };
 
 const quotePanelStyle: React.CSSProperties = {
+  position: 'sticky',
+  top: 116,
   background:
-    'linear-gradient(135deg, rgba(15,23,42,0.88) 0%, rgba(30,27,75,0.46) 52%, rgba(7,12,24,0.92) 100%)',
+    'linear-gradient(135deg, rgba(15,23,42,0.90) 0%, rgba(30,27,75,0.42) 52%, rgba(7,12,24,0.96) 100%)',
   border: '1px solid rgba(250, 204, 21, 0.16)',
-  borderRadius: 26,
-  padding: 22,
-  boxShadow: '0 22px 44px rgba(0,0,0,0.26)',
+  borderRadius: 22,
+  padding: 16,
+  boxShadow: '0 14px 30px rgba(0,0,0,0.24)',
 };
 
 const panelHeaderStyle: React.CSSProperties = {
-  marginBottom: 16,
+  marginBottom: 12,
 };
 
 const panelTitleStyle: React.CSSProperties = {
-  margin: '8px 0 6px',
-  fontSize: 25,
+  margin: '6px 0 5px',
+  fontSize: 22,
 };
 
 const panelTextStyle: React.CSSProperties = {
   margin: 0,
   color: '#94a3b8',
-  lineHeight: 1.6,
+  lineHeight: 1.5,
+  fontSize: 13,
+};
+
+const softBoxStyle: React.CSSProperties = {
+  padding: 14,
+  borderRadius: 16,
+  background: 'rgba(2, 6, 23, 0.38)',
+  border: '1px solid rgba(250, 204, 21, 0.11)',
 };
 
 const mutedTextStyle: React.CSSProperties = {
@@ -691,175 +713,163 @@ const mutedTextStyle: React.CSSProperties = {
   color: '#94a3b8',
 };
 
-const productGridStyle: React.CSSProperties = {
+const categoryListStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-  gap: 16,
+  gap: 10,
 };
 
-const productCardStyle: React.CSSProperties = {
-  background:
-    'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(30,27,75,0.42) 52%, rgba(9,14,28,0.92) 100%)',
-  border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 22,
-  padding: 18,
-  boxShadow: '0 18px 40px rgba(0,0,0,0.22)',
+const categorySectionStyle: React.CSSProperties = {
+  overflow: 'hidden',
+  borderRadius: 18,
+  background: 'rgba(2, 6, 23, 0.34)',
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+};
+
+const categoryHeaderStyle: React.CSSProperties = {
+  width: '100%',
+  minHeight: 58,
   display: 'flex',
-  flexDirection: 'column',
+  alignItems: 'center',
   justifyContent: 'space-between',
-  minHeight: 230,
+  gap: 12,
+  padding: '12px 14px',
+  border: 'none',
+  background: 'rgba(15,23,42,0.62)',
+  color: '#f8fafc',
+  cursor: 'pointer',
+  textAlign: 'left',
 };
 
-const categoryBadgeStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  padding: '6px 10px',
-  borderRadius: '999px',
-  background: 'rgba(245, 158, 11, 0.12)',
-  color: '#fbbf24',
-  border: '1px solid rgba(250, 204, 21, 0.24)',
+const categoryTitleStyle: React.CSSProperties = {
+  margin: 0,
+  fontSize: 17,
+};
+
+const categoryCountStyle: React.CSSProperties = {
+  margin: '3px 0 0',
+  color: '#94a3b8',
   fontSize: 12,
+  fontWeight: 700,
+};
+
+const categoryChevronStyle: React.CSSProperties = {
+  width: 30,
+  height: 30,
+  borderRadius: 999,
+  display: 'grid',
+  placeItems: 'center',
+  color: '#fbbf24',
+  border: '1px solid rgba(250,204,21,0.18)',
+  background: 'rgba(2,6,23,0.30)',
+  fontSize: 20,
   fontWeight: 900,
 };
 
+const productListStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 8,
+  padding: 10,
+};
+
+const productCardStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr) auto',
+  gap: 12,
+  alignItems: 'center',
+  padding: 12,
+  borderRadius: 16,
+  background: 'rgba(15,23,42,0.64)',
+  border: '1px solid rgba(148,163,184,0.10)',
+};
+
 const productNameStyle: React.CSSProperties = {
-  margin: '14px 0 8px',
-  fontSize: 21,
+  margin: 0,
+  fontSize: 15,
 };
 
 const productDescriptionStyle: React.CSSProperties = {
-  margin: 0,
+  margin: '5px 0 0',
   color: '#94a3b8',
-  lineHeight: 1.55,
+  fontSize: 12,
+  lineHeight: 1.4,
 };
 
 const productFooterStyle: React.CSSProperties = {
   display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'flex-end',
+  alignItems: 'center',
   gap: 12,
-  marginTop: 20,
 };
 
 const priceLabelStyle: React.CSSProperties = {
   margin: 0,
   color: '#64748b',
-  fontSize: 12,
+  fontSize: 10,
   textTransform: 'uppercase',
   letterSpacing: '0.08em',
+  fontWeight: 900,
 };
 
 const priceStyle: React.CSSProperties = {
-  margin: '6px 0 0',
-  fontSize: 24,
+  margin: '3px 0 0',
+  fontSize: 16,
   fontWeight: 900,
+  whiteSpace: 'nowrap',
 };
 
-const primaryButtonStyle: React.CSSProperties = {
+const smallButtonStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '12px 16px',
+  padding: '9px 12px',
   border: 'none',
-  borderRadius: 14,
-  background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
+  borderRadius: 12,
+  background: '#f97316',
   color: '#fff',
   fontWeight: 900,
   cursor: 'pointer',
-  boxShadow: '0 18px 34px rgba(236,72,153,0.24)',
 };
 
-const twoColumnLayoutStyle: React.CSSProperties = {
+const quoteStackStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-  gap: 20,
-  marginTop: 32,
-};
-
-const formGridStyle: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-  gap: 14,
-};
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  marginBottom: 7,
-  color: '#a5b4c7',
-  fontSize: 13,
-  fontWeight: 600,
-};
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '13px 14px',
-  borderRadius: 14,
-  border: '1px solid rgba(250, 204, 21, 0.14)',
-  background: 'rgba(2, 6, 23, 0.68)',
-  color: '#f8fafc',
-  outline: 'none',
-};
-
-const textareaStyle: React.CSSProperties = {
-  ...inputStyle,
-  minHeight: 120,
-  resize: 'vertical',
-};
-
-const emptyStateStyle: React.CSSProperties = {
-  padding: '22px 18px',
-  borderRadius: 18,
-  background: 'rgba(2, 6, 23, 0.42)',
-  border: '1px solid rgba(250, 204, 21, 0.14)',
-};
-
-const emptyTitleStyle: React.CSSProperties = {
-  margin: 0,
-  fontWeight: 800,
-  fontSize: 18,
-};
-
-const emptyTextStyle: React.CSSProperties = {
-  margin: '8px 0 0',
-  color: '#94a3b8',
-  lineHeight: 1.55,
+  gap: 10,
 };
 
 const quoteItemCardStyle: React.CSSProperties = {
-  border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 18,
-  padding: 14,
-  background: 'rgba(2, 6, 23, 0.42)',
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+  borderRadius: 16,
+  padding: 12,
+  background: 'rgba(2, 6, 23, 0.38)',
 };
 
 const quoteItemHeaderStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
-  gap: 12,
+  gap: 10,
 };
 
 const quoteItemNameStyle: React.CSSProperties = {
   margin: 0,
-  fontWeight: 800,
-  fontSize: 16,
+  fontWeight: 900,
+  fontSize: 14,
 };
 
 const quoteItemMetaStyle: React.CSSProperties = {
-  margin: '6px 0 0',
+  margin: '5px 0 0',
   color: '#94a3b8',
+  fontSize: 12,
 };
 
 const quoteItemActionsStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  gap: 8,
+  gap: 7,
 };
 
 const qtyButtonStyle: React.CSSProperties = {
-  width: 34,
-  height: 34,
-  borderRadius: 12,
+  width: 30,
+  height: 30,
+  borderRadius: 10,
   border: '1px solid rgba(250, 204, 21, 0.18)',
   background: 'rgba(15, 23, 42, 0.86)',
   color: '#f8fafc',
@@ -868,47 +878,137 @@ const qtyButtonStyle: React.CSSProperties = {
 };
 
 const qtyValueStyle: React.CSSProperties = {
-  minWidth: 22,
+  minWidth: 20,
   textAlign: 'center',
-  fontWeight: 800,
+  fontWeight: 900,
 };
 
 const quoteSubtotalStyle: React.CSSProperties = {
-  margin: '12px 0 0',
-  fontWeight: 700,
+  margin: '10px 0 0',
+  fontWeight: 800,
   color: '#dbe7f5',
+  fontSize: 13,
 };
 
 const quoteSummaryBoxStyle: React.CSSProperties = {
   border: '1px solid rgba(250, 204, 21, 0.16)',
   borderRadius: 18,
-  padding: 16,
+  padding: 14,
   background:
-    'linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(168,85,247,0.12) 48%, rgba(2,6,23,0.38) 100%)',
+    'linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(168,85,247,0.10) 48%, rgba(2,6,23,0.38) 100%)',
 };
 
 const quoteSummaryRowStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
-  alignItems: 'center',
   gap: 12,
   marginBottom: 8,
+  color: '#cbd5e1',
+  fontSize: 13,
+};
+
+const quoteSummaryTotalRowStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: 12,
+  paddingTop: 10,
+  marginTop: 8,
+  borderTop: '1px solid rgba(250,204,21,0.18)',
+  color: '#fde68a',
+  fontSize: 16,
+};
+
+const emptyStateStyle: React.CSSProperties = {
+  padding: 14,
+  borderRadius: 16,
+  background: 'rgba(2, 6, 23, 0.38)',
+  border: '1px solid rgba(250, 204, 21, 0.11)',
+};
+
+const emptyTitleStyle: React.CSSProperties = {
+  margin: 0,
+  fontWeight: 900,
+  fontSize: 15,
+};
+
+const emptyTextStyle: React.CSSProperties = {
+  margin: '6px 0 0',
+  color: '#94a3b8',
+  lineHeight: 1.45,
+  fontSize: 13,
+};
+
+const formGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+  gap: 12,
+};
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  marginBottom: 6,
+  color: '#a5b4c7',
+  fontSize: 12,
+  fontWeight: 800,
+};
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '12px 13px',
+  borderRadius: 13,
+  border: '1px solid rgba(250, 204, 21, 0.13)',
+  background: 'rgba(2, 6, 23, 0.58)',
+  color: '#f8fafc',
+  outline: 'none',
+};
+
+const textareaStyle: React.CSSProperties = {
+  ...inputStyle,
+  minHeight: 110,
+  resize: 'vertical',
+};
+
+const submitWrapStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'flex-end',
+  marginTop: 14,
+};
+
+const primaryButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '11px 15px',
+  border: 'none',
+  borderRadius: 14,
+  background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
+  color: '#fff',
+  fontWeight: 900,
+  cursor: 'pointer',
+  boxShadow: '0 14px 26px rgba(236,72,153,0.20)',
+};
+
+const primaryLinkButtonStyle: React.CSSProperties = {
+  ...primaryButtonStyle,
+  textDecoration: 'none',
 };
 
 const errorBoxStyle: React.CSSProperties = {
-  marginTop: 22,
-  padding: '14px 16px',
+  marginTop: 12,
+  padding: '13px 15px',
   borderRadius: 14,
   background: 'rgba(127, 29, 29, 0.30)',
   border: '1px solid rgba(248, 113, 113, 0.32)',
   color: '#fecaca',
+  fontWeight: 800,
 };
 
 const successBoxStyle: React.CSSProperties = {
-  marginTop: 22,
-  padding: '14px 16px',
+  marginTop: 12,
+  padding: '13px 15px',
   borderRadius: 14,
   background: 'rgba(20, 83, 45, 0.35)',
   border: '1px solid rgba(74, 222, 128, 0.28)',
   color: '#bbf7d0',
+  fontWeight: 800,
 };

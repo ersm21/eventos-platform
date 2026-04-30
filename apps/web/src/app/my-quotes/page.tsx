@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase/client';
@@ -46,12 +46,18 @@ function calculateTotalWithItbis(value: number | null | undefined) {
   return Number(value ?? 0) * 1.18;
 }
 
-
 function formatDate(value: string | null | undefined) {
   if (!value) return '—';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString();
+
+  return date.toLocaleDateString('es-DO', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
 }
 
 function getStatusLabel(status: string | null | undefined) {
@@ -73,15 +79,20 @@ function getStatusLabel(status: string | null | undefined) {
   }
 }
 
+function getDepositLabel(status: string | null | undefined) {
+  return status === 'paid' ? 'Pagado' : 'Pendiente';
+}
+
 function getStatusBadgeStyle(status: string | null | undefined) {
   const base = {
     display: 'inline-flex',
     alignItems: 'center',
-    padding: '7px 11px',
+    padding: '6px 10px',
     borderRadius: '999px',
-    fontSize: '12px',
-    fontWeight: 800,
+    fontSize: '11px',
+    fontWeight: 900,
     border: '1px solid',
+    whiteSpace: 'nowrap',
   } as const;
 
   switch (status) {
@@ -127,11 +138,12 @@ function getDepositBadgeStyle(status: string | null | undefined) {
   const base = {
     display: 'inline-flex',
     alignItems: 'center',
-    padding: '7px 11px',
+    padding: '6px 10px',
     borderRadius: '999px',
-    fontSize: '12px',
-    fontWeight: 800,
+    fontSize: '11px',
+    fontWeight: 900,
     border: '1px solid',
+    whiteSpace: 'nowrap',
   } as const;
 
   if (status === 'paid') {
@@ -158,6 +170,7 @@ export default function MyQuotesPage() {
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadQuotes = async () => {
@@ -222,10 +235,19 @@ export default function MyQuotesPage() {
     loadQuotes();
   }, [router]);
 
+  const quoteItemsById = useMemo(() => {
+    return quoteItems.reduce<Record<string, QuoteItem[]>>((accumulator, item) => {
+      accumulator[item.quote_id] = accumulator[item.quote_id] || [];
+      accumulator[item.quote_id].push(item);
+      return accumulator;
+    }, {});
+  }, [quoteItems]);
+
   const getItemsSubtotalForQuote = (quoteId: string) =>
-    quoteItems
-      .filter((item) => item.quote_id === quoteId)
-      .reduce((sum, item) => sum + Number(item.subtotal ?? 0), 0);
+    (quoteItemsById[quoteId] || []).reduce(
+      (sum, item) => sum + Number(item.subtotal ?? 0),
+      0
+    );
 
   const getQuoteBaseTotal = (quote: Quote) =>
     Number(
@@ -253,7 +275,7 @@ export default function MyQuotesPage() {
           <h1 style={heroTitleStyle}>Mis cotizaciones</h1>
           <p style={heroTextStyle}>
             {userEmail
-              ? `Sesión iniciada como ${userEmail}. Aquí puedes revisar cada cotización y su estado.`
+              ? `Sesión iniciada como ${userEmail}. Revisa tus solicitudes, montos y comprobantes.`
               : 'Aquí podrás revisar el estado de tus cotizaciones.'}
           </p>
         </section>
@@ -265,169 +287,179 @@ export default function MyQuotesPage() {
           <div style={emptyStateStyle}>
             <p style={emptyTitleStyle}>Todavía no has creado cotizaciones.</p>
             <p style={emptyTextStyle}>
-              Cuando envíes una cotización desde la home, aparecerá aquí.
+              Cuando envíes una solicitud desde Cotizar, aparecerá aquí.
             </p>
             <div style={{ marginTop: 14 }}>
-              <Link href="/" style={primaryLinkStyle}>
-                Ir a cotizar
+              <Link href="/cotizar" style={primaryLinkStyle}>
+                Crear cotización
               </Link>
             </div>
           </div>
         )}
 
         {!loading && !error && quotes.length > 0 && (
-          <div style={{ display: 'grid', gap: 8, marginTop: 12 }}>
-            {quotes.map((quote) => (
-              <article key={quote.id} style={cardStyle}>
-                <div style={cardHeaderStyle}>
-                  <div>
-                    <p style={smallLabelStyle}>Cotización</p>
-                    <h2 style={cardTitleStyle}>
-                      {quote.event_type || 'Evento sin título'}
-                    </h2>
-                    <p style={mutedTextStyle}>ID: {quote.id}</p>
-                  </div>
+          <div style={quotesListStyle}>
+            {quotes.map((quote) => {
+              const baseTotal = getQuoteBaseTotal(quote);
+              const totalWithItbis = calculateTotalWithItbis(baseTotal);
+              const itemsForQuote = quoteItemsById[quote.id] || [];
+              const isOpen = expandedQuoteId === quote.id;
 
-                  <div style={badgeWrapStyle}>
-                    <span style={getStatusBadgeStyle(quote.status)}>
-                      {getStatusLabel(quote.status)}
-                    </span>
-                    <span style={getDepositBadgeStyle(quote.deposit_status)}>
-                      Depósito {quote.deposit_status === 'paid' ? 'pagado' : 'pendiente'}
-                    </span>
-                  </div>
-                </div>
-
-                <div style={infoGridStyle}>
-                  <section style={subCardStyle}>
-                    <h3 style={subCardTitleStyle}>Resumen</h3>
-                    <p style={rowTextStyle}>
-                      <strong>Cliente:</strong> {quote.customer_name || '—'}
-                    </p>
-                    <p style={rowTextStyle}>
-                      <strong>Email:</strong> {quote.customer_email || '—'}
-                    </p>
-                    <p style={rowTextStyle}>
-                      <strong>Creada:</strong> {formatDate(quote.created_at)}
-                    </p>
-                    <p style={rowTextStyle}>
-                      <strong>Notas:</strong> {quote.notes || '—'}
-                    </p>
-                  </section>
-
-                  <section style={subCardStyle}>
-                    <h3 style={subCardTitleStyle}>Montos</h3>
-                    <p style={rowTextStyle}>
-                      <strong>Subtotal sin ITBIS:</strong>{' '}
-                      {formatMoney(quote.admin_final_total ?? quote.total)}
-                    </p>
-                    <p style={rowTextStyle}>
-                      <strong>ITBIS 18%:</strong>{' '}
-                      {formatMoney(calculateItbis(quote.admin_final_total ?? quote.total))}
-                    </p>
-                    <p style={rowTextStyle}>
-                      <strong>Total con ITBIS:</strong>{' '}
-                      {formatMoney(calculateTotalWithItbis(quote.admin_final_total ?? quote.total))}
-                    </p>
-                    <p style={rowTextStyle}>
-                      <strong>Depósito:</strong>{' '}
-                      {formatMoney(quote.deposit_amount)}
-                    </p>
-                    <p style={rowTextStyle}>
-                      <strong>Referencia:</strong>{' '}
-                      {quote.deposit_reference || '—'}
-                    </p>
-                  </section>
-                </div>
-
-                <section style={{ ...subCardStyle, marginTop: 12 }}>
-                  <div style={quoteItemsHeaderStyle}>
-                    <div>
-                      <p style={smallLabelStyle}>Detalle de servicios</p>
-                      <h3 style={subCardTitleStyle}>Artículos de la cotización</h3>
+              return (
+                <article key={quote.id} style={cardStyle}>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandedQuoteId((current) =>
+                        current === quote.id ? null : quote.id
+                      )
+                    }
+                    style={quoteSummaryButtonStyle}
+                  >
+                    <div style={summaryMainStyle}>
+                      <p style={smallLabelStyle}>Cotización</p>
+                      <h2 style={cardTitleStyle}>
+                        {quote.event_type || 'Evento sin título'}
+                      </h2>
+                      <p style={mutedTextStyle}>{formatDate(quote.created_at)}</p>
                     </div>
-                    <div style={quoteItemsTotalsStackStyle}>
-                      <div>
-                        <span style={quoteItemsTaxStyle}>Subtotal sin descuento: </span>
-                        {hasQuoteAdminDiscount(quote) ? (
-                          <span style={quoteItemsOriginalTotalStyle}>
-                            {formatMoney(getItemsSubtotalForQuote(quote.id))}
-                          </span>
+
+                    <div style={summaryMoneyStyle}>
+                      <span style={totalLabelStyle}>Total con ITBIS</span>
+                      <strong style={totalValueStyle}>{formatMoney(totalWithItbis)}</strong>
+                      <span style={subtotalHintStyle}>
+                        Subtotal: {formatMoney(baseTotal)}
+                      </span>
+                    </div>
+
+                    <div style={summaryBadgesStyle}>
+                      <span style={getStatusBadgeStyle(quote.status)}>
+                        {getStatusLabel(quote.status)}
+                      </span>
+                      <span style={getDepositBadgeStyle(quote.deposit_status)}>
+                        Depósito {getDepositLabel(quote.deposit_status).toLowerCase()}
+                      </span>
+                    </div>
+
+                    <span style={chevronStyle}>{isOpen ? '−' : '+'}</span>
+                  </button>
+
+                  {isOpen && (
+                    <div style={detailsWrapStyle}>
+                      <div style={infoGridStyle}>
+                        <section style={subCardStyle}>
+                          <h3 style={subCardTitleStyle}>Resumen</h3>
+                          <p style={rowTextStyle}>
+                            <strong>Cliente:</strong> {quote.customer_name || '—'}
+                          </p>
+                          <p style={rowTextStyle}>
+                            <strong>Email:</strong> {quote.customer_email || '—'}
+                          </p>
+                          <p style={rowTextStyle}>
+                            <strong>ID:</strong> {quote.id}
+                          </p>
+                          <p style={rowTextStyle}>
+                            <strong>Notas:</strong> {quote.notes || '—'}
+                          </p>
+                        </section>
+
+                        <section style={amountCardStyle}>
+                          <h3 style={subCardTitleStyle}>Montos</h3>
+
+                          {hasQuoteAdminDiscount(quote) && (
+                            <p style={rowTextStyle}>
+                              <strong>Subtotal original:</strong>{' '}
+                              <span style={quoteItemsOriginalTotalStyle}>
+                                {formatMoney(getItemsSubtotalForQuote(quote.id))}
+                              </span>
+                            </p>
+                          )}
+
+                          {hasQuoteAdminDiscount(quote) && (
+                            <p style={rowTextStyle}>
+                              <strong>Descuento aplicado:</strong>{' '}
+                              <span style={quoteItemsDiscountStyle}>
+                                -{formatMoney(getItemsSubtotalForQuote(quote.id) - baseTotal)}
+                              </span>
+                            </p>
+                          )}
+
+                          <p style={rowTextStyle}>
+                            <strong>Subtotal sin ITBIS:</strong> {formatMoney(baseTotal)}
+                          </p>
+                          <p style={rowTextStyle}>
+                            <strong>ITBIS 18%:</strong> {formatMoney(calculateItbis(baseTotal))}
+                          </p>
+                          <p style={totalRowStyle}>
+                            <strong>Total con ITBIS:</strong>{' '}
+                            <span>{formatMoney(totalWithItbis)}</span>
+                          </p>
+                          <p style={rowTextStyle}>
+                            <strong>Depósito:</strong> {formatMoney(quote.deposit_amount)}
+                          </p>
+                          <p style={rowTextStyle}>
+                            <strong>Referencia:</strong> {quote.deposit_reference || '—'}
+                          </p>
+                        </section>
+                      </div>
+
+                      <section style={subCardStyle}>
+                        <div style={quoteItemsHeaderStyle}>
+                          <div>
+                            <p style={smallLabelStyle}>Detalle de servicios</p>
+                            <h3 style={subCardTitleStyle}>Artículos de la cotización</h3>
+                          </div>
+                        </div>
+
+                        {itemsForQuote.length === 0 ? (
+                          <p style={mutedTextStyle}>Todavía no hay artículos asociados.</p>
                         ) : (
-                          <strong style={quoteItemsTotalStyle}>
-                            {formatMoney(getItemsSubtotalForQuote(quote.id))}
-                          </strong>
+                          <div style={itemsListStyle}>
+                            {itemsForQuote.map((item) => (
+                              <div key={item.id} style={itemRowStyle}>
+                                <div>
+                                  <strong style={quoteItemNameStyle}>{item.product_name}</strong>
+                                  <p style={itemMetaStyle}>
+                                    {Number(item.quantity ?? 0)} × {formatMoney(item.unit_price)}
+                                  </p>
+                                </div>
+                                <strong style={itemSubtotalStyle}>
+                                  {formatMoney(item.subtotal)}
+                                </strong>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </section>
+
+                      <section style={subCardStyle}>
+                        <h3 style={subCardTitleStyle}>Nota del admin</h3>
+                        <p style={notesTextStyle}>
+                          {quote.admin_note || 'Sin nota todavía.'}
+                        </p>
+                      </section>
+
+                      <div style={actionsRowStyle}>
+                        <Link href={`/quote/${quote.id}`} style={primaryLinkStyle}>
+                          Ver detalle completo
+                        </Link>
+
+                        {quote.payment_proof_url && (
+                          <a
+                            href={quote.payment_proof_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={secondaryLinkStyle}
+                          >
+                            Ver comprobante
+                          </a>
                         )}
                       </div>
-
-                      {hasQuoteAdminDiscount(quote) && (
-                        <>
-                          <div style={quoteItemsDiscountStyle}>
-                            Descuento aplicado: -{formatMoney(getItemsSubtotalForQuote(quote.id) - getQuoteBaseTotal(quote))}
-                          </div>
-                          <strong style={quoteItemsTotalStyle}>
-                            Subtotal sin ITBIS: {formatMoney(getQuoteBaseTotal(quote))}
-                          </strong>
-                        </>
-                      )}
-
-                      <span style={quoteItemsTaxStyle}>
-                        ITBIS 18%: {formatMoney(calculateItbis(getQuoteBaseTotal(quote)))}
-                      </span>
-                      <strong style={quoteItemsTotalStyle}>
-                        Total con ITBIS: {formatMoney(calculateTotalWithItbis(getQuoteBaseTotal(quote)))}
-                      </strong>
-                    </div>
-                  </div>
-
-                  {quoteItems.filter((item) => item.quote_id === quote.id).length === 0 ? (
-                    <p style={mutedTextStyle}>Todavía no hay artículos asociados.</p>
-                  ) : (
-                    <div style={quoteItemsTableWrapStyle}>
-                      <div style={quoteItemsTableHeaderStyle}>
-                        <span>Artículo</span>
-                        <span>Cantidad</span>
-                        <span>Unitario</span>
-                        <span>Subtotal</span>
-                      </div>
-
-                      {quoteItems
-                        .filter((item) => item.quote_id === quote.id)
-                        .map((item) => (
-                          <div key={item.id} style={quoteItemsTableRowStyle}>
-                            <span style={quoteItemNameStyle}>{item.product_name}</span>
-                            <span>{Number(item.quantity ?? 0)}</span>
-                            <span>{formatMoney(item.unit_price)}</span>
-                            <strong>{formatMoney(item.subtotal)}</strong>
-                          </div>
-                        ))}
                     </div>
                   )}
-                </section>
-
-                <section style={{ ...subCardStyle, marginTop: 12 }}>
-                  <h3 style={subCardTitleStyle}>Nota del admin</h3>
-                  <p style={notesTextStyle}>{quote.admin_note || 'Sin nota todavía.'}</p>
-                </section>
-
-                <div style={actionsRowStyle}>
-                  <Link href={`/quote/${quote.id}`} style={primaryLinkStyle}>
-                    Ver detalle
-                  </Link>
-
-                  {quote.payment_proof_url && (
-                    <a
-                      href={quote.payment_proof_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={secondaryLinkStyle}
-                    >
-                      Ver comprobante
-                    </a>
-                  )}
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </div>
@@ -438,7 +470,7 @@ export default function MyQuotesPage() {
 const pageStyle: React.CSSProperties = {
   minHeight: '100vh',
   color: '#f8fafc',
-  padding: '24px 14px 56px',
+  padding: '24px 14px 64px',
   background:
     'radial-gradient(circle at 12% 18%, rgba(168,85,247,0.20), transparent 28%), radial-gradient(circle at 88% 12%, rgba(245,158,11,0.16), transparent 28%), linear-gradient(135deg, #020617 0%, #09090f 48%, #111827 100%)',
   fontFamily:
@@ -446,7 +478,7 @@ const pageStyle: React.CSSProperties = {
 };
 
 const containerStyle: React.CSSProperties = {
-  maxWidth: 1240,
+  maxWidth: 980,
   margin: '0 auto',
 };
 
@@ -456,9 +488,9 @@ const heroCardStyle: React.CSSProperties = {
   background:
     'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(24,24,37,0.88) 42%, rgba(30,27,75,0.86) 100%)',
   border: '1px solid rgba(250, 204, 21, 0.16)',
-  borderRadius: 14,
-  padding: 14,
-  boxShadow: '0 10px 24px rgba(0,0,0,0.34)',
+  borderRadius: 24,
+  padding: 20,
+  boxShadow: '0 16px 34px rgba(0,0,0,0.28)',
 };
 
 const eyebrowStyle: React.CSSProperties = {
@@ -471,27 +503,26 @@ const eyebrowStyle: React.CSSProperties = {
 };
 
 const heroTitleStyle: React.CSSProperties = {
-  margin: '10px 0 8px',
-  fontSize: 44,
-  lineHeight: 1.04,
+  margin: '8px 0 6px',
+  fontSize: 36,
+  lineHeight: 1.02,
   letterSpacing: '-0.04em',
-  textShadow: '0 18px 60px rgba(0,0,0,0.42)',
 };
 
 const heroTextStyle: React.CSSProperties = {
   margin: 0,
   color: '#94a3b8',
-  lineHeight: 1.6,
+  lineHeight: 1.55,
+  fontSize: 14,
 };
 
 const infoBoxStyle: React.CSSProperties = {
   marginTop: 12,
-  padding: '18px 16px',
+  padding: '16px',
   borderRadius: 16,
   background: 'rgba(15, 23, 42, 0.78)',
   border: '1px solid rgba(250, 204, 21, 0.14)',
   color: '#a7b5c9',
-  boxShadow: '0 14px 30px rgba(0,0,0,0.22)',
 };
 
 const errorBoxStyle: React.CSSProperties = {
@@ -501,23 +532,21 @@ const errorBoxStyle: React.CSSProperties = {
   background: 'rgba(127, 29, 29, 0.30)',
   border: '1px solid rgba(248, 113, 113, 0.32)',
   color: '#fecaca',
-  boxShadow: '0 14px 28px rgba(0,0,0,0.18)',
 };
 
 const emptyStateStyle: React.CSSProperties = {
   marginTop: 12,
-  padding: '22px 18px',
-  borderRadius: 14,
+  padding: 18,
+  borderRadius: 18,
   background:
     'linear-gradient(135deg, rgba(15,23,42,0.82) 0%, rgba(30,27,75,0.38) 100%)',
   border: '1px solid rgba(250, 204, 21, 0.14)',
-  boxShadow: '0 14px 30px rgba(0,0,0,0.22)',
 };
 
 const emptyTitleStyle: React.CSSProperties = {
   margin: 0,
-  fontWeight: 800,
-  fontSize: 15,
+  fontWeight: 900,
+  fontSize: 18,
 };
 
 const emptyTextStyle: React.CSSProperties = {
@@ -525,78 +554,156 @@ const emptyTextStyle: React.CSSProperties = {
   color: '#94a3b8',
 };
 
-const cardStyle: React.CSSProperties = {
-  background:
-    'linear-gradient(135deg, rgba(15,23,42,0.84) 0%, rgba(30,27,75,0.42) 52%, rgba(9,14,28,0.92) 100%)',
-  border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 16,
-  padding: 12,
-  boxShadow: '0 10px 24px rgba(0,0,0,0.24)',
+const quotesListStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 10,
+  marginTop: 12,
 };
 
-const cardHeaderStyle: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'flex-start',
-  gap: 12,
-  flexWrap: 'wrap',
-  marginBottom: 10,
+const cardStyle: React.CSSProperties = {
+  overflow: 'hidden',
+  background:
+    'linear-gradient(135deg, rgba(15,23,42,0.88) 0%, rgba(30,27,75,0.34) 52%, rgba(9,14,28,0.96) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.13)',
+  borderRadius: 20,
+  boxShadow: '0 14px 26px rgba(0,0,0,0.20)',
+};
+
+const quoteSummaryButtonStyle: React.CSSProperties = {
+  width: '100%',
+  display: 'grid',
+  gridTemplateColumns: 'minmax(220px, 1fr) auto auto 32px',
+  gap: 14,
+  alignItems: 'center',
+  padding: 16,
+  border: 'none',
+  background: 'transparent',
+  color: '#f8fafc',
+  textAlign: 'left',
+  cursor: 'pointer',
+};
+
+const summaryMainStyle: React.CSSProperties = {
+  minWidth: 0,
 };
 
 const smallLabelStyle: React.CSSProperties = {
   margin: 0,
   color: '#fbbf24',
-  fontSize: 12,
+  fontSize: 11,
   textTransform: 'uppercase',
   letterSpacing: '0.08em',
   fontWeight: 900,
 };
 
 const cardTitleStyle: React.CSSProperties = {
-  margin: '8px 0 6px',
-  fontSize: 15,
+  margin: '6px 0 4px',
+  fontSize: 20,
+  lineHeight: 1.15,
 };
 
 const mutedTextStyle: React.CSSProperties = {
   margin: 0,
   color: '#94a3b8',
-  fontSize: 14,
+  fontSize: 13,
+  lineHeight: 1.45,
 };
 
-const badgeWrapStyle: React.CSSProperties = {
+const summaryMoneyStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 3,
+  textAlign: 'right',
+};
+
+const totalLabelStyle: React.CSSProperties = {
+  color: '#94a3b8',
+  fontSize: 11,
+  fontWeight: 800,
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+};
+
+const totalValueStyle: React.CSSProperties = {
+  color: '#fbbf24',
+  fontSize: 22,
+  lineHeight: 1,
+};
+
+const subtotalHintStyle: React.CSSProperties = {
+  color: '#94a3b8',
+  fontSize: 12,
+  fontWeight: 700,
+};
+
+const summaryBadgesStyle: React.CSSProperties = {
   display: 'flex',
-  gap: 8,
+  gap: 6,
   flexWrap: 'wrap',
+  justifyContent: 'flex-end',
+};
+
+const chevronStyle: React.CSSProperties = {
+  width: 30,
+  height: 30,
+  borderRadius: 999,
+  display: 'grid',
+  placeItems: 'center',
+  color: '#fbbf24',
+  border: '1px solid rgba(250,204,21,0.18)',
+  background: 'rgba(2,6,23,0.30)',
+  fontSize: 20,
+  fontWeight: 900,
+};
+
+const detailsWrapStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 10,
+  padding: '0 16px 16px',
 };
 
 const infoGridStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-  gap: 12,
+  gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+  gap: 10,
 };
 
 const subCardStyle: React.CSSProperties = {
-  background: 'rgba(2, 6, 23, 0.42)',
-  border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 14,
-  padding: 12,
+  background: 'rgba(2, 6, 23, 0.38)',
+  border: '1px solid rgba(250, 204, 21, 0.11)',
+  borderRadius: 16,
+  padding: 14,
+};
+
+const amountCardStyle: React.CSSProperties = {
+  ...subCardStyle,
+  background:
+    'linear-gradient(135deg, rgba(250,204,21,0.07) 0%, rgba(2,6,23,0.42) 100%)',
 };
 
 const subCardTitleStyle: React.CSSProperties = {
-  marginTop: 0,
-  marginBottom: 12,
-  fontSize: 15,
+  margin: '0 0 10px',
+  fontSize: 16,
 };
 
 const rowTextStyle: React.CSSProperties = {
-  margin: '0 0 8px',
+  margin: '0 0 7px',
   color: '#d7e2ee',
+  fontSize: 13,
+  lineHeight: 1.5,
+};
+
+const totalRowStyle: React.CSSProperties = {
+  margin: '10px 0',
+  color: '#fde68a',
+  fontSize: 16,
+  lineHeight: 1.5,
 };
 
 const notesTextStyle: React.CSSProperties = {
   margin: 0,
   color: '#d7e2ee',
-  lineHeight: 1.6,
+  lineHeight: 1.55,
+  fontSize: 13,
 };
 
 const quoteItemsHeaderStyle: React.CSSProperties = {
@@ -605,60 +712,11 @@ const quoteItemsHeaderStyle: React.CSSProperties = {
   alignItems: 'flex-start',
   gap: 8,
   flexWrap: 'wrap',
-  marginBottom: 8,
-};
-
-const quoteItemsTotalStyle: React.CSSProperties = {
-  color: '#f8fafc',
-  fontSize: 15,
-};
-
-const quoteItemsTableWrapStyle: React.CSSProperties = {
-  overflowX: 'auto',
-  borderRadius: 16,
-  border: '1px solid rgba(250, 204, 21, 0.12)',
-};
-
-const quoteItemsTableHeaderStyle: React.CSSProperties = {
-  minWidth: 560,
-  display: 'grid',
-  gridTemplateColumns: 'minmax(200px, 1.5fr) 90px 110px 110px',
-  gap: 12,
-  padding: '10px 12px',
-  background: 'rgba(250, 204, 21, 0.08)',
-  color: '#fbbf24',
-  fontSize: 12,
-  fontWeight: 900,
-  textTransform: 'uppercase',
-  letterSpacing: '0.07em',
-};
-
-const quoteItemsTableRowStyle: React.CSSProperties = {
-  minWidth: 560,
-  display: 'grid',
-  gridTemplateColumns: 'minmax(200px, 1.5fr) 90px 110px 110px',
-  gap: 12,
-  padding: '10px 12px',
-  borderTop: '1px solid rgba(250, 204, 21, 0.10)',
-  background: 'rgba(2, 6, 23, 0.28)',
-  color: '#d7e2ee',
-  alignItems: 'center',
-};
-
-const quoteItemNameStyle: React.CSSProperties = {
-  color: '#f8fafc',
-  fontWeight: 800,
-};
-
-const quoteItemsTotalsStackStyle: React.CSSProperties = {
-  display: 'grid',
-  gap: 6,
-  textAlign: 'right',
+  marginBottom: 10,
 };
 
 const quoteItemsOriginalTotalStyle: React.CSSProperties = {
   color: '#94a3b8',
-  fontSize: 15,
   fontWeight: 800,
   textDecoration: 'line-through',
   textDecorationThickness: 2,
@@ -669,41 +727,66 @@ const quoteItemsDiscountStyle: React.CSSProperties = {
   fontWeight: 900,
 };
 
-const quoteItemsTaxStyle: React.CSSProperties = {
-  color: '#fbbf24',
-  fontWeight: 800,
+const itemsListStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 8,
+};
+
+const itemRowStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: 12,
+  alignItems: 'center',
+  padding: 10,
+  borderRadius: 14,
+  background: 'rgba(15,23,42,0.62)',
+  border: '1px solid rgba(148,163,184,0.10)',
+};
+
+const quoteItemNameStyle: React.CSSProperties = {
+  color: '#f8fafc',
+  fontWeight: 900,
+};
+
+const itemMetaStyle: React.CSSProperties = {
+  margin: '4px 0 0',
+  color: '#94a3b8',
+  fontSize: 12,
+};
+
+const itemSubtotalStyle: React.CSSProperties = {
+  color: '#f8fafc',
+  whiteSpace: 'nowrap',
 };
 
 const actionsRowStyle: React.CSSProperties = {
   display: 'flex',
   gap: 10,
   flexWrap: 'wrap',
-  marginTop: 14,
 };
 
 const primaryLinkStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '9px 13px',
+  padding: '10px 13px',
   borderRadius: 14,
   textDecoration: 'none',
   background: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 48%, #8b5cf6 100%)',
   color: '#fff',
   fontWeight: 900,
-  boxShadow: '0 18px 34px rgba(236,72,153,0.24)',
+  boxShadow: '0 14px 26px rgba(236,72,153,0.20)',
 };
 
 const secondaryLinkStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '9px 13px',
+  padding: '10px 13px',
   borderRadius: 14,
   textDecoration: 'none',
   background: 'rgba(2, 6, 23, 0.48)',
   color: '#f8fafc',
   fontWeight: 800,
   border: '1px solid rgba(250, 204, 21, 0.18)',
-  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
 };
