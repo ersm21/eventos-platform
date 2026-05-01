@@ -85,6 +85,31 @@ function calculateTaxableBase(
   const subtotal = Number(value ?? 0);
 
   return (
+    <>
+      <style jsx global>{`
+        @media print {
+          .print-estimate .print-info-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 14px !important;
+            align-items: stretch !important;
+          }
+
+          .print-estimate .print-table-header,
+          .print-estimate .print-table-row {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) 56px 82px 82px !important;
+            column-gap: 12px !important;
+            align-items: center !important;
+          }
+
+          .print-estimate .print-number-cell,
+          .print-estimate .print-number-header {
+            text-align: right !important;
+            white-space: nowrap !important;
+          }
+        }
+`}</style>
     subtotal +
     calculateTechnicalSupport(subtotal) +
     calculateTransport(subtotal, locationText)
@@ -489,7 +514,7 @@ export default function QuoteDetailPage({
             </div>
           </header>
 
-          <section style={printInfoGridStyle}>
+          <section className="print-info-grid" style={printInfoGridStyle}>
             <div style={printInfoBoxStyle}>
               <p style={printSectionLabelStyle}>Cliente</p>
               <h2 style={printClientNameStyle}>{quote.customer_name || 'Cliente sin nombre'}</h2>
@@ -509,18 +534,18 @@ export default function QuoteDetailPage({
           </section>
 
           <section style={printTableSectionStyle}>
-            <div style={printTableHeaderStyle}>
+            <div className="print-table-header" style={printTableHeaderStyle}>
               <span>Servicio</span>
-              <span style={printNumberHeaderStyle}>Cant.</span>
-              <span style={printNumberHeaderStyle}>Precio</span>
-              <span style={printNumberHeaderStyle}>Total</span>
+              <span className="print-number-header" style={printNumberHeaderStyle}>Cant.</span>
+              <span className="print-number-header" style={printNumberHeaderStyle}>Precio</span>
+              <span className="print-number-header" style={printNumberHeaderStyle}>Total</span>
             </div>
 
             {items.length === 0 ? (
               <div style={printTableEmptyStyle}>No hay servicios agregados.</div>
             ) : (
               items.map((item) => (
-                <div key={item.id} style={printTableRowStyle}>
+                <div key={item.id} className="print-table-row" style={printTableRowStyle}>
                   <div style={printItemNameWrapStyle}>
                     {item.product_image_url && (
                       <img
@@ -540,13 +565,13 @@ export default function QuoteDetailPage({
                       )}
                     </div>
                   </div>
-                  <span style={printNumberCellStyle}>
+                  <span className="print-number-cell" style={printNumberCellStyle}>
                     {Number(item.quantity ?? 0)}
                   </span>
-                  <span style={printNumberCellStyle}>
+                  <span className="print-number-cell" style={printNumberCellStyle}>
                     {formatMoney(item.unit_price)}
                   </span>
-                  <strong style={printNumberStrongCellStyle}>
+                  <strong className="print-number-cell" style={printNumberStrongCellStyle}>
                     {formatMoney(item.subtotal)}
                   </strong>
                 </div>
@@ -1027,6 +1052,7 @@ export default function QuoteDetailPage({
         </div>
       </div>
     </main>
+    </>
   );
 }
 
