@@ -146,7 +146,9 @@ export default function LoginPage() {
             >
               <span style={facebookIconStyle}>f</span>
             </button>
+          </div>
 
+          <div style={{ display: 'grid', gap: 14, marginTop: 10 }}>
             <div style={dividerWrapStyle}>
               <div style={dividerLineStyle} />
               <span>o continúa con email</span>
