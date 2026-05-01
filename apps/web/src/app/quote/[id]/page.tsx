@@ -36,12 +36,28 @@ function formatMoney(value: number | null | undefined) {
   return `$${Number(value ?? 0).toLocaleString()}`;
 }
 
+function calculateTechnicalSupport(value: number | null | undefined) {
+  const subtotal = Number(value ?? 0);
+
+  if (subtotal >= 120001) return 35000;
+  if (subtotal >= 85000) return 25000;
+  if (subtotal >= 35000) return 15000;
+  if (subtotal >= 1000) return 5000;
+
+  return 0;
+}
+
+function calculateTaxableBase(value: number | null | undefined) {
+  const subtotal = Number(value ?? 0);
+  return subtotal + calculateTechnicalSupport(subtotal);
+}
+
 function calculateItbis(value: number | null | undefined) {
-  return Number(value ?? 0) * 0.18;
+  return calculateTaxableBase(value) * 0.18;
 }
 
 function calculateTotalWithItbis(value: number | null | undefined) {
-  return Number(value ?? 0) * 1.18;
+  return calculateTaxableBase(value) * 1.18;
 }
 
 
