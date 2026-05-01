@@ -488,73 +488,69 @@ export default function QuoteDetailPage({
             </div>
           </header>
 
-          <section className="print-info-grid" style={printInfoGridStyle}>
-            <div style={printInfoBoxStyle}>
-              <p style={printSectionLabelStyle}>Cliente</p>
-              <h2 style={printClientNameStyle}>{quote.customer_name || 'Cliente sin nombre'}</h2>
-              <p style={printInfoTextStyle}>{quote.customer_email || 'Sin email'}</p>
-              <p style={printInfoTextStyle}>Evento: {quote.event_type || '—'}</p>
-            </div>
-
-            <div style={printInfoBoxStyle}>
-              <p style={printSectionLabelStyle}>Resumen</p>
-              <p style={printInfoTextStyle}>Estado: {getStatusLabel(quote.status)}</p>
-              <p style={printInfoTextStyle}>
-                Depósito: {quote.deposit_status === 'paid' ? 'Pagado' : 'Pendiente'}
-              </p>
-              <p style={printInfoTextStyle}>Referencia: {quote.deposit_reference || '—'}</p>
-              <p style={printInfoTextStyle}>Cotización ID: {quote.id}</p>
-            </div>
-          </section>
+          <table style={printInfoTableStyle}>
+            <tbody>
+              <tr>
+                <td style={printInfoTableCellStyle}>
+                  <p style={printSectionLabelStyle}>Cliente</p>
+                  <strong style={printClientNameStyle}>{quote.customer_name || 'Cliente'}</strong>
+                  <p style={printMutedTextStyle}>{quote.customer_email || '—'}</p>
+                  <p style={printMutedTextStyle}>Evento: {quote.event_type || '—'}</p>
+                </td>
+                <td style={printInfoTableCellStyle}>
+                  <p style={printSectionLabelStyle}>Resumen</p>
+                  <p style={printMutedTextStyle}>Estado: {getStatusLabel(quote.status)}</p>
+                  <p style={printMutedTextStyle}>Depósito: {getDepositStatusLabel(quote.deposit_status)}</p>
+                  <p style={printMutedTextStyle}>Referencia: {quote.deposit_reference || '—'}</p>
+                  <p style={printMutedTextStyle}>Cotización ID: {quote.id}</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
           <section style={printTableSectionStyle}>
-            <div className="print-table-header" style={printTableHeaderStyle}>
-              <span>Servicio</span>
-              <span className="print-number-header" style={printNumberHeaderStyle}>Cant.</span>
-              <span className="print-number-header" style={printNumberHeaderStyle}>Precio</span>
-              <span className="print-number-header" style={printNumberHeaderStyle}>Total</span>
-            </div>
-
-            {items.length === 0 ? (
-              <div style={printTableEmptyStyle}>No hay servicios agregados.</div>
-            ) : (
-              items.map((item) => (
-                <div key={item.id} className="print-table-row" style={printTableRowStyle}>
-                  <div style={printItemNameWrapStyle}>
-                    {item.product_image_url && (
-                      <img
-                        src={item.product_image_url}
-                        alt={item.product_name}
-                        style={printItemImageStyle}
-                      />
-                    )}
-                    <div>
-                      <strong style={printItemProductNameStyle}>
-                        {item.product_name}
-                      </strong>
-                      {item.product_description && (
-                        <p style={printItemDescriptionStyle}>
-                          {item.product_description}
-                        </p>
+            <table style={printItemsTableStyle}>
+            <thead>
+              <tr style={printItemsTableHeadRowStyle}>
+                <th style={printItemsServiceHeaderStyle}>Servicio</th>
+                <th style={printItemsNumberHeaderStyle}>Cant.</th>
+                <th style={printItemsNumberHeaderStyle}>Precio</th>
+                <th style={printItemsNumberHeaderStyle}>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item.id} style={printItemsTableRowStyle}>
+                  <td style={printItemsServiceCellStyle}>
+                    <div style={printItemNameWrapStyle}>
+                      {item.product_image_url && (
+                        <img
+                          src={item.product_image_url}
+                          alt={item.product_name}
+                          style={printItemImageStyle}
+                        />
                       )}
+                      <div>
+                        <strong style={printItemProductNameStyle}>
+                          {item.product_name}
+                        </strong>
+                        {item.product_description && (
+                          <p style={printItemDescriptionStyle}>
+                            {item.product_description}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <span className="print-number-cell" style={printNumberCellStyle}>
-                    {Number(item.quantity ?? 0)}
-                  </span>
-                  <span className="print-number-cell" style={printNumberCellStyle}>
-                    {formatMoney(item.unit_price)}
-                  </span>
-                  <strong className="print-number-cell" style={printNumberStrongCellStyle}>
-                    {formatMoney(item.subtotal)}
-                  </strong>
-                </div>
-              ))
-            )}
-          </section>
+                  </td>
+                  <td style={printItemsNumberCellStyle}>{Number(item.quantity ?? 0)}</td>
+                  <td style={printItemsNumberCellStyle}>{formatMoney(item.unit_price)}</td>
+                  <td style={printItemsNumberStrongCellStyle}>{formatMoney(item.subtotal)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-          <section style={printBottomGridStyle}>
-            <div style={printNotesBoxStyle}>
+          <div style={printNotesBoxStyle}>
               <p style={printSectionLabelStyle}>Notas</p>
               <p style={printInfoTextStyle}>{quote.notes || 'Sin notas adicionales.'}</p>
               <p style={printInfoTextStyle}>
@@ -1385,6 +1381,89 @@ const printEstimateTitleStyle: React.CSSProperties = {
   fontSize: 32,
   lineHeight: 1,
   letterSpacing: '-0.04em',
+};
+
+
+const printInfoTableStyle: React.CSSProperties = {
+  width: '100%',
+  borderCollapse: 'separate',
+  borderSpacing: '12px 0',
+  marginTop: 14,
+};
+
+const printInfoTableCellStyle: React.CSSProperties = {
+  width: '50%',
+  verticalAlign: 'top',
+  background: '#ffffff',
+  border: '1px solid #e5e7eb',
+  borderRadius: 16,
+  padding: 14,
+};
+
+const printItemsTableStyle: React.CSSProperties = {
+  width: '100%',
+  borderCollapse: 'collapse',
+  marginTop: 16,
+  border: '1px solid #e5e7eb',
+  borderRadius: 14,
+  overflow: 'hidden',
+};
+
+const printItemsTableHeadRowStyle: React.CSSProperties = {
+  background: '#0f172a',
+  color: '#ffffff',
+};
+
+const printItemsServiceHeaderStyle: React.CSSProperties = {
+  textAlign: 'left',
+  padding: '11px 12px',
+  fontSize: 10,
+  fontWeight: 900,
+  textTransform: 'uppercase',
+  letterSpacing: '0.07em',
+};
+
+const printItemsNumberHeaderStyle: React.CSSProperties = {
+  width: 82,
+  textAlign: 'right',
+  padding: '11px 12px',
+  fontSize: 10,
+  fontWeight: 900,
+  textTransform: 'uppercase',
+  letterSpacing: '0.07em',
+  whiteSpace: 'nowrap',
+};
+
+const printItemsTableRowStyle: React.CSSProperties = {
+  borderBottom: '1px solid #e5e7eb',
+  breakInside: 'avoid',
+  pageBreakInside: 'avoid',
+};
+
+const printItemsServiceCellStyle: React.CSSProperties = {
+  padding: '11px 12px',
+  verticalAlign: 'top',
+};
+
+const printItemsNumberCellStyle: React.CSSProperties = {
+  width: 82,
+  padding: '11px 12px',
+  textAlign: 'right',
+  verticalAlign: 'top',
+  color: '#111827',
+  fontSize: 11,
+  whiteSpace: 'nowrap',
+};
+
+const printItemsNumberStrongCellStyle: React.CSSProperties = {
+  width: 82,
+  padding: '11px 12px',
+  textAlign: 'right',
+  verticalAlign: 'top',
+  color: '#111827',
+  fontSize: 11,
+  fontWeight: 900,
+  whiteSpace: 'nowrap',
 };
 
 const printInfoGridStyle: React.CSSProperties = {
