@@ -27,6 +27,7 @@ type QuoteItem = {
   id: string;
   quote_id: string;
   product_name: string;
+  product_image_url: string | null;
   unit_price: number;
   quantity: number;
   subtotal: number;
@@ -508,7 +509,16 @@ export default function QuoteDetailPage({
             ) : (
               items.map((item) => (
                 <div key={item.id} style={printTableRowStyle}>
-                  <strong>{item.product_name}</strong>
+                  <div style={printItemNameWrapStyle}>
+                    {item.product_image_url && (
+                      <img
+                        src={item.product_image_url}
+                        alt={item.product_name}
+                        style={printItemImageStyle}
+                      />
+                    )}
+                    <strong>{item.product_name}</strong>
+                  </div>
                   <span>{Number(item.quantity ?? 0)}</span>
                   <span>{formatMoney(item.unit_price)}</span>
                   <strong>{formatMoney(item.subtotal)}</strong>
@@ -619,7 +629,16 @@ export default function QuoteDetailPage({
             ) : (
               items.map((item) => (
                 <div key={item.id} style={conduceTableRowStyle}>
-                  <strong>{item.product_name}</strong>
+                  <div style={printItemNameWrapStyle}>
+                    {item.product_image_url && (
+                      <img
+                        src={item.product_image_url}
+                        alt={item.product_name}
+                        style={printItemImageStyle}
+                      />
+                    )}
+                    <strong>{item.product_name}</strong>
+                  </div>
                   <span>{Number(item.quantity ?? 0)}</span>
                   <span>______________________________</span>
                 </div>
@@ -920,7 +939,16 @@ export default function QuoteDetailPage({
 
               {items.map((item) => (
                 <div key={item.id} style={quoteItemsTableRowStyle}>
-                  <span style={quoteItemNameStyle}>{item.product_name}</span>
+                  <span style={quoteItemNameWithImageStyle}>
+                    {item.product_image_url && (
+                      <img
+                        src={item.product_image_url}
+                        alt={item.product_name}
+                        style={quoteItemThumbStyle}
+                      />
+                    )}
+                    <span style={quoteItemNameStyle}>{item.product_name}</span>
+                  </span>
                   <span>{Number(item.quantity ?? 0)}</span>
                   <span>{formatMoney(item.unit_price)}</span>
                   <strong>{formatMoney(item.subtotal)}</strong>
@@ -1150,6 +1178,24 @@ const quoteItemsTableRowStyle: React.CSSProperties = {
   alignItems: 'center',
 };
 
+const quoteItemNameWithImageStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
+  minWidth: 0,
+};
+
+const quoteItemThumbStyle: React.CSSProperties = {
+  width: 46,
+  height: 38,
+  objectFit: 'contain',
+  borderRadius: 8,
+  background: 'rgba(2,6,23,0.54)',
+  border: '1px solid rgba(250,204,21,0.12)',
+  padding: 4,
+  flexShrink: 0,
+};
+
 const quoteItemNameStyle: React.CSSProperties = {
   color: '#f8fafc',
   fontWeight: 800,
@@ -1162,6 +1208,24 @@ const fileInputStyle: React.CSSProperties = {
   border: '1px solid rgba(250, 204, 21, 0.16)',
   background: 'rgba(2, 6, 23, 0.58)',
   color: '#e5e7eb',
+};
+
+const printItemNameWrapStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  minWidth: 0,
+};
+
+const printItemImageStyle: React.CSSProperties = {
+  width: 42,
+  height: 34,
+  objectFit: 'contain',
+  borderRadius: 6,
+  border: '1px solid #e5e7eb',
+  background: '#ffffff',
+  padding: 3,
+  flexShrink: 0,
 };
 
 const printEstimateStyle: React.CSSProperties = {
