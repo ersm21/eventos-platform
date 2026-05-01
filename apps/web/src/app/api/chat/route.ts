@@ -1,84 +1,104 @@
 import { NextResponse } from 'next/server';
 
-type ChatRequestBody = {
-  message?: string;
+type ChatMessage = {
+  role: 'user' | 'assistant';
+  content: string;
 };
 
-function buildFallbackReply(message: string) {
-  const text = message.toLowerCase();
+const SYSTEM_PROMPT = `
+Eres el asistente oficial de SM Events, una empresa de producción de eventos en República Dominicana.
 
-  if (
-    text.includes('boda') ||
-    text.includes('matrimonio') ||
-    text.includes('wedding')
-  ) {
-    return 'Para una boda, lo ideal es revisar lugar, cantidad de invitados, horario y si necesitas luces, sonido, pantalla LED, tarima o DJ. Puedes ir a Cotizar para armar tu solicitud o escribirnos por WhatsApp al 829-935-9774 para ayudarte directo.';
-  }
+SM Events ofrece:
+- Luces
+- Sonido
+- Pantallas LED
+- Tarimas
+- Techos en truss
+- DJs
+- Producción técnica para bodas, cumpleaños, conciertos, eventos corporativos, bautizos, quince años y eventos privados.
 
-  if (
-    text.includes('precio') ||
-    text.includes('cotiz') ||
-    text.includes('presupuesto') ||
-    text.includes('cuanto') ||
-    text.includes('cuánto')
-  ) {
-    return 'Para darte un precio más claro necesitamos saber tipo de evento, fecha, lugar, duración y servicios que necesitas. Puedes entrar a Cotizar y enviar tu solicitud, o escribirnos por WhatsApp al 829-935-9774.';
-  }
+Contacto principal:
+WhatsApp: 829-935-9774
 
-  if (
-    text.includes('pantalla') ||
-    text.includes('led') ||
-    text.includes('sonido') ||
-    text.includes('luces') ||
-    text.includes('tarima')
-  ) {
-    return 'SM Events trabaja luces, sonido, pantallas LED, tarimas, techos en truss, DJs y producción. Puedes ver los servicios en Catálogo o armar tu solicitud en Cotizar.';
-  }
-
-  if (
-    text.includes('reunion') ||
-    text.includes('reunión') ||
-    text.includes('cita') ||
-    text.includes('agenda')
-  ) {
-    return 'Claro. Puedes solicitar una reunión desde la sección Reunión para hablar con el equipo de SM Events y coordinar los detalles de tu evento.';
-  }
-
-  if (
-    text.includes('whatsapp') ||
-    text.includes('telefono') ||
-    text.includes('teléfono') ||
-    text.includes('contacto') ||
-    text.includes('hablar')
-  ) {
-    return 'Puedes escribirnos directo por WhatsApp al 829-935-9774. También puedes usar el botón de WhatsApp dentro de este chat.';
-  }
-
-  return 'Puedo ayudarte con cotizaciones, catálogo, reuniones, luces, sonido, pantallas LED, tarimas y producción. Cuéntame qué tipo de evento estás preparando o escríbenos por WhatsApp al 829-935-9774.';
-}
+Tono:
+- Profesional, amable, claro y directo.
+- Habla en español dominicano natural cuando el cliente escriba en español.
+- Si el cliente escribe en inglés, responde en inglés.
+- No inventes precios exactos si el cliente no da detalles.
+- Para cotizaciones, pide datos clave: tipo de evento, fecha, lugar, horario/duración, cantidad aproximada de personas, servicios que necesita y presupuesto aproximado si lo tiene.
+- Invita al cliente a usar el botón de cotizar o escribir por WhatsApp.
+- Si preguntan por disponibilidad, explica que deben solicitar reunión o cotización para confirmar agenda.
+`;
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as ChatRequestBody;
-    const message = body.message?.trim() || '';
-
-    if (!message) {
+    if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
-        { reply: 'Escríbeme qué necesitas para tu evento y te ayudo.' },
-        { status: 200 }
+        { error: 'OPENAI_API_KEY no está configurada en el servidor.' },
+        { status: 500 }
       );
     }
 
-    return NextResponse.json({ reply: buildFallbackReply(message) }, { status: 200 });
-  } catch (error) {
-    console.error('Chat route fallback error:', error);
+    const body = await request.json();
+    const messages = (body.messages || []) as ChatMessage[];
 
-    return NextResponse.json(
-      {
-        reply:
-          'Puedo ayudarte con cotizaciones, catálogo, reuniones o WhatsApp. Escríbenos directo al 829-935-9774 si quieres atención personalizada.',
+    const cleanMessages = messages
+      .filter(
+        (message) =>
+          (message.role === 'user' || message.role === 'assistant') &&
+          typeof message.content === 'string' &&
+          message.content.trim().length > 0
+      )
+      .slice(-12);
+
+    const response = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
       },
-      { status: 200 }
-    );
+      body: JSON.stringify({
+        model: 'gpt-4.1-mini',
+        input: [
+          {
+            role: 'system',
+            content: SYSTEM_PROMPT,
+          },
+          ...cleanMessages.map((message) => ({
+            role: message.role,
+            content: message.content,
+          })),
+        ],
+        temperature: 0.5,
+        max_output_tokens: 450,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return NextResponse.json(
+        {
+          error:
+            data?.error?.message ||
+            'Error llamando OpenAI desde el servidor.',
+        },
+        { status: response.status }
+      );
+    }
+
+    const reply =
+      data.output_text ||
+      data.output?.[0]?.content?.[0]?.text ||
+      'Ahora mismo no pude generar una respuesta. Intenta de nuevo.';
+
+    return NextResponse.json({ reply });
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Error inesperado procesando el chat.';
+
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
