@@ -134,9 +134,10 @@ export default function LoginPage() {
               type="button"
               onClick={loginWithFacebook}
               disabled={loading}
-              style={googleButtonStyle}
+              style={socialButtonStyle}
             >
-              Continuar con Facebook
+              <span style={facebookIconStyle}>f</span>
+              <span>Continuar con Facebook</span>
             </button>
 
             <div style={dividerWrapStyle}>
@@ -242,6 +243,51 @@ const textStyle: React.CSSProperties = {
   margin: 0,
   color: '#a7b5c9',
   lineHeight: 1.6,
+};
+
+const socialButtonStyle: React.CSSProperties = {
+  width: '100%',
+  minHeight: 48,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 10,
+  borderRadius: 14,
+  border: '1px solid rgba(255,255,255,0.18)',
+  background: 'rgba(255,255,255,0.96)',
+  color: '#111827',
+  fontWeight: 900,
+  cursor: 'pointer',
+  boxShadow: '0 14px 28px rgba(0,0,0,0.20)',
+};
+
+const googleIconStyle: React.CSSProperties = {
+  width: 24,
+  height: 24,
+  borderRadius: 999,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  background: 'linear-gradient(135deg, #4285F4 0%, #34A853 35%, #FBBC05 68%, #EA4335 100%)',
+  color: '#ffffff',
+  fontWeight: 900,
+  fontSize: 15,
+  lineHeight: 1,
+};
+
+const facebookIconStyle: React.CSSProperties = {
+  width: 24,
+  height: 24,
+  borderRadius: 999,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  background: '#1877f2',
+  color: '#ffffff',
+  fontFamily: 'Arial, Helvetica, sans-serif',
+  fontWeight: 900,
+  fontSize: 20,
+  lineHeight: 1,
 };
 
 const googleButtonStyle: React.CSSProperties = {
