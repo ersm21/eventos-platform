@@ -1393,6 +1393,7 @@ const printInfoGridStyle: React.CSSProperties = {
   gridTemplateColumns: '1fr 1fr',
   gap: 14,
   marginTop: 14,
+  alignItems: 'stretch',
 };
 
 const printInfoBoxStyle: React.CSSProperties = {
@@ -1434,17 +1435,17 @@ const printTableSectionStyle: React.CSSProperties = {
 
 const printTableHeaderStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'minmax(0, 1fr) 64px 92px 92px',
+  gridTemplateColumns: 'minmax(0, 1fr) 56px 82px 82px',
   columnGap: 12,
   alignItems: 'center',
   background: '#0f172a',
   color: '#ffffff',
-  padding: '12px 14px',
+  padding: '10px 12px',
   borderRadius: '14px 14px 0 0',
-  fontSize: 10.5,
+  fontSize: 10,
   fontWeight: 900,
   textTransform: 'uppercase',
-  letterSpacing: '0.08em',
+  letterSpacing: '0.07em',
 };
 
 const printNumberHeaderStyle: React.CSSProperties = {
@@ -1453,10 +1454,10 @@ const printNumberHeaderStyle: React.CSSProperties = {
 
 const printTableRowStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'minmax(0, 1fr) 64px 92px 92px',
+  gridTemplateColumns: 'minmax(0, 1fr) 56px 82px 82px',
   columnGap: 12,
   alignItems: 'center',
-  padding: '12px 14px',
+  padding: '11px 12px',
   borderBottom: '1px solid #e5e7eb',
   breakInside: 'avoid',
   pageBreakInside: 'avoid',
@@ -1717,14 +1718,16 @@ const printItemProductNameStyle: React.CSSProperties = {
 const printNumberCellStyle: React.CSSProperties = {
   textAlign: 'right',
   color: '#111827',
-  fontSize: 12,
+  fontSize: 11,
+  whiteSpace: 'nowrap',
 };
 
 const printNumberStrongCellStyle: React.CSSProperties = {
   textAlign: 'right',
   color: '#111827',
-  fontSize: 12,
+  fontSize: 11,
   fontWeight: 900,
+  whiteSpace: 'nowrap',
 };
 
 const printItemDescriptionStyle: React.CSSProperties = {
