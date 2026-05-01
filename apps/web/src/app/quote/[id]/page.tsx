@@ -511,9 +511,9 @@ export default function QuoteDetailPage({
           <section style={printTableSectionStyle}>
             <div style={printTableHeaderStyle}>
               <span>Servicio</span>
-              <span>Cant.</span>
-              <span>Precio</span>
-              <span>Total</span>
+              <span style={printNumberHeaderStyle}>Cant.</span>
+              <span style={printNumberHeaderStyle}>Precio</span>
+              <span style={printNumberHeaderStyle}>Total</span>
             </div>
 
             {items.length === 0 ? (
@@ -1010,9 +1010,15 @@ export default function QuoteDetailPage({
                     )}
                     <span style={quoteItemNameStyle}>{item.product_name}</span>
                   </span>
-                  <span>{Number(item.quantity ?? 0)}</span>
-                  <span>{formatMoney(item.unit_price)}</span>
-                  <strong>{formatMoney(item.subtotal)}</strong>
+                  <span style={printNumberCellStyle}>
+                    {Number(item.quantity ?? 0)}
+                  </span>
+                  <span style={printNumberCellStyle}>
+                    {formatMoney(item.unit_price)}
+                  </span>
+                  <strong style={printNumberStrongCellStyle}>
+                    {formatMoney(item.subtotal)}
+                  </strong>
                 </div>
               ))}
             </div>
@@ -1384,9 +1390,9 @@ const printEstimateTitleStyle: React.CSSProperties = {
 
 const printInfoGridStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '1.15fr 0.85fr',
+  gridTemplateColumns: '1fr 1fr',
   gap: 14,
-  marginBottom: 16,
+  marginTop: 14,
 };
 
 const printInfoBoxStyle: React.CSSProperties = {
@@ -1428,23 +1434,27 @@ const printTableSectionStyle: React.CSSProperties = {
 
 const printTableHeaderStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '1fr 70px 100px 100px',
-  gap: 12,
+  gridTemplateColumns: 'minmax(0, 1fr) 64px 92px 92px',
+  columnGap: 12,
   alignItems: 'center',
   background: '#0f172a',
   color: '#ffffff',
   padding: '12px 14px',
   borderRadius: '14px 14px 0 0',
-  fontSize: 11,
+  fontSize: 10.5,
   fontWeight: 900,
   textTransform: 'uppercase',
   letterSpacing: '0.08em',
 };
 
+const printNumberHeaderStyle: React.CSSProperties = {
+  textAlign: 'right',
+};
+
 const printTableRowStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '1fr 70px 100px 100px',
-  gap: 12,
+  gridTemplateColumns: 'minmax(0, 1fr) 64px 92px 92px',
+  columnGap: 12,
   alignItems: 'center',
   padding: '12px 14px',
   borderBottom: '1px solid #e5e7eb',
