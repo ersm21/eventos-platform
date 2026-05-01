@@ -19,6 +19,7 @@ export default function SMChatbot() {
     },
   ]);
   const [error, setError] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
 
   const visibleMessages = useMemo(() => messages.slice(-14), [messages]);
 
@@ -41,13 +42,17 @@ export default function SMChatbot() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: nextMessages }),
+        body: JSON.stringify({ messages: nextMessages, conversationId }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data?.error || 'No se pudo responder el mensaje.');
+      }
+
+      if (data.conversationId) {
+        setConversationId(data.conversationId);
       }
 
       setMessages((current) => [

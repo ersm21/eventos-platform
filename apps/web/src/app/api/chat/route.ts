@@ -30,6 +30,72 @@ Tono:
 - Si preguntan por disponibilidad, explica que deben solicitar reunión o cotización para confirmar agenda.
 `;
 
+async function supabaseRest(
+  table: string,
+  method: 'POST' | 'PATCH',
+  body: Record<string, unknown>,
+  query = ''
+) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return null;
+  }
+
+  const response = await fetch(
+    `${supabaseUrl}/rest/v1/${table}${query}`,
+    {
+      method,
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation',
+      },
+      body: JSON.stringify(body),
+    }
+  );
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return response.json();
+}
+
+async function createConversation() {
+  const data = await supabaseRest('chatbot_conversations', 'POST', {
+    status: 'open',
+    updated_at: new Date().toISOString(),
+  });
+
+  return Array.isArray(data) ? data[0]?.id : null;
+}
+
+async function updateConversation(conversationId: string) {
+  await supabaseRest(
+    'chatbot_conversations',
+    'PATCH',
+    {
+      updated_at: new Date().toISOString(),
+    },
+    `?id=eq.${conversationId}`
+  );
+}
+
+async function saveChatMessage(
+  conversationId: string,
+  role: 'user' | 'assistant',
+  content: string
+) {
+  await supabaseRest('chatbot_messages', 'POST', {
+    conversation_id: conversationId,
+    role,
+    content,
+  });
+}
+
 export async function POST(request: Request) {
   try {
     if (!process.env.OPENAI_API_KEY) {
@@ -42,6 +108,15 @@ export async function POST(request: Request) {
     const body = await request.json();
     const messages = (body.messages || []) as ChatMessage[];
 
+    let conversationId =
+      typeof body.conversationId === 'string' && body.conversationId.trim()
+        ? body.conversationId.trim()
+        : null;
+
+    if (!conversationId) {
+      conversationId = await createConversation();
+    }
+
     const cleanMessages = messages
       .filter(
         (message) =>
@@ -50,6 +125,18 @@ export async function POST(request: Request) {
           message.content.trim().length > 0
       )
       .slice(-12);
+
+    const lastUserMessage = [...cleanMessages]
+      .reverse()
+      .find((message) => message.role === 'user');
+
+    if (conversationId && lastUserMessage) {
+      await saveChatMessage(
+        conversationId,
+        'user',
+        lastUserMessage.content.trim()
+      );
+    }
 
     const response = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
@@ -92,7 +179,12 @@ export async function POST(request: Request) {
       data.output?.[0]?.content?.[0]?.text ||
       'Ahora mismo no pude generar una respuesta. Intenta de nuevo.';
 
-    return NextResponse.json({ reply });
+    if (conversationId) {
+      await saveChatMessage(conversationId, 'assistant', reply);
+      await updateConversation(conversationId);
+    }
+
+    return NextResponse.json({ reply, conversationId });
   } catch (error) {
     const message =
       error instanceof Error
