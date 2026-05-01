@@ -118,26 +118,33 @@ export default function LoginPage() {
             </div>
           )}
 
-          <div style={{ display: 'grid', gap: 14, marginTop: 20 }}>
+          <div style={socialIconsRowStyle}>
             <button
+              type="button"
               onClick={handleGoogleLogin}
               disabled={googleLoading}
               style={{
-                ...googleButtonStyle,
+                ...socialIconButtonStyle,
                 opacity: googleLoading ? 0.7 : 1,
               }}
+              aria-label="Continuar con Google"
+              title="Continuar con Google"
             >
-              {googleLoading ? 'Abriendo Google...' : 'Continuar con Google'}
+              <span style={googleIconStyle}>G</span>
             </button>
 
             <button
               type="button"
               onClick={loginWithFacebook}
               disabled={loading}
-              style={socialButtonStyle}
+              style={{
+                ...socialIconButtonStyle,
+                opacity: loading ? 0.7 : 1,
+              }}
+              aria-label="Continuar con Facebook"
+              title="Continuar con Facebook"
             >
               <span style={facebookIconStyle}>f</span>
-              <span>Continuar con Facebook</span>
             </button>
 
             <div style={dividerWrapStyle}>
@@ -245,25 +252,31 @@ const textStyle: React.CSSProperties = {
   lineHeight: 1.6,
 };
 
-const socialButtonStyle: React.CSSProperties = {
-  width: '100%',
-  minHeight: 48,
+const socialIconsRowStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 16,
+  marginTop: 20,
+  marginBottom: 18,
+};
+
+const socialIconButtonStyle: React.CSSProperties = {
+  width: 56,
+  height: 56,
+  borderRadius: 999,
+  border: '1px solid rgba(255,255,255,0.18)',
+  background: 'rgba(255,255,255,0.96)',
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: 10,
-  borderRadius: 14,
-  border: '1px solid rgba(255,255,255,0.18)',
-  background: 'rgba(255,255,255,0.96)',
-  color: '#111827',
-  fontWeight: 900,
   cursor: 'pointer',
-  boxShadow: '0 14px 28px rgba(0,0,0,0.20)',
+  boxShadow: '0 14px 28px rgba(0,0,0,0.22)',
 };
 
 const googleIconStyle: React.CSSProperties = {
-  width: 24,
-  height: 24,
+  width: 34,
+  height: 34,
   borderRadius: 999,
   display: 'inline-flex',
   alignItems: 'center',
@@ -271,13 +284,13 @@ const googleIconStyle: React.CSSProperties = {
   background: 'linear-gradient(135deg, #4285F4 0%, #34A853 35%, #FBBC05 68%, #EA4335 100%)',
   color: '#ffffff',
   fontWeight: 900,
-  fontSize: 15,
+  fontSize: 20,
   lineHeight: 1,
 };
 
 const facebookIconStyle: React.CSSProperties = {
-  width: 24,
-  height: 24,
+  width: 34,
+  height: 34,
   borderRadius: 999,
   display: 'inline-flex',
   alignItems: 'center',
@@ -286,7 +299,7 @@ const facebookIconStyle: React.CSSProperties = {
   color: '#ffffff',
   fontFamily: 'Arial, Helvetica, sans-serif',
   fontWeight: 900,
-  fontSize: 20,
+  fontSize: 26,
   lineHeight: 1,
 };
 
