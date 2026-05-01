@@ -269,16 +269,16 @@ export default function CotizarPage() {
   );
 
   const eventLocationOptions = [
-    { label: 'Selecciona el lugar del evento', value: '' },
-    { label: 'Santiago — RD$7,000', value: 'Santiago' },
-    { label: 'Moca — RD$7,000', value: 'Moca' },
-    { label: 'La Vega — RD$10,000', value: 'La Vega' },
-    { label: 'Puerto Plata — RD$15,000', value: 'Puerto Plata' },
-    { label: 'Mao — RD$20,000', value: 'Mao' },
-    { label: 'Santo Domingo — RD$20,000', value: 'Santo Domingo' },
-    { label: 'La Romana — RD$30,000', value: 'La Romana' },
-    { label: 'Punta Cana — RD$30,000', value: 'Punta Cana' },
-    { label: 'Bávaro — RD$30,000', value: 'Bavaro' },
+    { label: 'Selecciona una ciudad', value: '' },
+    { label: 'Santiago', value: 'Santiago' },
+    { label: 'Moca', value: 'Moca' },
+    { label: 'La Vega', value: 'La Vega' },
+    { label: 'Puerto Plata', value: 'Puerto Plata' },
+    { label: 'Mao', value: 'Mao' },
+    { label: 'Santo Domingo', value: 'Santo Domingo' },
+    { label: 'La Romana', value: 'La Romana' },
+    { label: 'Punta Cana', value: 'Punta Cana' },
+    { label: 'Bávaro', value: 'Bavaro' },
   ];
 
   const saveQuote = async () => {
@@ -421,10 +421,10 @@ export default function CotizarPage() {
           <div>
             <p style={sectionEyebrowStyle}>Lugar del evento</p>
             <h1 style={locationHeroTitleStyle}>
-              Selecciona la ciudad para calcular el transporte
+              Ciudad del evento
             </h1>
             <p style={locationHeroTextStyle}>
-              El transporte se agrega automáticamente según la zona seleccionada para evitar errores al escribir el lugar.
+              Selecciona la ciudad para calcular el transporte automáticamente.
             </p>
           </div>
 
@@ -768,45 +768,45 @@ const containerStyle: React.CSSProperties = {
 };
 
 const locationHeroStyle: React.CSSProperties = {
-  marginTop: 14,
+  marginTop: 12,
   display: 'grid',
-  gridTemplateColumns: '1.15fr 0.85fr',
-  gap: 18,
+  gridTemplateColumns: '1fr 300px',
+  gap: 14,
   alignItems: 'center',
   background:
-    'linear-gradient(135deg, rgba(15,23,42,0.86) 0%, rgba(30,27,75,0.50) 52%, rgba(9,14,28,0.92) 100%)',
-  border: '1px solid rgba(250, 204, 21, 0.14)',
-  borderRadius: 28,
-  padding: 22,
-  boxShadow: '0 24px 58px rgba(0,0,0,0.24)',
+    'linear-gradient(135deg, rgba(15,23,42,0.78) 0%, rgba(30,27,75,0.36) 52%, rgba(9,14,28,0.84) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+  borderRadius: 22,
+  padding: '16px 18px',
+  boxShadow: '0 18px 42px rgba(0,0,0,0.18)',
 };
 
 const locationHeroTitleStyle: React.CSSProperties = {
-  margin: '8px 0 8px',
-  fontSize: 30,
-  lineHeight: 1.1,
+  margin: '6px 0 6px',
+  fontSize: 24,
+  lineHeight: 1.08,
   letterSpacing: '-0.03em',
 };
 
 const locationHeroTextStyle: React.CSSProperties = {
   margin: 0,
   color: '#a8b8ce',
-  lineHeight: 1.6,
-  fontSize: 14,
+  lineHeight: 1.5,
+  fontSize: 13,
 };
 
 const locationSelectWrapStyle: React.CSSProperties = {
   display: 'grid',
-  gap: 8,
-  background: 'rgba(2, 6, 23, 0.42)',
-  border: '1px solid rgba(250, 204, 21, 0.16)',
-  borderRadius: 20,
-  padding: 14,
+  gap: 7,
+  background: 'rgba(2, 6, 23, 0.36)',
+  border: '1px solid rgba(250, 204, 21, 0.13)',
+  borderRadius: 16,
+  padding: 10,
 };
 
 const locationSelectLabelStyle: React.CSSProperties = {
   color: '#fbbf24',
-  fontSize: 12,
+  fontSize: 10,
   fontWeight: 900,
   textTransform: 'uppercase',
   letterSpacing: '0.08em',
@@ -814,14 +814,15 @@ const locationSelectLabelStyle: React.CSSProperties = {
 
 const locationSelectStyle: React.CSSProperties = {
   width: '100%',
-  minHeight: 50,
-  borderRadius: 14,
-  border: '1px solid rgba(250, 204, 21, 0.18)',
-  background: 'rgba(2, 6, 23, 0.86)',
+  minHeight: 42,
+  borderRadius: 12,
+  border: '1px solid rgba(250, 204, 21, 0.16)',
+  background: 'rgba(2, 6, 23, 0.82)',
   color: '#f8fafc',
   outline: 'none',
-  padding: '12px 14px',
+  padding: '9px 11px',
   fontWeight: 800,
+  fontSize: 13,
 };
 
 const heroCardStyle: React.CSSProperties = {
