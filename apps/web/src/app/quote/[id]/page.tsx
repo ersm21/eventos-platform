@@ -390,8 +390,8 @@ export default function QuoteDetailPage({
     0
   );
   const quoteNumber = quote.id.slice(0, 8).toUpperCase();
-  const itbisAmount = calculateItbis(finalTotal);
-  const totalWithItbis = calculateTotalWithItbis(finalTotal);
+  const itbisAmount = calculateItbis(finalTotal, quote.notes);
+  const totalWithItbis = calculateTotalWithItbis(finalTotal, quote.notes);
 
   const downloadQuotePdf = () => {
     setPrintDocument('quote');
@@ -733,13 +733,28 @@ export default function QuoteDetailPage({
               hint: 'Monto base aprobado',
             },
             {
+              label: 'Soporte técnico',
+              value: formatMoney(calculateTechnicalSupport(finalTotal)),
+              hint: 'Asistencia técnica del montaje',
+            },
+            {
+              label: 'Transporte',
+              value: formatMoney(calculateTransport(finalTotal, quote.notes)),
+              hint: 'Según ciudad o zona del evento',
+            },
+            {
+              label: 'Base para ITBIS',
+              value: formatMoney(calculateTaxableBase(finalTotal, quote.notes)),
+              hint: 'Subtotal + soporte + transporte',
+            },
+            {
               label: 'ITBIS 18%',
-              value: formatMoney(calculateItbis(finalTotal)),
-              hint: 'Impuesto aplicado al subtotal',
+              value: formatMoney(calculateItbis(finalTotal, quote.notes)),
+              hint: 'Impuesto aplicado a la base',
             },
             {
               label: 'Total con ITBIS',
-              value: formatMoney(calculateTotalWithItbis(finalTotal)),
+              value: formatMoney(calculateTotalWithItbis(finalTotal, quote.notes)),
               hint: 'Total final a pagar',
             },
             {

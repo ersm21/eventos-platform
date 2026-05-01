@@ -2273,14 +2273,14 @@ export default function AdminPage() {
 
                   <div style={quoteCompactMoneyStyle}>
                     <strong>
-                      {formatMoney(calculateItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
+                      {formatMoney(calculateItbis(getQuoteBaseTotal(quote, itemsForQuote), quote.notes))}
                     </strong>
                   </div>
 
                   <div style={quoteCompactMoneyHighlightStyle}>
                     <strong>
                       {formatMoney(
-                        calculateTotalWithItbis(getQuoteBaseTotal(quote, itemsForQuote))
+                        calculateTotalWithItbis(getQuoteBaseTotal(quote, itemsForQuote), quote.notes)
                       )}
                     </strong>
                   </div>
@@ -2384,11 +2384,11 @@ export default function AdminPage() {
                     </p>
                     <p style={rowTextStyle}>
                       <strong>ITBIS 18%:</strong>{' '}
-                      {formatMoney(calculateItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
+                      {formatMoney(calculateItbis(getQuoteBaseTotal(quote, itemsForQuote), quote.notes))}
                     </p>
                     <p style={rowTextStyle}>
                       <strong>Total con ITBIS:</strong>{' '}
-                      {formatMoney(calculateTotalWithItbis(getQuoteBaseTotal(quote, itemsForQuote)))}
+                      {formatMoney(calculateTotalWithItbis(getQuoteBaseTotal(quote, itemsForQuote), quote.notes))}
                     </p>
                     <p style={rowTextStyle}>
                       <strong>Depósito requerido:</strong>{' '}
