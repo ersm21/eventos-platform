@@ -85,31 +85,6 @@ function calculateTaxableBase(
   const subtotal = Number(value ?? 0);
 
   return (
-    <>
-      <style jsx global>{`
-        @media print {
-          .print-estimate .print-info-grid {
-            display: grid !important;
-            grid-template-columns: 1fr 1fr !important;
-            gap: 14px !important;
-            align-items: stretch !important;
-          }
-
-          .print-estimate .print-table-header,
-          .print-estimate .print-table-row {
-            display: grid !important;
-            grid-template-columns: minmax(0, 1fr) 56px 82px 82px !important;
-            column-gap: 12px !important;
-            align-items: center !important;
-          }
-
-          .print-estimate .print-number-cell,
-          .print-estimate .print-number-header {
-            text-align: right !important;
-            white-space: nowrap !important;
-          }
-        }
-`}</style>
     subtotal +
     calculateTechnicalSupport(subtotal) +
     calculateTransport(subtotal, locationText)
@@ -129,7 +104,6 @@ function calculateTotalWithItbis(
 ) {
   return calculateTaxableBase(value, locationText) * 1.18;
 }
-
 
 function formatDate(value: string | null | undefined) {
   if (!value) return '—';
