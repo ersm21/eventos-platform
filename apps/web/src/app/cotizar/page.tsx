@@ -192,7 +192,6 @@ export default function CotizarPage() {
       if (Object.keys(prev).length > 0) return prev;
 
       return {
-        [productCategories[0]]: true,
       };
     });
   }, [productCategories]);
@@ -268,6 +267,19 @@ export default function CotizarPage() {
     () => quoteItems.reduce((sum, item) => sum + item.quantity, 0),
     [quoteItems]
   );
+
+  const eventLocationOptions = [
+    { label: 'Selecciona el lugar del evento', value: '' },
+    { label: 'Santiago — RD$7,000', value: 'Santiago' },
+    { label: 'Moca — RD$7,000', value: 'Moca' },
+    { label: 'La Vega — RD$10,000', value: 'La Vega' },
+    { label: 'Puerto Plata — RD$15,000', value: 'Puerto Plata' },
+    { label: 'Mao — RD$20,000', value: 'Mao' },
+    { label: 'Santo Domingo — RD$20,000', value: 'Santo Domingo' },
+    { label: 'La Romana — RD$30,000', value: 'La Romana' },
+    { label: 'Punta Cana — RD$30,000', value: 'Punta Cana' },
+    { label: 'Bávaro — RD$30,000', value: 'Bavaro' },
+  ];
 
   const saveQuote = async () => {
     if (!isLoggedIn) {
@@ -405,12 +417,31 @@ export default function CotizarPage() {
       <div style={containerStyle}>
         <AppNavbar ctaHref="/book-meeting" ctaLabel="Hablar con nosotros" />
 
-        <section style={heroCardStyle}>
-          <p style={eyebrowStyle}>Cotizar</p>
-          <h1 style={heroTitleStyle}>Arma tu cotización</h1>
-          <p style={heroTextStyle}>
-            Selecciona servicios por categoría y envíanos los detalles de tu evento.
-          </p>
+        <section style={locationHeroStyle}>
+          <div>
+            <p style={sectionEyebrowStyle}>Lugar del evento</p>
+            <h1 style={locationHeroTitleStyle}>
+              Selecciona la ciudad para calcular el transporte
+            </h1>
+            <p style={locationHeroTextStyle}>
+              El transporte se agrega automáticamente según la zona seleccionada para evitar errores al escribir el lugar.
+            </p>
+          </div>
+
+          <label style={locationSelectWrapStyle}>
+            <span style={locationSelectLabelStyle}>Ciudad / zona</span>
+            <select
+              value={eventLocation}
+              onChange={(event) => setEventLocation(event.target.value)}
+              style={locationSelectStyle}
+            >
+              {eventLocationOptions.map((option) => (
+                <option key={option.value || 'empty-location'} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
         </section>
 
         {!isLoggedIn && (
@@ -685,17 +716,6 @@ export default function CotizarPage() {
             </div>
 
             <div style={{ gridColumn: '1 / -1' }}>
-              <label style={labelStyle}>Lugar del evento</label>
-              <input
-                type="text"
-                placeholder="Ej: Santiago, Moca, Santo Domingo, Punta Cana..."
-                value={eventLocation}
-                onChange={(event) => setEventLocation(event.target.value)}
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={{ gridColumn: '1 / -1' }}>
               <label style={labelStyle}>Notas adicionales</label>
               <textarea
                 placeholder="Fecha, lugar, duración, montaje, luces, sonido, pantalla o cualquier detalle importante"
@@ -745,6 +765,63 @@ const pageStyle: React.CSSProperties = {
 const containerStyle: React.CSSProperties = {
   maxWidth: 1080,
   margin: '0 auto',
+};
+
+const locationHeroStyle: React.CSSProperties = {
+  marginTop: 14,
+  display: 'grid',
+  gridTemplateColumns: '1.15fr 0.85fr',
+  gap: 18,
+  alignItems: 'center',
+  background:
+    'linear-gradient(135deg, rgba(15,23,42,0.86) 0%, rgba(30,27,75,0.50) 52%, rgba(9,14,28,0.92) 100%)',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  borderRadius: 28,
+  padding: 22,
+  boxShadow: '0 24px 58px rgba(0,0,0,0.24)',
+};
+
+const locationHeroTitleStyle: React.CSSProperties = {
+  margin: '8px 0 8px',
+  fontSize: 30,
+  lineHeight: 1.1,
+  letterSpacing: '-0.03em',
+};
+
+const locationHeroTextStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#a8b8ce',
+  lineHeight: 1.6,
+  fontSize: 14,
+};
+
+const locationSelectWrapStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 8,
+  background: 'rgba(2, 6, 23, 0.42)',
+  border: '1px solid rgba(250, 204, 21, 0.16)',
+  borderRadius: 20,
+  padding: 14,
+};
+
+const locationSelectLabelStyle: React.CSSProperties = {
+  color: '#fbbf24',
+  fontSize: 12,
+  fontWeight: 900,
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+};
+
+const locationSelectStyle: React.CSSProperties = {
+  width: '100%',
+  minHeight: 50,
+  borderRadius: 14,
+  border: '1px solid rgba(250, 204, 21, 0.18)',
+  background: 'rgba(2, 6, 23, 0.86)',
+  color: '#f8fafc',
+  outline: 'none',
+  padding: '12px 14px',
+  fontWeight: 800,
 };
 
 const heroCardStyle: React.CSSProperties = {
