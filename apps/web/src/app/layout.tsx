@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ChatBot from "../components/ChatBot";
 import AmbientMusicPlayer from '../components/AmbientMusicPlayer';
 import SMChatbot from '../components/SMChatbot';
 
@@ -34,7 +33,7 @@ export default function RootLayout({
         {children}
         <SMChatbot />
         <AmbientMusicPlayer />
-        <ChatBot />
+        
       </body>
     </html>
   );
