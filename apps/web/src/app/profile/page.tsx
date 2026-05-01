@@ -163,6 +163,25 @@ export default function ProfilePage() {
     }
   };
 
+  const loginWithFacebook = async () => {
+    setLoggingIn(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    const { error: facebookError } = await supabase.auth.signInWithOAuth({
+      provider: 'facebook',
+      options: {
+        redirectTo: `${window.location.origin}/profile`,
+      },
+    });
+
+    if (facebookError) {
+      setError(facebookError.message);
+      setLoggingIn(false);
+    }
+  };
+
+
   const handleAvatarChange = (file: File | null) => {
     setSelectedAvatarFile(file);
 
@@ -337,6 +356,18 @@ export default function ProfilePage() {
                 }}
               >
                 Continuar con Google
+              </button>
+
+              <button
+                type="button"
+                onClick={loginWithFacebook}
+                disabled={loggingIn}
+                style={{
+                  ...secondaryButtonStyle,
+                  opacity: loggingIn ? 0.65 : 1,
+                }}
+              >
+                Continuar con Facebook
               </button>
             </div>
           </section>
