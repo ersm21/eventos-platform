@@ -104,6 +104,7 @@ export default function CotizarPage() {
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [eventType, setEventType] = useState('');
+  const [eventLocation, setEventLocation] = useState('');
   const [notes, setNotes] = useState('');
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -292,7 +293,12 @@ export default function CotizarPage() {
           customer_name: customerName,
           customer_email: customerEmail,
           event_type: eventType,
-          notes,
+          notes: [
+            eventLocation.trim() ? `Lugar: ${eventLocation.trim()}` : '',
+            notes.trim(),
+          ]
+            .filter(Boolean)
+            .join('\n'),
           status: 'draft',
           total,
           user_id: user.id,
@@ -336,7 +342,12 @@ export default function CotizarPage() {
           customerName,
           customerEmail,
           eventType,
-          notes,
+          notes: [
+            eventLocation.trim() ? `Lugar: ${eventLocation.trim()}` : '',
+            notes.trim(),
+          ]
+            .filter(Boolean)
+            .join('\n'),
           total,
           items: quoteItems.map((item) => ({
             name: item.name,
@@ -354,7 +365,9 @@ export default function CotizarPage() {
 
     setQuoteItems([]);
     setCustomerName('');
+    setCustomerEmail('');
     setEventType('');
+    setEventLocation('');
     setNotes('');
     setSaving(false);
 
@@ -547,16 +560,20 @@ export default function CotizarPage() {
                     <strong>{formatMoney(calculateTechnicalSupport(total))}</strong>
                   </div>
                   <div style={quoteSummaryRowStyle}>
+                    <span>Transporte</span>
+                    <strong>{formatMoney(calculateTransport(total, eventLocation))}</strong>
+                  </div>
+                  <div style={quoteSummaryRowStyle}>
                     <span>Base para ITBIS</span>
-                    <strong>{formatMoney(calculateTaxableBase(total))}</strong>
+                    <strong>{formatMoney(calculateTaxableBase(total, eventLocation))}</strong>
                   </div>
                   <div style={quoteSummaryRowStyle}>
                     <span>ITBIS 18%</span>
-                    <strong>{formatMoney(calculateItbis(total))}</strong>
+                    <strong>{formatMoney(calculateItbis(total, eventLocation))}</strong>
                   </div>
                   <div style={quoteSummaryTotalRowStyle}>
                     <span>Total con ITBIS</span>
-                    <strong>{formatMoney(calculateTotalWithItbis(total))}</strong>
+                    <strong>{formatMoney(calculateTotalWithItbis(total, eventLocation))}</strong>
                   </div>
                 </div>
               </div>
@@ -603,6 +620,17 @@ export default function CotizarPage() {
                 placeholder="Boda, concierto, corporativo, DJ set, cumpleaños..."
                 value={eventType}
                 onChange={(event) => setEventType(event.target.value)}
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={labelStyle}>Lugar del evento</label>
+              <input
+                type="text"
+                placeholder="Ej: Santiago, Moca, Santo Domingo, Punta Cana..."
+                value={eventLocation}
+                onChange={(event) => setEventLocation(event.target.value)}
                 style={inputStyle}
               />
             </div>
