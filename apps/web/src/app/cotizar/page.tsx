@@ -307,6 +307,11 @@ export default function CotizarPage() {
       return;
     }
 
+    if (!eventLocation.trim()) {
+      setError('Selecciona la ciudad o zona del evento para calcular el transporte.');
+      return;
+    }
+
     setSaving(true);
     setError(null);
     setSuccessMessage(null);
@@ -431,6 +436,7 @@ export default function CotizarPage() {
           <label style={locationSelectWrapStyle}>
             <span style={locationSelectLabelStyle}>Ciudad / zona</span>
             <select
+              required
               value={eventLocation}
               onChange={(event) => setEventLocation(event.target.value)}
               style={locationSelectStyle}
@@ -756,11 +762,12 @@ const containerStyle: React.CSSProperties = {
 };
 
 const locationHeroStyle: React.CSSProperties = {
+  width: '46%',
+  minWidth: 360,
   marginTop: 10,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: 14,
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  gap: 10,
   background: 'rgba(15, 23, 42, 0.58)',
   border: '1px solid rgba(250, 204, 21, 0.10)',
   borderRadius: 18,
@@ -770,7 +777,7 @@ const locationHeroStyle: React.CSSProperties = {
 
 const locationHeroTitleStyle: React.CSSProperties = {
   margin: '4px 0 2px',
-  fontSize: 20,
+  fontSize: 18,
   lineHeight: 1.08,
   letterSpacing: '-0.03em',
 };
@@ -779,18 +786,17 @@ const locationHeroTextStyle: React.CSSProperties = {
   margin: 0,
   color: '#94a3b8',
   lineHeight: 1.35,
-  fontSize: 12,
+  fontSize: 11,
 };
 
 const locationSelectWrapStyle: React.CSSProperties = {
-  width: 260,
+  width: '100%',
   display: 'grid',
-  gap: 6,
+  gap: 5,
   background: 'rgba(2, 6, 23, 0.32)',
   border: '1px solid rgba(250, 204, 21, 0.11)',
   borderRadius: 14,
   padding: 8,
-  flexShrink: 0,
 };
 
 const locationSelectLabelStyle: React.CSSProperties = {
@@ -803,13 +809,13 @@ const locationSelectLabelStyle: React.CSSProperties = {
 
 const locationSelectStyle: React.CSSProperties = {
   width: '100%',
-  minHeight: 38,
+  minHeight: 36,
   borderRadius: 10,
   border: '1px solid rgba(250, 204, 21, 0.14)',
   background: 'rgba(2, 6, 23, 0.86)',
   color: '#f8fafc',
   outline: 'none',
-  padding: '8px 10px',
+  padding: '7px 10px',
   fontWeight: 800,
   fontSize: 12,
 };
