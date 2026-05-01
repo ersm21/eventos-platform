@@ -13,6 +13,7 @@ type Product = {
   price: number | null;
   category: string | null;
   is_active: boolean | null;
+  image_url: string | null;
 };
 
 type QuoteItem = Product & {
@@ -317,6 +318,7 @@ export default function CotizarPage() {
       quote_id: quoteData.id,
       product_id: item.id,
       product_name: item.name,
+      product_image_url: item.image_url ?? null,
       unit_price: item.price ?? 0,
       quantity: item.quantity,
       subtotal: Number(item.price ?? 0) * item.quantity,
@@ -465,6 +467,19 @@ export default function CotizarPage() {
                         <div style={productListStyle}>
                           {categoryProducts.map((product) => (
                             <article key={product.id} style={productCardStyle}>
+                  <div style={productThumbWrapStyle}>
+                    {product.image_url ? (
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        style={productThumbStyle}
+                      />
+                    ) : (
+                      <div style={productThumbPlaceholderStyle}>
+                        {product.category || 'SM'}
+                      </div>
+                    )}
+                  </div>
                               <div>
                                 <h4 style={productNameStyle}>{product.name}</h4>
                                 <p style={productDescriptionStyle}>
@@ -865,6 +880,44 @@ const productListStyle: React.CSSProperties = {
   display: 'grid',
   gap: 8,
   padding: 10,
+};
+
+const productThumbWrapStyle: React.CSSProperties = {
+  width: '100%',
+  height: 92,
+  borderRadius: 16,
+  overflow: 'hidden',
+  background:
+    'linear-gradient(135deg, rgba(2,6,23,0.90), rgba(15,23,42,0.90))',
+  border: '1px solid rgba(250,204,21,0.12)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginBottom: 12,
+};
+
+const productThumbStyle: React.CSSProperties = {
+  width: '100%',
+  height: '100%',
+  objectFit: 'contain',
+  objectPosition: 'center',
+  display: 'block',
+  padding: 8,
+};
+
+const productThumbPlaceholderStyle: React.CSSProperties = {
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: '#fbbf24',
+  fontSize: 12,
+  fontWeight: 900,
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+  background:
+    'radial-gradient(circle at 20% 20%, rgba(250,204,21,0.18), transparent 30%), rgba(2,6,23,0.66)',
 };
 
 const productCardStyle: React.CSSProperties = {
