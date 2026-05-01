@@ -65,7 +65,45 @@ const categoryVisuals: Record<string, { label: string; description: string }> = 
 };
 
 function normalizeCategory(category: string | null | undefined) {
-  return category?.trim() || 'General';
+  const cleanCategory = category?.trim() || 'General';
+  const lowerCategory = cleanCategory.toLowerCase();
+
+  if (
+    lowerCategory.includes('pantalla') ||
+    lowerCategory.includes('pantallas') ||
+    lowerCategory.includes('led') ||
+    lowerCategory.includes('video')
+  ) {
+    return 'Pantallas LED';
+  }
+
+  if (
+    lowerCategory.includes('efecto') ||
+    lowerCategory.includes('confeti') ||
+    lowerCategory.includes('humo') ||
+    lowerCategory.includes('spark') ||
+    lowerCategory.includes('chisp')
+  ) {
+    return 'Efectos especiales';
+  }
+
+  if (lowerCategory.includes('ilumin')) {
+    return 'Iluminación';
+  }
+
+  if (lowerCategory.includes('tarima')) {
+    return 'Tarimas';
+  }
+
+  if (lowerCategory.includes('truss')) {
+    return 'Truss';
+  }
+
+  if (lowerCategory.includes('audio') || lowerCategory.includes('sonido')) {
+    return 'Audio';
+  }
+
+  return cleanCategory;
 }
 
 export default function CatalogoPage() {
