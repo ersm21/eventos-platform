@@ -49,17 +49,60 @@ function calculateTechnicalSupport(value: number | null | undefined) {
   return 0;
 }
 
-function calculateTaxableBase(value: number | null | undefined) {
+function normalizeTransportText(value: string | null | undefined) {
+  return String(value ?? '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function calculateTransport(
+  value: number | null | undefined,
+  locationText?: string | null
+) {
   const subtotal = Number(value ?? 0);
-  return subtotal + calculateTechnicalSupport(subtotal);
+  const location = normalizeTransportText(locationText);
+
+  if (subtotal <= 0) return 0;
+
+  if (location.includes('punta cana')) return 30000;
+  if (location.includes('bavaro')) return 30000;
+  if (location.includes('la romana')) return 30000;
+  if (location.includes('mao')) return 20000;
+  if (location.includes('santo domingo')) return 20000;
+  if (location.includes('puerto plata')) return 15000;
+  if (location.includes('la vega')) return 10000;
+  if (location.includes('moca')) return 7000;
+  if (location.includes('santiago')) return 7000;
+
+  return 0;
 }
 
-function calculateItbis(value: number | null | undefined) {
-  return calculateTaxableBase(value) * 0.18;
+function calculateTaxableBase(
+  value: number | null | undefined,
+  locationText?: string | null
+) {
+  const subtotal = Number(value ?? 0);
+
+  return (
+    subtotal +
+    calculateTechnicalSupport(subtotal) +
+    calculateTransport(subtotal, locationText)
+  );
 }
 
-function calculateTotalWithItbis(value: number | null | undefined) {
-  return calculateTaxableBase(value) * 1.18;
+function calculateItbis(
+  value: number | null | undefined,
+  locationText?: string | null
+) {
+  return calculateTaxableBase(value, locationText) * 0.18;
+}
+
+function calculateTotalWithItbis(
+  value: number | null | undefined,
+  locationText?: string | null
+) {
+  return calculateTaxableBase(value, locationText) * 1.18;
 }
 
 function formatDate(value: string | null | undefined) {
