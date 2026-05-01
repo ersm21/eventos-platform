@@ -185,3 +185,20 @@ textarea {
     max-width: calc(100vw - 18px) !important;
   }
 }
+
+/* Mobile collapsible navbar */
+@media (max-width: 768px) {
+  header nav {
+    display: var(--mobile-menu-display, none) !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  header button[aria-expanded] {
+    display: inline-flex !important;
+  }
+
+  header a[href="/"] {
+    width: auto !important;
+    justify-content: flex-start !important;
+  }
+}

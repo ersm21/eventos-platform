@@ -14,6 +14,7 @@ export default function AppNavbar({
   ctaLabel = 'Cotizar ahora',
 }: AppNavbarProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -45,53 +46,65 @@ export default function AppNavbar({
   return (
     <header style={navbarStyle}>
       <div style={navbarInnerStyle}>
-        <Link href="/" style={brandLinkStyle}>
-          <div style={logoStyle}>
-            <img src="/sm-logo.png" alt="SM Events" style={logoImageStyle} />
-          </div>
+        <div style={mobileTopRowStyle}>
+          <Link href="/" style={brandLinkStyle} onClick={() => setMobileMenuOpen(false)}>
+            <div style={logoStyle}>
+              <img src="/sm-logo.png" alt="SM Events" style={logoImageStyle} />
+            </div>
 
-          <div>
-            <p style={brandSubtitleStyle}>Producción de eventos</p>
-          </div>
-        </Link>
+            <div>
+              <p style={brandSubtitleStyle}>Producción de eventos</p>
+            </div>
+          </Link>
 
-        <nav style={navStyle}>
-          <Link href="/" style={navLinkStyle}>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((current) => !current)}
+            style={mobileMenuButtonStyle}
+            aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? 'Cerrar' : 'Menú'}
+          </button>
+        </div>
+
+        <nav style={getNavStyle(mobileMenuOpen)}>
+          <Link href="/" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}>
             Inicio
           </Link>
 
-          <Link href="/catalogo" style={navLinkStyle}>
+          <Link href="/catalogo" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}>
             Catálogo
           </Link>
 
-          <Link href="/galeria" style={navLinkStyle}>
+          <Link href="/galeria" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}>
             Galería
           </Link>
 
-          <Link href="/feed" style={navLinkStyle}>
+          <Link href="/feed" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}>
             Feed
           </Link>
 
-          <Link href="/cotizar" style={navLinkStyle}>
+          <Link href="/cotizar" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}>
             Cotizar
           </Link>
 
-          <Link href="/my-quotes" style={navLinkStyle}>
+          <Link href="/my-quotes" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}>
             Mis cotizaciones
           </Link>
 
-          <Link href="/my-meetings" style={navLinkStyle}>
+          <Link href="/my-meetings" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}>
             Mis reuniones
           </Link>
 
           {isLoggedIn && (
-            <Link href="/profile" style={navLinkStyle}>
+            <Link href="/profile" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}>
               Mi perfil
             </Link>
           )}
 
           {!isLoggedIn ? (
-            <Link href="/login" style={navLinkStyle}>
+            <Link href="/login" style={navLinkStyle} onClick={() => setMobileMenuOpen(false)}>
               Login
             </Link>
           ) : (
@@ -100,7 +113,7 @@ export default function AppNavbar({
             </button>
           )}
 
-          <Link href={ctaHref} style={ctaButtonStyle}>
+          <Link href={ctaHref} style={ctaButtonStyle} onClick={() => setMobileMenuOpen(false)}>
             {ctaLabel}
           </Link>
         </nav>
@@ -108,6 +121,34 @@ export default function AppNavbar({
     </header>
   );
 }
+
+function getNavStyle(mobileMenuOpen: boolean): React.CSSProperties {
+  return {
+    ...navStyle,
+    ['--mobile-menu-display' as string]: mobileMenuOpen ? 'grid' : 'none',
+  };
+}
+
+const mobileTopRowStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 14,
+  width: '100%',
+};
+
+const mobileMenuButtonStyle: React.CSSProperties = {
+  display: 'none',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '10px 13px',
+  borderRadius: 14,
+  border: '1px solid rgba(250, 204, 21, 0.22)',
+  background: 'rgba(250, 204, 21, 0.10)',
+  color: '#fde68a',
+  fontWeight: 900,
+  cursor: 'pointer',
+};
 
 const navbarStyle: React.CSSProperties = {
   position: 'sticky',
