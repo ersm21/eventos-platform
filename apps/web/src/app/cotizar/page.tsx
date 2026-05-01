@@ -424,7 +424,7 @@ export default function CotizarPage() {
               Ciudad del evento
             </h1>
             <p style={locationHeroTextStyle}>
-              Selecciona la ciudad para calcular el transporte automáticamente.
+              Calculamos el transporte según la ciudad.
             </p>
           </div>
 
@@ -461,15 +461,7 @@ export default function CotizarPage() {
         )}
 
         {isLoggedIn && sessionEmail && (
-          <section style={sessionBoxStyle}>
-            <div>
-              <p style={sectionEyebrowStyle}>Sesión activa</p>
-              <h2 style={sessionTitleStyle}>Cotizando como cliente</h2>
-              <p style={sessionTextStyle}>
-                Entraste como {sessionEmail}. Esta cotización quedará vinculada a tu cuenta.
-              </p>
-            </div>
-          </section>
+          
         )}
 
         {error && <div style={errorBoxStyle}>{error}</div>}
@@ -768,45 +760,46 @@ const containerStyle: React.CSSProperties = {
 };
 
 const locationHeroStyle: React.CSSProperties = {
-  marginTop: 12,
-  display: 'grid',
-  gridTemplateColumns: '1fr 300px',
-  gap: 14,
+  marginTop: 10,
+  display: 'flex',
   alignItems: 'center',
-  background:
-    'linear-gradient(135deg, rgba(15,23,42,0.78) 0%, rgba(30,27,75,0.36) 52%, rgba(9,14,28,0.84) 100%)',
-  border: '1px solid rgba(250, 204, 21, 0.12)',
-  borderRadius: 22,
-  padding: '16px 18px',
-  boxShadow: '0 18px 42px rgba(0,0,0,0.18)',
+  justifyContent: 'space-between',
+  gap: 14,
+  background: 'rgba(15, 23, 42, 0.58)',
+  border: '1px solid rgba(250, 204, 21, 0.10)',
+  borderRadius: 18,
+  padding: '12px 14px',
+  boxShadow: '0 14px 32px rgba(0,0,0,0.14)',
 };
 
 const locationHeroTitleStyle: React.CSSProperties = {
-  margin: '6px 0 6px',
-  fontSize: 24,
+  margin: '4px 0 2px',
+  fontSize: 20,
   lineHeight: 1.08,
   letterSpacing: '-0.03em',
 };
 
 const locationHeroTextStyle: React.CSSProperties = {
   margin: 0,
-  color: '#a8b8ce',
-  lineHeight: 1.5,
-  fontSize: 13,
+  color: '#94a3b8',
+  lineHeight: 1.35,
+  fontSize: 12,
 };
 
 const locationSelectWrapStyle: React.CSSProperties = {
+  width: 260,
   display: 'grid',
-  gap: 7,
-  background: 'rgba(2, 6, 23, 0.36)',
-  border: '1px solid rgba(250, 204, 21, 0.13)',
-  borderRadius: 16,
-  padding: 10,
+  gap: 6,
+  background: 'rgba(2, 6, 23, 0.32)',
+  border: '1px solid rgba(250, 204, 21, 0.11)',
+  borderRadius: 14,
+  padding: 8,
+  flexShrink: 0,
 };
 
 const locationSelectLabelStyle: React.CSSProperties = {
   color: '#fbbf24',
-  fontSize: 10,
+  fontSize: 9,
   fontWeight: 900,
   textTransform: 'uppercase',
   letterSpacing: '0.08em',
@@ -814,15 +807,15 @@ const locationSelectLabelStyle: React.CSSProperties = {
 
 const locationSelectStyle: React.CSSProperties = {
   width: '100%',
-  minHeight: 42,
-  borderRadius: 12,
-  border: '1px solid rgba(250, 204, 21, 0.16)',
-  background: 'rgba(2, 6, 23, 0.82)',
+  minHeight: 38,
+  borderRadius: 10,
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  background: 'rgba(2, 6, 23, 0.86)',
   color: '#f8fafc',
   outline: 'none',
-  padding: '9px 11px',
+  padding: '8px 10px',
   fontWeight: 800,
-  fontSize: 13,
+  fontSize: 12,
 };
 
 const heroCardStyle: React.CSSProperties = {
