@@ -20,6 +20,15 @@ type QuoteItem = Product & {
   quantity: number;
 };
 
+function getCategoryElementId(category: string) {
+  return `quote-category-${category
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')}`;
+}
+
 function formatMoney(value: number | null | undefined) {
   return `$${Number(value ?? 0).toLocaleString()}`;
 }
@@ -193,6 +202,19 @@ export default function CotizarPage() {
       ...prev,
       [category]: !prev[category],
     }));
+  };
+
+  const openCategory = (category: string) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [category]: true,
+    }));
+
+    window.setTimeout(() => {
+      document
+        .getElementById(getCategoryElementId(category))
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
   };
 
   const addToQuote = (product: Product) => {
@@ -441,13 +463,34 @@ export default function CotizarPage() {
                 <p style={mutedTextStyle}>Todavía no hay servicios disponibles.</p>
               </div>
             ) : (
+              <div style={categoryTabsStyle}>
+                {productCategories.map((category) => {
+                  const isActive = !!expandedCategories[category];
+
+                  return (
+                    <button
+                      key={category}
+                      type="button"
+                      onClick={() => openCategory(category)}
+                      style={isActive ? categoryTabButtonActiveStyle : categoryTabButtonStyle}
+                    >
+                      {category}
+                    </button>
+                  );
+                })}
+              </div>
+
               <div style={categoryListStyle}>
                 {productCategories.map((category) => {
                   const isOpen = !!expandedCategories[category];
                   const categoryProducts = productsByCategory[category] || [];
 
                   return (
-                    <section key={category} style={categorySectionStyle}>
+                    <section
+                      id={getCategoryElementId(category)}
+                      key={category}
+                      style={categorySectionStyle}
+                    >
                       <button
                         type="button"
                         onClick={() => toggleCategory(category)}
@@ -821,6 +864,36 @@ const softBoxStyle: React.CSSProperties = {
 const mutedTextStyle: React.CSSProperties = {
   margin: 0,
   color: '#94a3b8',
+};
+
+const categoryTabsStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: 8,
+  overflowX: 'auto',
+  padding: '4px 2px 12px',
+  marginTop: 16,
+  marginBottom: 4,
+  WebkitOverflowScrolling: 'touch',
+};
+
+const categoryTabButtonStyle: React.CSSProperties = {
+  flexShrink: 0,
+  border: '1px solid rgba(250,204,21,0.16)',
+  background: 'rgba(2,6,23,0.46)',
+  color: '#cbd5e1',
+  borderRadius: 999,
+  padding: '9px 13px',
+  fontSize: 12,
+  fontWeight: 900,
+  cursor: 'pointer',
+  whiteSpace: 'nowrap',
+};
+
+const categoryTabButtonActiveStyle: React.CSSProperties = {
+  ...categoryTabButtonStyle,
+  background: 'linear-gradient(135deg, rgba(245,158,11,0.26), rgba(168,85,247,0.22))',
+  color: '#fde68a',
+  border: '1px solid rgba(250,204,21,0.34)',
 };
 
 const categoryListStyle: React.CSSProperties = {
