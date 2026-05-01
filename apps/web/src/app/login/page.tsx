@@ -70,6 +70,24 @@ export default function LoginPage() {
     }
   };
 
+  const loginWithFacebook = async () => {
+    setLoading(true);
+    setError(null);
+
+    const { error: facebookError } = await supabase.auth.signInWithOAuth({
+      provider: 'facebook',
+      options: {
+        redirectTo: `${window.location.origin}/profile`,
+      },
+    });
+
+    if (facebookError) {
+      setError(facebookError.message);
+      setLoading(false);
+    }
+  };
+
+
   return (
     <main style={pageStyle}>
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
@@ -110,6 +128,15 @@ export default function LoginPage() {
               }}
             >
               {googleLoading ? 'Abriendo Google...' : 'Continuar con Google'}
+            </button>
+
+            <button
+              type="button"
+              onClick={loginWithFacebook}
+              disabled={loading}
+              style={googleButtonStyle}
+            >
+              Continuar con Facebook
             </button>
 
             <div style={dividerWrapStyle}>
