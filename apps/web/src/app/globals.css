@@ -68,3 +68,120 @@ textarea {
   background: rgba(96, 165, 250, 0.32);
   color: white;
 }
+/* Mobile optimization for SM Events web */
+@media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: hidden !important;
+  }
+
+  main {
+    padding: 14px 10px 120px !important;
+  }
+
+  header {
+    position: relative !important;
+    top: 0 !important;
+    margin-bottom: 14px !important;
+    padding: 10px !important;
+    border-radius: 18px !important;
+  }
+
+  header > div {
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  header a[href="/"] {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  header nav {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  header nav a,
+  header nav button {
+    width: 100% !important;
+    min-height: 42px !important;
+    justify-content: center !important;
+    text-align: center !important;
+    font-size: 12px !important;
+    padding: 9px 8px !important;
+  }
+
+  section {
+    border-radius: 18px !important;
+  }
+
+  h1 {
+    font-size: 32px !important;
+    line-height: 1.05 !important;
+  }
+
+  h2 {
+    font-size: 24px !important;
+    line-height: 1.12 !important;
+  }
+
+  h3 {
+    font-size: 18px !important;
+  }
+
+  p {
+    font-size: 14px !important;
+  }
+
+  input,
+  textarea,
+  select,
+  button,
+  a {
+    max-width: 100% !important;
+  }
+
+  img,
+  video,
+  iframe {
+    max-width: 100% !important;
+  }
+
+  iframe {
+    min-height: 260px !important;
+  }
+
+  [style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 520px) {
+  header nav {
+    grid-template-columns: 1fr !important;
+  }
+
+  header img[alt="SM Events"] {
+    max-height: 54px !important;
+  }
+
+  main {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  section {
+    padding: 14px !important;
+  }
+
+  h1 {
+    font-size: 29px !important;
+  }
+
+  [style*="position: fixed"] {
+    max-width: calc(100vw - 18px) !important;
+  }
+}
