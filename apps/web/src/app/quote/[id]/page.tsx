@@ -1026,7 +1026,6 @@ export default function QuoteDetailPage({
         </div>
       </div>
     </main>
-    </>
   );
 }
 
