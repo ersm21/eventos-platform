@@ -28,6 +28,7 @@ type QuoteItem = {
   quote_id: string;
   product_name: string;
   product_image_url: string | null;
+  product_description: string | null;
   unit_price: number;
   quantity: number;
   subtotal: number;
@@ -84,6 +85,30 @@ function calculateTaxableBase(
   const subtotal = Number(value ?? 0);
 
   return (
+    <>
+      <style jsx global>{`
+        @media print {
+          .no-print,
+          [data-no-print="true"],
+          button,
+          nav,
+          header,
+          [style*="position: fixed"],
+          [style*="position:fixed"] {
+            display: none !important;
+            visibility: hidden !important;
+          }
+
+          body {
+            background: #ffffff !important;
+          }
+
+          .sm-events-print-cleanup {
+            display: block !important;
+          }
+        }
+      `}</style>
+
     subtotal +
     calculateTechnicalSupport(subtotal) +
     calculateTransport(subtotal, locationText)
@@ -517,7 +542,14 @@ export default function QuoteDetailPage({
                         style={printItemImageStyle}
                       />
                     )}
-                    <strong>{item.product_name}</strong>
+                    <div>
+                      <strong>{item.product_name}</strong>
+                      {item.product_description && (
+                        <p style={printItemDescriptionStyle}>
+                          {item.product_description}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <span>{Number(item.quantity ?? 0)}</span>
                   <span>{formatMoney(item.unit_price)}</span>
@@ -637,7 +669,14 @@ export default function QuoteDetailPage({
                         style={printItemImageStyle}
                       />
                     )}
-                    <strong>{item.product_name}</strong>
+                    <div>
+                      <strong>{item.product_name}</strong>
+                      {item.product_description && (
+                        <p style={printItemDescriptionStyle}>
+                          {item.product_description}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <span>{Number(item.quantity ?? 0)}</span>
                   <span>______________________________</span>
@@ -975,6 +1014,7 @@ export default function QuoteDetailPage({
         </div>
       </div>
     </main>
+    </>
   );
 }
 
@@ -1649,3 +1689,11 @@ const conduceSignatureLineStyle: React.CSSProperties = {
   marginBottom: 8,
 };
 
+
+const printItemDescriptionStyle: React.CSSProperties = {
+  margin: '4px 0 0',
+  color: '#64748b',
+  fontSize: 11,
+  lineHeight: 1.35,
+  fontWeight: 500,
+};

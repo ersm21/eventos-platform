@@ -2380,7 +2380,7 @@ export default function AdminPage() {
                     </p>
                     <p style={rowTextStyle}>
                       <strong>Base para ITBIS:</strong>{' '}
-                      {formatMoney(calculateTaxableBase(getQuoteBaseTotal(quote, itemsForQuote)))}
+                      {formatMoney(calculateTaxableBase(getQuoteBaseTotal(quote, itemsForQuote), quote.notes))}
                     </p>
                     <p style={rowTextStyle}>
                       <strong>ITBIS 18%:</strong>{' '}

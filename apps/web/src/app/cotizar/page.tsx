@@ -358,6 +358,7 @@ export default function CotizarPage() {
       product_id: item.id,
       product_name: item.name,
       product_image_url: item.image_url ?? null,
+      product_description: item.description ?? null,
       unit_price: item.price ?? 0,
       quantity: item.quantity,
       subtotal: Number(item.price ?? 0) * item.quantity,
