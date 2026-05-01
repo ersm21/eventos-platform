@@ -447,6 +447,17 @@ export default function QuoteDetailPage({
             padding: 0 !important;
           }
 
+          .no-print,
+          [data-no-print="true"],
+          button,
+          nav,
+          header:not(.print-estimate header):not(.print-conduce header),
+          [style*="position: fixed"],
+          [style*="position:fixed"] {
+            display: none !important;
+            visibility: hidden !important;
+          }
+
           * {
             box-shadow: none !important;
             text-shadow: none !important;
@@ -519,7 +530,9 @@ export default function QuoteDetailPage({
                       />
                     )}
                     <div>
-                      <strong>{item.product_name}</strong>
+                      <strong style={printItemProductNameStyle}>
+                        {item.product_name}
+                      </strong>
                       {item.product_description && (
                         <p style={printItemDescriptionStyle}>
                           {item.product_description}
@@ -527,9 +540,15 @@ export default function QuoteDetailPage({
                       )}
                     </div>
                   </div>
-                  <span>{Number(item.quantity ?? 0)}</span>
-                  <span>{formatMoney(item.unit_price)}</span>
-                  <strong>{formatMoney(item.subtotal)}</strong>
+                  <span style={printNumberCellStyle}>
+                    {Number(item.quantity ?? 0)}
+                  </span>
+                  <span style={printNumberCellStyle}>
+                    {formatMoney(item.unit_price)}
+                  </span>
+                  <strong style={printNumberStrongCellStyle}>
+                    {formatMoney(item.subtotal)}
+                  </strong>
                 </div>
               ))
             )}
@@ -557,12 +576,24 @@ export default function QuoteDetailPage({
                 <strong>{formatMoney(finalTotal)}</strong>
               </div>
               <div style={printTotalRowStyle}>
+                <span>Soporte técnico</span>
+                <strong>{formatMoney(calculateTechnicalSupport(finalTotal))}</strong>
+              </div>
+              <div style={printTotalRowStyle}>
+                <span>Transporte</span>
+                <strong>{formatMoney(calculateTransport(finalTotal, quote.notes))}</strong>
+              </div>
+              <div style={printTotalRowStyle}>
+                <span>Base para ITBIS</span>
+                <strong>{formatMoney(calculateTaxableBase(finalTotal, quote.notes))}</strong>
+              </div>
+              <div style={printTotalRowStyle}>
                 <span>ITBIS 18%</span>
-                <strong>{formatMoney(itbisAmount)}</strong>
+                <strong>{formatMoney(calculateItbis(finalTotal, quote.notes))}</strong>
               </div>
               <div style={printGrandTotalRowStyle}>
                 <span>Total con ITBIS</span>
-                <strong>{formatMoney(totalWithItbis)}</strong>
+                <strong>{formatMoney(calculateTotalWithItbis(finalTotal, quote.notes))}</strong>
               </div>
               <div style={printDepositRowStyle}>
                 <span>Depósito requerido</span>
@@ -1243,7 +1274,7 @@ const fileInputStyle: React.CSSProperties = {
 const printItemNameWrapStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  gap: 8,
+  gap: 10,
   minWidth: 0,
 };
 
@@ -1397,27 +1428,28 @@ const printTableSectionStyle: React.CSSProperties = {
 
 const printTableHeaderStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '1fr 70px 110px 115px',
-  gap: 10,
-  background: '#111827',
+  gridTemplateColumns: '1fr 70px 100px 100px',
+  gap: 12,
+  alignItems: 'center',
+  background: '#0f172a',
   color: '#ffffff',
   padding: '12px 14px',
+  borderRadius: '14px 14px 0 0',
   fontSize: 11,
-  fontWeight: 950,
+  fontWeight: 900,
   textTransform: 'uppercase',
-  letterSpacing: '0.07em',
+  letterSpacing: '0.08em',
 };
 
 const printTableRowStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '1fr 70px 110px 115px',
-  gap: 10,
-  padding: '13px 14px',
-  borderTop: '1px solid #e5e7eb',
-  color: '#111827',
-  fontSize: 12,
+  gridTemplateColumns: '1fr 70px 100px 100px',
+  gap: 12,
   alignItems: 'center',
-  background: '#ffffff',
+  padding: '12px 14px',
+  borderBottom: '1px solid #e5e7eb',
+  breakInside: 'avoid',
+  pageBreakInside: 'avoid',
 };
 
 const printTableEmptyStyle: React.CSSProperties = {
@@ -1665,10 +1697,30 @@ const conduceSignatureLineStyle: React.CSSProperties = {
 };
 
 
+const printItemProductNameStyle: React.CSSProperties = {
+  display: 'block',
+  color: '#111827',
+  fontSize: 13,
+  lineHeight: 1.2,
+};
+
+const printNumberCellStyle: React.CSSProperties = {
+  textAlign: 'right',
+  color: '#111827',
+  fontSize: 12,
+};
+
+const printNumberStrongCellStyle: React.CSSProperties = {
+  textAlign: 'right',
+  color: '#111827',
+  fontSize: 12,
+  fontWeight: 900,
+};
+
 const printItemDescriptionStyle: React.CSSProperties = {
   margin: '4px 0 0',
   color: '#64748b',
-  fontSize: 11,
+  fontSize: 10.5,
   lineHeight: 1.35,
   fontWeight: 500,
 };
