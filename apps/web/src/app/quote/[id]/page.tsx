@@ -85,30 +85,6 @@ function calculateTaxableBase(
   const subtotal = Number(value ?? 0);
 
   return (
-    <>
-      <style jsx global>{`
-        @media print {
-          .no-print,
-          [data-no-print="true"],
-          button,
-          nav,
-          header,
-          [style*="position: fixed"],
-          [style*="position:fixed"] {
-            display: none !important;
-            visibility: hidden !important;
-          }
-
-          body {
-            background: #ffffff !important;
-          }
-
-          .sm-events-print-cleanup {
-            display: block !important;
-          }
-        }
-      `}</style>
-
     subtotal +
     calculateTechnicalSupport(subtotal) +
     calculateTransport(subtotal, locationText)
