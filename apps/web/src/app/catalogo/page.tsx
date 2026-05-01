@@ -634,8 +634,13 @@ const productCardStyle: React.CSSProperties = {
 const productImageStyle: React.CSSProperties = {
   width: '100%',
   height: 132,
-  objectFit: 'cover',
+  objectFit: 'contain',
+  objectPosition: 'center',
   display: 'block',
+  padding: 10,
+  background:
+    'linear-gradient(135deg, rgba(2,6,23,0.92), rgba(15,23,42,0.92))',
+  borderBottom: '1px solid rgba(250,204,21,0.10)',
 };
 
 const productImagePlaceholderStyle: React.CSSProperties = {
