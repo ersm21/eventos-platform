@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ChatBot from "../components/ChatBot";
+import AmbientMusicPlayer from '../components/AmbientMusicPlayer';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         {children}
+        <AmbientMusicPlayer />
         <ChatBot />
       </body>
     </html>

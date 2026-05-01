@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabase/client';
 import AppNavbar from '../components/AppNavbar';
-import AmbientMusicPlayer from '../components/AmbientMusicPlayer';
 
 type Product = {
   id: string;
@@ -485,7 +484,6 @@ export default function Home() {
         </section>
       </div>
 
-      <AmbientMusicPlayer />
     </main>
   );
 }
