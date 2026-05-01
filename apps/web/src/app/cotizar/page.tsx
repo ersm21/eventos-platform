@@ -460,10 +460,6 @@ export default function CotizarPage() {
           </section>
         )}
 
-        {isLoggedIn && sessionEmail && (
-          
-        )}
-
         {error && <div style={errorBoxStyle}>{error}</div>}
         {successMessage && <div style={successBoxStyle}>{successMessage}</div>}
 
