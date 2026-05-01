@@ -797,7 +797,6 @@ const quotePanelStyle: React.CSSProperties = {
 };
 
 const panelHeaderStyle: React.CSSProperties = {
-  marginBottom: 12,
 };
 
 const panelTitleStyle: React.CSSProperties = {
@@ -883,9 +882,9 @@ const productListStyle: React.CSSProperties = {
 };
 
 const productThumbWrapStyle: React.CSSProperties = {
-  width: '100%',
-  height: 92,
-  borderRadius: 16,
+  width: 56,
+  height: 56,
+  borderRadius: 14,
   overflow: 'hidden',
   background:
     'linear-gradient(135deg, rgba(2,6,23,0.90), rgba(15,23,42,0.90))',
@@ -893,7 +892,7 @@ const productThumbWrapStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  marginBottom: 12,
+  flexShrink: 0,
 };
 
 const productThumbStyle: React.CSSProperties = {
@@ -902,7 +901,7 @@ const productThumbStyle: React.CSSProperties = {
   objectFit: 'contain',
   objectPosition: 'center',
   display: 'block',
-  padding: 8,
+  padding: 6,
 };
 
 const productThumbPlaceholderStyle: React.CSSProperties = {
@@ -912,23 +911,24 @@ const productThumbPlaceholderStyle: React.CSSProperties = {
   alignItems: 'center',
   justifyContent: 'center',
   color: '#fbbf24',
-  fontSize: 12,
+  fontSize: 10,
   fontWeight: 900,
   textTransform: 'uppercase',
-  letterSpacing: '0.08em',
+  letterSpacing: '0.06em',
   background:
     'radial-gradient(circle at 20% 20%, rgba(250,204,21,0.18), transparent 30%), rgba(2,6,23,0.66)',
 };
 
 const productCardStyle: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'minmax(0, 1fr) auto',
-  gap: 12,
-  alignItems: 'center',
-  padding: 12,
   borderRadius: 16,
   background: 'rgba(15,23,42,0.64)',
   border: '1px solid rgba(148,163,184,0.10)',
+  display: 'grid',
+  gridTemplateColumns: '56px 1fr auto',
+  alignItems: 'center',
+  gap: 12,
+  minHeight: 92,
+  padding: 12,
 };
 
 const productNameStyle: React.CSSProperties = {
