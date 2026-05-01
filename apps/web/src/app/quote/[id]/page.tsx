@@ -500,7 +500,7 @@ export default function QuoteDetailPage({
                 <td style={printInfoTableCellStyle}>
                   <p style={printSectionLabelStyle}>Resumen</p>
                   <p style={printMutedStyle}>Estado: {getStatusLabel(quote.status)}</p>
-                  <p style={printMutedStyle}>Depósito: {getDepositStatusLabel(quote.deposit_status)}</p>
+                  <p style={printMutedStyle}>Depósito: {quote.deposit_status || 'Pendiente'}</p>
                   <p style={printMutedStyle}>Referencia: {quote.deposit_reference || '—'}</p>
                   <p style={printMutedStyle}>Cotización ID: {quote.id}</p>
                 </td>
