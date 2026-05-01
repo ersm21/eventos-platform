@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 const MUSIC_STORAGE_KEY = 'sm_events_music_enabled';
+const MUSIC_VOLUME_KEY = 'sm_events_music_volume';
 
 export default function AmbientMusicPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -11,15 +12,24 @@ export default function AmbientMusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [wasBlocked, setWasBlocked] = useState(false);
+  const [volume, setVolume] = useState(14);
 
   useEffect(() => {
     const audio = new Audio('/audio/sm-ambient.mp3');
     const savedPreference = localStorage.getItem(MUSIC_STORAGE_KEY);
+    const savedVolume = Number(localStorage.getItem(MUSIC_VOLUME_KEY) || 14);
+    const safeVolume = Number.isFinite(savedVolume)
+      ? Math.min(100, Math.max(0, savedVolume))
+      : 14;
 
     audio.loop = true;
-    audio.volume = 0.14;
+    audio.preload = 'auto';
+    audio.volume = safeVolume / 100;
+
     audioRef.current = audio;
     manualPauseRef.current = savedPreference === 'false';
+
+    setVolume(safeVolume);
     setIsReady(true);
 
     const startMusic = async () => {
@@ -46,11 +56,14 @@ export default function AmbientMusicPlayer() {
     window.addEventListener('click', startAfterInteraction);
     window.addEventListener('touchstart', startAfterInteraction);
     window.addEventListener('keydown', startAfterInteraction);
+    window.addEventListener('scroll', startAfterInteraction, { once: false });
 
     return () => {
       window.removeEventListener('click', startAfterInteraction);
       window.removeEventListener('touchstart', startAfterInteraction);
       window.removeEventListener('keydown', startAfterInteraction);
+      window.removeEventListener('scroll', startAfterInteraction);
+
       audio.pause();
       audioRef.current = null;
     };
@@ -82,40 +95,103 @@ export default function AmbientMusicPlayer() {
     }
   };
 
+  const updateVolume = async (nextVolume: number) => {
+    const safeVolume = Math.min(100, Math.max(0, nextVolume));
+    const audio = audioRef.current;
+
+    setVolume(safeVolume);
+    localStorage.setItem(MUSIC_VOLUME_KEY, String(safeVolume));
+
+    if (audio) {
+      audio.volume = safeVolume / 100;
+    }
+
+    if (audio && audio.paused && !manualPauseRef.current && safeVolume > 0) {
+      try {
+        await audio.play();
+        setIsPlaying(true);
+        setWasBlocked(false);
+        localStorage.setItem(MUSIC_STORAGE_KEY, 'true');
+      } catch {
+        setWasBlocked(true);
+      }
+    }
+  };
+
   return (
-    <button
-      type="button"
-      onClick={toggleMusic}
-      disabled={!isReady}
-      aria-label={isPlaying ? 'Pausar música ambiente' : 'Activar música ambiente'}
+    <div
       style={{
         position: 'fixed',
         left: 18,
         bottom: 18,
         zIndex: 100,
-        display: 'inline-flex',
-        alignItems: 'center',
+        display: 'grid',
         gap: 8,
-        padding: '11px 14px',
-        borderRadius: 999,
+        padding: 12,
+        borderRadius: 18,
         border: '1px solid rgba(250, 204, 21, 0.24)',
-        background: 'rgba(2, 6, 23, 0.82)',
+        background: 'rgba(2, 6, 23, 0.84)',
         color: '#fde68a',
-        fontWeight: 900,
-        cursor: isReady ? 'pointer' : 'not-allowed',
         boxShadow: '0 14px 30px rgba(0,0,0,0.28)',
         backdropFilter: 'blur(14px)',
         WebkitBackdropFilter: 'blur(14px)',
+        minWidth: 210,
       }}
     >
-      <span>{isPlaying ? '⏸' : '♪'}</span>
-      <span>
-        {isPlaying
-          ? 'Pausar ambiente'
-          : wasBlocked
-            ? 'Activar ambiente'
-            : 'Ambiente'}
-      </span>
-    </button>
+      <button
+        type="button"
+        onClick={toggleMusic}
+        disabled={!isReady}
+        aria-label={isPlaying ? 'Pausar música ambiente' : 'Activar música ambiente'}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 8,
+          width: '100%',
+          padding: 0,
+          border: 'none',
+          background: 'transparent',
+          color: '#fde68a',
+          fontWeight: 900,
+          cursor: isReady ? 'pointer' : 'not-allowed',
+        }}
+      >
+        <span>{isPlaying ? '⏸ Pausar ambiente' : wasBlocked ? '♪ Activar ambiente' : '♪ Ambiente'}</span>
+        <span
+          style={{
+            color: isPlaying ? '#86efac' : '#fbbf24',
+            fontSize: 11,
+            fontWeight: 900,
+          }}
+        >
+          {isPlaying ? 'ON' : 'OFF'}
+        </span>
+      </button>
+
+      <label
+        style={{
+          display: 'grid',
+          gap: 5,
+          color: '#cbd5e1',
+          fontSize: 11,
+          fontWeight: 800,
+        }}
+      >
+        Volumen {volume}%
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={volume}
+          onChange={(event) => updateVolume(Number(event.target.value))}
+          style={{
+            width: '100%',
+            accentColor: '#fbbf24',
+            cursor: 'pointer',
+          }}
+        />
+      </label>
+    </div>
   );
 }
