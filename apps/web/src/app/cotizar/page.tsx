@@ -478,8 +478,6 @@ export default function CotizarPage() {
                     </button>
                   );
                 })}
-              </div>
-
               <div style={categoryListStyle}>
                 {productCategories.map((category) => {
                   const isOpen = !!expandedCategories[category];
