@@ -494,15 +494,15 @@ export default function QuoteDetailPage({
                 <td style={printInfoTableCellStyle}>
                   <p style={printSectionLabelStyle}>Cliente</p>
                   <strong style={printClientNameStyle}>{quote.customer_name || 'Cliente'}</strong>
-                  <p style={printMutedTextStyle}>{quote.customer_email || '—'}</p>
-                  <p style={printMutedTextStyle}>Evento: {quote.event_type || '—'}</p>
+                  <p style={printMutedStyle}>{quote.customer_email || '—'}</p>
+                  <p style={printMutedStyle}>Evento: {quote.event_type || '—'}</p>
                 </td>
                 <td style={printInfoTableCellStyle}>
                   <p style={printSectionLabelStyle}>Resumen</p>
-                  <p style={printMutedTextStyle}>Estado: {getStatusLabel(quote.status)}</p>
-                  <p style={printMutedTextStyle}>Depósito: {getDepositStatusLabel(quote.deposit_status)}</p>
-                  <p style={printMutedTextStyle}>Referencia: {quote.deposit_reference || '—'}</p>
-                  <p style={printMutedTextStyle}>Cotización ID: {quote.id}</p>
+                  <p style={printMutedStyle}>Estado: {getStatusLabel(quote.status)}</p>
+                  <p style={printMutedStyle}>Depósito: {getDepositStatusLabel(quote.deposit_status)}</p>
+                  <p style={printMutedStyle}>Referencia: {quote.deposit_reference || '—'}</p>
+                  <p style={printMutedStyle}>Cotización ID: {quote.id}</p>
                 </td>
               </tr>
             </tbody>
