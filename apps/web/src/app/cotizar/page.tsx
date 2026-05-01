@@ -463,22 +463,25 @@ export default function CotizarPage() {
                 <p style={mutedTextStyle}>Todavía no hay servicios disponibles.</p>
               </div>
             ) : (
-              <div style={categoryTabsStyle}>
-                {productCategories.map((category) => {
-                  const isActive = !!expandedCategories[category];
+              <>
+                <div style={categoryTabsStyle}>
+                  {productCategories.map((category) => {
+                    const isActive = !!expandedCategories[category];
 
-                  return (
-                    <button
-                      key={category}
-                      type="button"
-                      onClick={() => openCategory(category)}
-                      style={isActive ? categoryTabButtonActiveStyle : categoryTabButtonStyle}
-                    >
-                      {category}
-                    </button>
-                  );
-                })}
-              <div style={categoryListStyle}>
+                    return (
+                      <button
+                        key={category}
+                        type="button"
+                        onClick={() => openCategory(category)}
+                        style={isActive ? categoryTabButtonActiveStyle : categoryTabButtonStyle}
+                      >
+                        {category}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div style={categoryListStyle}>
                 {productCategories.map((category) => {
                   const isOpen = !!expandedCategories[category];
                   const categoryProducts = productsByCategory[category] || [];
@@ -549,7 +552,8 @@ export default function CotizarPage() {
                     </section>
                   );
                 })}
-              </div>
+                </div>
+              </>
             )}
           </section>
 
