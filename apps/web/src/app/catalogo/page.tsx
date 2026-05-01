@@ -83,7 +83,8 @@ export default function CatalogoPage() {
         .from('products')
         .select('*')
         .eq('is_active', true)
-        .order('created_at', { ascending: false });
+        .order('category', { ascending: true })
+        .order('price', { ascending: true });
 
       if (productsError) {
         setError(productsError.message);
