@@ -76,7 +76,7 @@ export default function CatalogoScreen() {
   }, []);
 
   const productsByCategory = useMemo(() => {
-    return products.reduce<Record<string, Product[]>>((accumulator, product) => {
+    const grouped = products.reduce<Record<string, Product[]>>((accumulator, product) => {
       const category = product.category || 'General';
 
       if (!accumulator[category]) {
@@ -86,24 +86,31 @@ export default function CatalogoScreen() {
       accumulator[category].push(product);
       return accumulator;
     }, {});
+
+    Object.keys(grouped).forEach((category) => {
+      grouped[category].sort((a, b) => {
+        const priceDifference = Number(a.price ?? 0) - Number(b.price ?? 0);
+
+        if (priceDifference !== 0) return priceDifference;
+
+        return a.name.localeCompare(b.name);
+      });
+    });
+
+    return grouped;
   }, [products]);
 
-  const productCategories = useMemo(
-    () => Object.keys(productsByCategory),
-    [productsByCategory]
-  );
+  const productCategories = useMemo(() => {
+    const existingCategories = Object.keys(productsByCategory);
+    const orderedCategories = CATEGORY_ORDER.filter((category) =>
+      existingCategories.includes(category)
+    );
+    const extraCategories = existingCategories
+      .filter((category) => !CATEGORY_ORDER.includes(category))
+      .sort((a, b) => a.localeCompare(b));
 
-  useEffect(() => {
-    if (productCategories.length === 0) return;
-
-    setExpandedCategories((prev) => {
-      if (Object.keys(prev).length > 0) return prev;
-
-      return {
-        [productCategories[0]]: true,
-      };
-    });
-  }, [productCategories]);
+    return [...orderedCategories, ...extraCategories];
+  }, [productsByCategory]);
 
   const toggleCategory = (category: string) => {
     setExpandedCategories((prev) => ({
