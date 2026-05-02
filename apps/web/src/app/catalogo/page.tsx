@@ -168,18 +168,6 @@ export default function CatalogoPage() {
     });
   }, [productsByCategory]);
 
-  useEffect(() => {
-    if (productCategories.length === 0) return;
-
-    setExpandedCategories((prev) => {
-      if (Object.keys(prev).length > 0) return prev;
-
-      return {
-        [productCategories[0]]: true,
-      };
-    });
-  }, [productCategories]);
-
   const cartItemCount = useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
     [cartItems]
