@@ -702,6 +702,7 @@ export default function AdminPage() {
   const [savingId, setSavingId] = useState<string | null>(null);
   const [deletingQuoteId, setDeletingQuoteId] = useState<string | null>(null);
   const [savingMeetingId, setSavingMeetingId] = useState<string | null>(null);
+  const [deletingMeetingId, setDeletingMeetingId] = useState<string | null>(null);
   const [savingSlotId, setSavingSlotId] = useState<string | null>(null);
   const [savingQuoteItemId, setSavingQuoteItemId] = useState<string | null>(null);
   const [creatingQuoteItemForId, setCreatingQuoteItemForId] = useState<string | null>(null);
@@ -1937,6 +1938,32 @@ export default function AdminPage() {
     </>
   );
 
+  const deleteMeeting = async (meetingId: string) => {
+    const confirmed = window.confirm(
+      '¿Seguro que quieres eliminar esta reunión? Esta acción no se puede deshacer.'
+    );
+
+    if (!confirmed) return;
+
+    setDeletingMeetingId(meetingId);
+    setError(null);
+
+    const { error: deleteError } = await supabase
+      .from('meetings')
+      .delete()
+      .eq('id', meetingId);
+
+    if (deleteError) {
+      setError(deleteError.message);
+      setDeletingMeetingId(null);
+      return;
+    }
+
+    setMeetings((current) => current.filter((meeting) => meeting.id !== meetingId));
+    setExpandedMeetingId((current) => (current === meetingId ? null : current));
+    setDeletingMeetingId(null);
+  };
+
   const renderMeetings = () => (
     <section style={sectionStyle}>
       <div style={sectionHeaderRowStyle}>
@@ -2056,6 +2083,20 @@ export default function AdminPage() {
                     style={compactQuoteButtonStyle}
                   >
                     {expandedMeetingId === meeting.id ? 'Ocultar' : 'Ver'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => deleteMeeting(meeting.id)}
+                    disabled={deletingMeetingId === meeting.id}
+                    style={{
+                      ...compactQuoteButtonStyle,
+                      border: '1px solid rgba(248, 113, 113, 0.35)',
+                      background: 'rgba(127, 29, 29, 0.28)',
+                      color: '#fecaca',
+                      opacity: deletingMeetingId === meeting.id ? 0.65 : 1,
+                    }}
+                  >
+                    {deletingMeetingId === meeting.id ? 'Eliminando...' : 'Eliminar'}
                   </button>
                 </div>
               </div>
