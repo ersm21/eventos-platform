@@ -90,6 +90,8 @@ export default function CotizarScreen() {
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [eventType, setEventType] = useState('');
+  const [eventLocation, setEventLocation] = useState('');
+  const [eventDate, setEventDate] = useState('');
   const [notes, setNotes] = useState('');
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -231,7 +233,37 @@ export default function CotizarScreen() {
       setCustomerEmail(session?.user?.email ?? '');
     });
 
-    return () => {
+    const eventLocationOptions = [
+    { value: '', label: 'Selecciona la ciudad / zona' },
+    { value: 'Santiago', label: 'Santiago' },
+    { value: 'Moca', label: 'Moca' },
+    { value: 'Puerto Plata', label: 'Puerto Plata' },
+    { value: 'Mao', label: 'Mao' },
+    { value: 'La Vega', label: 'La Vega' },
+    { value: 'Santo Domingo', label: 'Santo Domingo' },
+    { value: 'La Romana', label: 'La Romana' },
+    { value: 'Punta Cana', label: 'Punta Cana' },
+    { value: 'Bávaro', label: 'Bávaro' },
+  ];
+
+  const eventTypeOptions = [
+    { value: '', label: 'Selecciona el tipo de evento' },
+    { value: 'Boda', label: 'Boda' },
+    { value: 'Cumpleaños', label: 'Cumpleaños' },
+    { value: 'Quince años', label: 'Quince años' },
+    { value: 'Evento corporativo', label: 'Evento corporativo' },
+    { value: 'Concierto', label: 'Concierto' },
+    { value: 'DJ set', label: 'DJ set' },
+    { value: 'Fiesta privada', label: 'Fiesta privada' },
+    { value: 'Graduación', label: 'Graduación' },
+    { value: 'Bautizo', label: 'Bautizo' },
+    { value: 'Actividad escolar', label: 'Actividad escolar' },
+    { value: 'Actividad religiosa', label: 'Actividad religiosa' },
+    { value: 'Feria / expo', label: 'Feria / expo' },
+    { value: 'Otro (agregar en notas)', label: 'Otro (agregar en notas)' },
+  ];
+
+  return () => {
       subscription.unsubscribe();
     };
   }, []);
@@ -328,16 +360,6 @@ export default function CotizarScreen() {
       return;
     }
 
-    if (!customerName.trim()) {
-      setError('Debes escribir tu nombre.');
-      return;
-    }
-
-    if (!customerEmail.trim()) {
-      setError('Debes escribir tu email.');
-      return;
-    }
-
     if (!eventType.trim()) {
       setError('Debes indicar el tipo de evento.');
       return;
@@ -351,6 +373,33 @@ export default function CotizarScreen() {
     setSaving(true);
     setError(null);
     setSuccessMessage(null);
+
+    const quoteCustomerName = customerName.trim() || sessionEmail?.split('@')[0] || 'Cliente';
+    const quoteCustomerEmail = sessionEmail || customerEmail.trim();
+
+    if (!quoteCustomerEmail) {
+      setError('Debes iniciar sesión para enviar una cotización.');
+      setSaving(false);
+      return;
+    }
+
+    if (!eventLocation.trim()) {
+      setError('Debes seleccionar la ciudad del evento.');
+      setSaving(false);
+      return;
+    }
+
+    if (!eventType.trim()) {
+      setError('Debes seleccionar el tipo de evento.');
+      setSaving(false);
+      return;
+    }
+
+    if (!eventDate.trim()) {
+      setError('Debes seleccionar la fecha del evento.');
+      setSaving(false);
+      return;
+    }
 
     const {
       data: { user },
@@ -564,43 +613,67 @@ export default function CotizarScreen() {
             </View>
           )}
 
-          <View style={styles.panel}>
-            <Text style={styles.sectionEyebrow}>Datos del cliente</Text>
-            <Text style={styles.panelTitle}>Cuéntanos sobre tu evento</Text>
-            <Text style={styles.panelText}>
-              Completa tus datos para revisar tu solicitud y responderte con claridad.
-            </Text>
+          <View style={styles.eventDetailsPanel}>
+            <Text style={styles.sectionEyebrow}>Lugar del evento</Text>
+            <Text style={styles.panelTitle}>Ciudad del evento</Text>
+            <Text style={styles.panelText}>Calculamos el transporte según la ciudad.</Text>
 
             <View style={styles.fieldGroup}>
-              <Text style={styles.label}>Nombre</Text>
-              <TextInput
-                value={customerName}
-                onChangeText={setCustomerName}
-                placeholder="Tu nombre"
-                placeholderTextColor="#64748b"
-                style={styles.input}
-              />
-            </View>
-
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                value={customerEmail}
-                onChangeText={setCustomerEmail}
-                placeholder="Tu email"
-                placeholderTextColor="#64748b"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                style={styles.input}
-              />
+              <Text style={styles.label}>Ciudad / zona</Text>
+              <View style={styles.optionGrid}>
+                {eventLocationOptions.map((option) => (
+                  <Pressable
+                    key={option.value || 'empty-location'}
+                    onPress={() => setEventLocation(option.value)}
+                    style={[
+                      styles.optionPill,
+                      eventLocation === option.value && styles.optionPillActive,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.optionPillText,
+                        eventLocation === option.value && styles.optionPillTextActive,
+                      ]}
+                    >
+                      {option.label}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
             </View>
 
             <View style={styles.fieldGroup}>
               <Text style={styles.label}>Tipo de evento</Text>
+              <View style={styles.optionGrid}>
+                {eventTypeOptions.map((option) => (
+                  <Pressable
+                    key={option.value || 'empty-event-type'}
+                    onPress={() => setEventType(option.value)}
+                    style={[
+                      styles.optionPill,
+                      eventType === option.value && styles.optionPillActive,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.optionPillText,
+                        eventType === option.value && styles.optionPillTextActive,
+                      ]}
+                    >
+                      {option.label}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.fieldGroup}>
+              <Text style={styles.label}>Fecha del evento</Text>
               <TextInput
-                value={eventType}
-                onChangeText={setEventType}
-                placeholder="Boda, concierto, corporativo, DJ set, cumpleaños..."
+                value={eventDate}
+                onChangeText={setEventDate}
+                placeholder="YYYY-MM-DD"
                 placeholderTextColor="#64748b"
                 style={styles.input}
               />
@@ -611,7 +684,7 @@ export default function CotizarScreen() {
               <TextInput
                 value={notes}
                 onChangeText={setNotes}
-                placeholder="Fecha, lugar, duración, montaje, luces, sonido, pantalla o cualquier detalle importante"
+                placeholder="Duración, montaje, horario, detalles especiales..."
                 placeholderTextColor="#64748b"
                 style={[styles.input, styles.textArea]}
                 multiline
@@ -731,6 +804,14 @@ const styles = StyleSheet.create({
   errorText: { color: '#fecaca', fontWeight: '800' },
   successBox: { padding: 12, borderRadius: 14, backgroundColor: 'rgba(20, 83, 45, 0.35)', borderWidth: 1, borderColor: 'rgba(74, 222, 128, 0.28)' },
   successText: { color: '#bbf7d0', fontWeight: '800' },
+  eventDetailsPanel: {
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: 'rgba(250, 204, 21, 0.22)',
+    backgroundColor: 'rgba(15, 23, 42, 0.86)',
+    padding: 18,
+    gap: 14,
+  },
   panel: { borderRadius: 20, padding: 14, backgroundColor: 'rgba(15, 23, 42, 0.78)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 11 },
   mutedText: { color: '#94a3b8', fontSize: 12, fontWeight: '700' },
   categoryList: { gap: 10 },
