@@ -316,6 +316,10 @@ export default function CotizarPage() {
     setError(null);
     setSuccessMessage(null);
 
+    const quoteCustomerName =
+      customerName.trim() || sessionEmail?.split('@')[0] || 'Cliente';
+    const quoteCustomerEmail = sessionEmail || customerEmail.trim();
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -330,8 +334,8 @@ export default function CotizarPage() {
       .from('quotes')
       .insert([
         {
-          customer_name: customerName,
-          customer_email: customerEmail,
+          customer_name: quoteCustomerName,
+          customer_email: quoteCustomerEmail,
           event_type: eventType,
           notes: [
             eventLocation.trim() ? `Lugar: ${eventLocation.trim()}` : '',
@@ -381,8 +385,8 @@ export default function CotizarPage() {
         body: JSON.stringify({
           type: 'quote_created',
           quoteId: quoteData.id,
-          customerName,
-          customerEmail,
+          customerName: quoteCustomerName,
+          customerEmail: quoteCustomerEmail,
           eventType,
           notes: [
             eventLocation.trim() ? `Lugar: ${eventLocation.trim()}` : '',
@@ -668,31 +672,10 @@ export default function CotizarPage() {
               <div style={panelHeaderStyle}>
                 <p style={sectionEyebrowStyle}>Datos del cliente</p>
                 <h2 style={clientCompactTitleStyle}>Datos del cliente</h2>
-                <p style={clientCompactTextStyle}>Completa los datos para enviar la solicitud.</p>
+                <p style={clientCompactTextStyle}>Tu nombre y correo se toman automáticamente de tu perfil.</p>
               </div>
 
               <div style={formGridStyle}>
-                <div>
-                  <label style={labelStyle}>Nombre</label>
-                  <input
-                    type="text"
-                    placeholder="Tu nombre"
-                    value={customerName}
-                    onChange={(event) => setCustomerName(event.target.value)}
-                    style={inputStyle}
-                  />
-                </div>
-
-                <div>
-                  <label style={labelStyle}>Email</label>
-                  <input
-                    type="email"
-                    placeholder="Tu email"
-                    value={customerEmail}
-                    onChange={(event) => setCustomerEmail(event.target.value)}
-                    style={inputStyle}
-                  />
-                </div>
 
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={labelStyle}>Tipo de evento</label>
