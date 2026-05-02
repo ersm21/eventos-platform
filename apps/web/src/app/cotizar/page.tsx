@@ -663,84 +663,84 @@ export default function CotizarPage() {
                 </select>
               </label>
             </section>
+
+            <section style={clientCompactSectionStyle}>
+              <div style={panelHeaderStyle}>
+                <p style={sectionEyebrowStyle}>Datos del cliente</p>
+                <h2 style={clientCompactTitleStyle}>Datos del cliente</h2>
+                <p style={clientCompactTextStyle}>Completa los datos para enviar la solicitud.</p>
+              </div>
+
+              <div style={formGridStyle}>
+                <div>
+                  <label style={labelStyle}>Nombre</label>
+                  <input
+                    type="text"
+                    placeholder="Tu nombre"
+                    value={customerName}
+                    onChange={(event) => setCustomerName(event.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Email</label>
+                  <input
+                    type="email"
+                    placeholder="Tu email"
+                    value={customerEmail}
+                    onChange={(event) => setCustomerEmail(event.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
+
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label style={labelStyle}>Tipo de evento</label>
+                  <input
+                    type="text"
+                    placeholder="Boda, concierto, corporativo, DJ set, cumpleaños..."
+                    value={eventType}
+                    onChange={(event) => setEventType(event.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
+
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label style={labelStyle}>Notas adicionales</label>
+                  <textarea
+                    placeholder="Fecha, lugar, duración, montaje, luces, sonido, pantalla o cualquier detalle importante"
+                    value={notes}
+                    onChange={(event) => setNotes(event.target.value)}
+                    style={textareaStyle}
+                  />
+                </div>
+              </div>
+
+              <div style={submitWrapStyle}>
+                {!isLoggedIn ? (
+                  <Link href="/login" style={primaryLinkButtonStyle}>
+                    Inicia sesión para guardar tu cotización
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={saveQuote}
+                    disabled={saving}
+                    style={{
+                      ...primaryButtonStyle,
+                      opacity: saving ? 0.72 : 1,
+                      cursor: saving ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {saving ? 'Enviando...' : 'Enviar cotización'}
+                  </button>
+                )}
+              </div>
+            </section>
           </div>
         </div>
 
-        <section style={panelStyle}>
-          <div style={panelHeaderStyle}>
-            <p style={sectionEyebrowStyle}>Datos del cliente</p>
-            <h2 style={panelTitleStyle}>Cuéntanos sobre tu evento</h2>
-            <p style={panelTextStyle}>
-              Completa estos datos para poder revisar tu solicitud correctamente.
-            </p>
-          </div>
 
-          <div style={formGridStyle}>
-            <div>
-              <label style={labelStyle}>Nombre</label>
-              <input
-                type="text"
-                placeholder="Tu nombre"
-                value={customerName}
-                onChange={(event) => setCustomerName(event.target.value)}
-                style={inputStyle}
-              />
-            </div>
-
-            <div>
-              <label style={labelStyle}>Email</label>
-              <input
-                type="email"
-                placeholder="Tu email"
-                value={customerEmail}
-                onChange={(event) => setCustomerEmail(event.target.value)}
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={{ gridColumn: '1 / -1' }}>
-              <label style={labelStyle}>Tipo de evento</label>
-              <input
-                type="text"
-                placeholder="Boda, concierto, corporativo, DJ set, cumpleaños..."
-                value={eventType}
-                onChange={(event) => setEventType(event.target.value)}
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={{ gridColumn: '1 / -1' }}>
-              <label style={labelStyle}>Notas adicionales</label>
-              <textarea
-                placeholder="Fecha, lugar, duración, montaje, luces, sonido, pantalla o cualquier detalle importante"
-                value={notes}
-                onChange={(event) => setNotes(event.target.value)}
-                style={textareaStyle}
-              />
-            </div>
-          </div>
-
-          <div style={submitWrapStyle}>
-            {!isLoggedIn ? (
-              <Link href="/login" style={primaryLinkButtonStyle}>
-                Inicia sesión para guardar tu cotización
-              </Link>
-            ) : (
-              <button
-                type="button"
-                onClick={saveQuote}
-                disabled={saving}
-                style={{
-                  ...primaryButtonStyle,
-                  opacity: saving ? 0.72 : 1,
-                  cursor: saving ? 'not-allowed' : 'pointer',
-                }}
-              >
-                {saving ? 'Enviando...' : 'Enviar cotización'}
-              </button>
-            )}
-          </div>
-        </section>
       </div>
     </main>
   );
@@ -897,6 +897,30 @@ const panelStyle: React.CSSProperties = {
   borderRadius: 22,
   padding: 16,
   boxShadow: '0 14px 26px rgba(0,0,0,0.20)',
+};
+
+const clientCompactSectionStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 10,
+  background: 'rgba(15, 23, 42, 0.58)',
+  border: '1px solid rgba(250, 204, 21, 0.10)',
+  borderRadius: 18,
+  padding: '12px 14px',
+  boxShadow: '0 14px 32px rgba(0,0,0,0.14)',
+};
+
+const clientCompactTitleStyle: React.CSSProperties = {
+  margin: '4px 0 2px',
+  fontSize: 18,
+  lineHeight: 1.08,
+  letterSpacing: '-0.03em',
+};
+
+const clientCompactTextStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#94a3b8',
+  lineHeight: 1.35,
+  fontSize: 11,
 };
 
 const quoteSideColumnStyle: React.CSSProperties = {
