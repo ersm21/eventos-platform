@@ -95,6 +95,7 @@ export default function FeedPage() {
   const [submittingCommentId, setSubmittingCommentId] = useState<string | null>(null);
   const [likingPostId, setLikingPostId] = useState<string | null>(null);
   const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
 
   const [error, setError] = useState<string | null>(null);
   const [commentsOpen, setCommentsOpen] = useState<Record<string, boolean>>({});
@@ -461,6 +462,39 @@ export default function FeedPage() {
     await loadFeed();
   };
 
+  const deleteComment = async (commentId: string) => {
+    if (!currentUserId) {
+      setError('Debes iniciar sesión para borrar comentarios.');
+      return;
+    }
+
+    if (!isAdmin) {
+      setError('Solo el administrador puede borrar comentarios.');
+      return;
+    }
+
+    const confirmed = window.confirm('¿Eliminar este comentario?');
+
+    if (!confirmed) return;
+
+    setDeletingCommentId(commentId);
+    setError(null);
+
+    const { error: deleteError } = await supabase
+      .from('feed_comments')
+      .delete()
+      .eq('id', commentId);
+
+    if (deleteError) {
+      setError(deleteError.message);
+      setDeletingCommentId(null);
+      return;
+    }
+
+    setComments((current) => current.filter((comment) => comment.id !== commentId));
+    setDeletingCommentId(null);
+  };
+
   const getProfileName = (userId: string | null | undefined) => {
     if (!userId) return 'Cliente';
 
@@ -647,7 +681,7 @@ export default function FeedPage() {
                             {avatarUrl ? (
                               <img
                                 src={avatarUrl}
-                                alt={getProfileName(comment.user_id)}
+                                alt={comment.author_name || (comment.user_id === currentUserId && isAdmin ? 'SM Events' : getProfileName(comment.user_id))}
                                 style={commentAvatarStyle}
                               />
                             ) : (
@@ -658,9 +692,23 @@ export default function FeedPage() {
 
                             <div>
                               <p style={commentAuthorStyle}>
-                                {getProfileName(comment.user_id)}
+                                {comment.author_name || (comment.user_id === currentUserId && isAdmin ? 'SM Events' : getProfileName(comment.user_id))}
                               </p>
                               <p style={commentTextStyle}>{comment.comment}</p>
+
+                            {isAdmin && (
+                              <button
+                                type="button"
+                                onClick={() => deleteComment(comment.id)}
+                                disabled={deletingCommentId === comment.id}
+                                style={{
+                                  ...commentDeleteButtonStyle,
+                                  opacity: deletingCommentId === comment.id ? 0.65 : 1,
+                                }}
+                              >
+                                {deletingCommentId === comment.id ? 'Eliminando...' : 'Eliminar'}
+                              </button>
+                            )}
                             </div>
                           </div>
                         );
@@ -970,6 +1018,16 @@ const commentAuthorStyle: React.CSSProperties = {
   color: '#fbbf24',
   fontSize: 11,
   fontWeight: 900,
+};
+
+const commentDeleteButtonStyle: React.CSSProperties = {
+  border: 'none',
+  background: 'transparent',
+  color: '#fca5a5',
+  fontSize: 12,
+  fontWeight: 800,
+  cursor: 'pointer',
+  padding: 0,
 };
 
 const commentTextStyle: React.CSSProperties = {
