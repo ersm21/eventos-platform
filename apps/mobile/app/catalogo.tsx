@@ -103,30 +103,6 @@ export default function CatalogoScreen() {
     fontWeight: '900',
   },
 });
-
-  useEffect(() => {
-    const loadProducts = async () => {
-      setLoading(true);
-      setError(null);
-
-      const { data, error: productsError } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-
-      if (productsError) {
-        setError(productsError.message);
-      } else {
-        setProducts((data || []) as Product[]);
-      }
-
-      setLoading(false);
-    };
-
-    loadProducts();
-  }, []);
-
   const productsByCategory = useMemo(() => {
     const grouped = products.reduce<Record<string, Product[]>>((accumulator, product) => {
       const category = product.category || 'General';
