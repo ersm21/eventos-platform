@@ -700,6 +700,7 @@ export default function AdminPage() {
   const [authMessage, setAuthMessage] = useState<string | null>(null);
 
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [deletingQuoteId, setDeletingQuoteId] = useState<string | null>(null);
   const [savingMeetingId, setSavingMeetingId] = useState<string | null>(null);
   const [savingSlotId, setSavingSlotId] = useState<string | null>(null);
   const [savingQuoteItemId, setSavingQuoteItemId] = useState<string | null>(null);
@@ -2139,6 +2140,43 @@ export default function AdminPage() {
     </button>
   );
 
+  const deleteQuote = async (quoteId: string) => {
+    const confirmed = window.confirm(
+      '¿Seguro que quieres eliminar esta cotización? Esta acción no se puede deshacer.'
+    );
+
+    if (!confirmed) return;
+
+    setDeletingQuoteId(quoteId);
+    setError(null);
+
+    const { error: itemsError } = await supabase
+      .from('quote_items')
+      .delete()
+      .eq('quote_id', quoteId);
+
+    if (itemsError) {
+      setError(itemsError.message);
+      setDeletingQuoteId(null);
+      return;
+    }
+
+    const { error: quoteError } = await supabase
+      .from('quotes')
+      .delete()
+      .eq('id', quoteId);
+
+    if (quoteError) {
+      setError(quoteError.message);
+      setDeletingQuoteId(null);
+      return;
+    }
+
+    setQuotes((current) => current.filter((quote) => quote.id !== quoteId));
+    setExpandedQuoteId((current) => (current === quoteId ? null : current));
+    setDeletingQuoteId(null);
+  };
+
   const renderQuotes = () => (
     <section style={sectionStyle}>
       <div style={sectionHeaderRowStyle}>
@@ -2317,6 +2355,20 @@ export default function AdminPage() {
                       style={compactQuoteButtonStyle}
                     >
                       {expandedQuoteId === quote.id ? 'Ocultar' : 'Ver'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deleteQuote(quote.id)}
+                      disabled={deletingQuoteId === quote.id}
+                      style={{
+                        ...compactQuoteButtonStyle,
+                        border: '1px solid rgba(248, 113, 113, 0.35)',
+                        background: 'rgba(127, 29, 29, 0.28)',
+                        color: '#fecaca',
+                        opacity: deletingQuoteId === quote.id ? 0.65 : 1,
+                      }}
+                    >
+                      {deletingQuoteId === quote.id ? 'Eliminando...' : 'Eliminar'}
                     </button>
                   </div>
                 </div>
