@@ -25,6 +25,7 @@ type FeedComment = {
   post_id: string;
   user_id: string | null;
   comment: string;
+  author_name?: string | null;
   created_at: string | null;
 };
 
