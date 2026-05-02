@@ -114,6 +114,7 @@ export default function CotizarPage() {
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [eventType, setEventType] = useState('');
+  const [eventDate, setEventDate] = useState('');
   const [eventLocation, setEventLocation] = useState('');
   const [notes, setNotes] = useState('');
 
@@ -661,60 +662,53 @@ export default function CotizarPage() {
                   ))}
                 </select>
               </label>
+
+              <label style={locationSelectWrapStyle}>
+                <span style={locationSelectLabelStyle}>Tipo de evento</span>
+                <input
+                  type="text"
+                  placeholder="Boda, concierto, corporativo, DJ set..."
+                  value={eventType}
+                  onChange={(event) => setEventType(event.target.value)}
+                  style={inputStyle}
+                />
+              </label>
+
+              <label style={locationSelectWrapStyle}>
+                <span style={locationSelectLabelStyle}>Fecha del evento</span>
+                <input
+                  type="date"
+                  value={eventDate}
+                  onChange={(event) => setEventDate(event.target.value)}
+                  style={inputStyle}
+                />
+              </label>
+
+              <label style={locationSelectWrapStyle}>
+                <span style={locationSelectLabelStyle}>Notas adicionales</span>
+                <textarea
+                  placeholder="Duración, montaje, horario, detalles especiales..."
+                  value={notes}
+                  onChange={(event) => setNotes(event.target.value)}
+                  style={compactTextareaStyle}
+                />
+              </label>
+
+              <button
+                          type="button"
+                          onClick={saveQuote}
+                          disabled={saving}
+                          style={{
+                            ...primaryButtonStyle,
+                            opacity: saving ? 0.72 : 1,
+                            cursor: saving ? 'not-allowed' : 'pointer',
+                          }}
+                        >
+                          {saving ? 'Enviando...' : 'Enviar cotización'}
+                        </button>
             </section>
 
-            <section style={clientCompactSectionStyle}>
-              <div style={panelHeaderStyle}>
-                <p style={sectionEyebrowStyle}>Datos del cliente</p>
-                <h2 style={clientCompactTitleStyle}>Datos del cliente</h2>
-                <p style={clientCompactTextStyle}>Tu nombre y correo se toman automáticamente de tu perfil.</p>
-              </div>
 
-              <div style={formGridStyle}>
-
-                <div style={{ gridColumn: '1 / -1' }}>
-                  <label style={labelStyle}>Tipo de evento</label>
-                  <input
-                    type="text"
-                    placeholder="Boda, concierto, corporativo, DJ set, cumpleaños..."
-                    value={eventType}
-                    onChange={(event) => setEventType(event.target.value)}
-                    style={inputStyle}
-                  />
-                </div>
-
-                <div style={{ gridColumn: '1 / -1' }}>
-                  <label style={labelStyle}>Notas adicionales</label>
-                  <textarea
-                    placeholder="Fecha, lugar, duración, montaje, luces, sonido, pantalla o cualquier detalle importante"
-                    value={notes}
-                    onChange={(event) => setNotes(event.target.value)}
-                    style={textareaStyle}
-                  />
-                </div>
-              </div>
-
-              <div style={submitWrapStyle}>
-                {!isLoggedIn ? (
-                  <Link href="/login" style={primaryLinkButtonStyle}>
-                    Inicia sesión para guardar tu cotización
-                  </Link>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={saveQuote}
-                    disabled={saving}
-                    style={{
-                      ...primaryButtonStyle,
-                      opacity: saving ? 0.72 : 1,
-                      cursor: saving ? 'not-allowed' : 'pointer',
-                    }}
-                  >
-                    {saving ? 'Enviando...' : 'Enviar cotización'}
-                  </button>
-                )}
-              </div>
-            </section>
           </div>
         </div>
 
@@ -1261,6 +1255,12 @@ const inputStyle: React.CSSProperties = {
   background: 'rgba(2, 6, 23, 0.58)',
   color: '#f8fafc',
   outline: 'none',
+};
+
+const compactTextareaStyle: React.CSSProperties = {
+  ...inputStyle,
+  minHeight: 76,
+  resize: 'vertical',
 };
 
 const textareaStyle: React.CSSProperties = {
