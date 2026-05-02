@@ -1959,7 +1959,7 @@ export default function AdminPage() {
       return;
     }
 
-    setMeetings((current) => current.filter((meeting) => meeting.id !== meetingId));
+    setMeetingRequests((current) => current.filter((meeting) => meeting.id !== meetingId));
     setExpandedMeetingId((current) => (current === meetingId ? null : current));
     setDeletingMeetingId(null);
   };
