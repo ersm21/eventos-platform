@@ -84,41 +84,7 @@ function calculateTaxableBase(
 ) {
   const subtotal = Number(value ?? 0);
 
-  const deleteQuote = async (quoteId: string) => {
-    const confirmed = window.confirm(
-      '¿Seguro que quieres eliminar esta cotización? Esta acción no se puede deshacer.'
-    );
 
-    if (!confirmed) return;
-
-    setDeletingQuoteId(quoteId);
-    setError(null);
-
-    const { error: itemsError } = await supabase
-      .from('quote_items')
-      .delete()
-      .eq('quote_id', quoteId);
-
-    if (itemsError) {
-      setError(itemsError.message);
-      setDeletingQuoteId(null);
-      return;
-    }
-
-    const { error: quoteError } = await supabase
-      .from('quotes')
-      .delete()
-      .eq('id', quoteId);
-
-    if (quoteError) {
-      setError(quoteError.message);
-      setDeletingQuoteId(null);
-      return;
-    }
-
-    setQuotes((current) => current.filter((quote) => quote.id !== quoteId));
-    setDeletingQuoteId(null);
-  };
 
   return (
     subtotal +
@@ -266,6 +232,42 @@ export default function MyQuotesPage() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [deletingQuoteId, setDeletingQuoteId] = useState<string | null>(null);
+  const deleteQuote = async (quoteId: string) => {
+    const confirmed = window.confirm(
+      '¿Seguro que quieres eliminar esta cotización? Esta acción no se puede deshacer.'
+    );
+
+    if (!confirmed) return;
+
+    setDeletingQuoteId(quoteId);
+    setError(null);
+
+    const { error: itemsError } = await supabase
+      .from('quote_items')
+      .delete()
+      .eq('quote_id', quoteId);
+
+    if (itemsError) {
+      setError(itemsError.message);
+      setDeletingQuoteId(null);
+      return;
+    }
+
+    const { error: quoteError } = await supabase
+      .from('quotes')
+      .delete()
+      .eq('id', quoteId);
+
+    if (quoteError) {
+      setError(quoteError.message);
+      setDeletingQuoteId(null);
+      return;
+    }
+
+    setQuotes((current) => current.filter((quote) => quote.id !== quoteId));
+    setDeletingQuoteId(null);
+  };
+
   const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null);
 
   useEffect(() => {
