@@ -50,7 +50,59 @@ export default function CatalogoScreen() {
   const [hasLoadedSavedCart, setHasLoadedSavedCart] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({  stickyCartBar: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    bottom: 18,
+    zIndex: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 18,
+    backgroundColor: 'rgba(2, 6, 23, 0.96)',
+    borderWidth: 1,
+    borderColor: 'rgba(250, 204, 21, 0.24)',
+    shadowColor: '#000',
+    shadowOpacity: 0.28,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 8,
+  },
+  stickyCartInfo: {
+    flex: 1,
+  },
+  stickyCartEyebrow: {
+    color: '#fbbf24',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 0.7,
+  },
+  stickyCartTitle: {
+    marginTop: 2,
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  stickyCartButton: {
+    minWidth: 58,
+    minHeight: 38,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#facc15',
+    paddingHorizontal: 14,
+  },
+  stickyCartButtonText: {
+    color: '#111827',
+    fontSize: 13,
+    fontWeight: '900',
+  },
+});
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -220,6 +272,15 @@ export default function CatalogoScreen() {
     });
   };
 
+  const cartTotal = useMemo(
+    () =>
+      cartItems.reduce(
+        (total, item) => total + Number(item.price ?? 0) * item.quantity,
+        0
+      ),
+    [cartItems]
+  );
+
   return (
     <LinearGradient colors={['#020617', '#09090f', '#111827']} style={styles.page}>
       <SafeAreaView style={styles.safeArea}>
@@ -378,6 +439,22 @@ export default function CatalogoScreen() {
             </>
           )}
         </ScrollView>
+
+        {cartItems.length > 0 && (
+          <View style={styles.stickyCartBar}>
+            <View style={styles.stickyCartInfo}>
+              <Text style={styles.stickyCartEyebrow}>Agregado a tu cotización</Text>
+              <Text style={styles.stickyCartTitle}>
+                {cartItems.reduce((total, item) => total + item.quantity, 0)} servicio
+                {cartItems.reduce((total, item) => total + item.quantity, 0) === 1 ? '' : 's'} · {formatMoney(cartTotal)}
+              </Text>
+            </View>
+
+            <Pressable style={styles.stickyCartButton} onPress={goToQuoteWithCart}>
+              <Text style={styles.stickyCartButtonText}>Ver</Text>
+            </Pressable>
+          </View>
+        )}
       </SafeAreaView>
     </LinearGradient>
   );
@@ -386,7 +463,7 @@ export default function CatalogoScreen() {
 const styles = StyleSheet.create({
   page: { flex: 1 },
   safeArea: { flex: 1 },
-  content: { padding: 16, paddingBottom: 112, gap: 12 },
+  content: { padding: 16, paddingBottom: 160, gap: 12 },
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 4 },
   backButton: { paddingVertical: 8, paddingHorizontal: 11, borderRadius: 999, backgroundColor: 'rgba(15, 23, 42, 0.82)', borderWidth: 1, borderColor: 'rgba(148, 163, 184, 0.18)' },
   backButtonText: { color: '#e5e7eb', fontSize: 12, fontWeight: '900' },
