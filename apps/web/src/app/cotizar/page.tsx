@@ -269,6 +269,23 @@ export default function CotizarPage() {
     [quoteItems]
   );
 
+  const eventTypeOptions = [
+    { value: '', label: 'Selecciona el tipo de evento' },
+    { value: 'Boda', label: 'Boda' },
+    { value: 'Cumpleaños', label: 'Cumpleaños' },
+    { value: 'Quince años', label: 'Quince años' },
+    { value: 'Evento corporativo', label: 'Evento corporativo' },
+    { value: 'Concierto', label: 'Concierto' },
+    { value: 'DJ set', label: 'DJ set' },
+    { value: 'Fiesta privada', label: 'Fiesta privada' },
+    { value: 'Graduación', label: 'Graduación' },
+    { value: 'Bautizo', label: 'Bautizo' },
+    { value: 'Actividad escolar', label: 'Actividad escolar' },
+    { value: 'Actividad religiosa', label: 'Actividad religiosa' },
+    { value: 'Feria / expo', label: 'Feria / expo' },
+    { value: 'Otro (agregar en notas)', label: 'Otro (agregar en notas)' },
+  ];
+
   const eventLocationOptions = [
     { label: 'Selecciona una ciudad', value: '' },
     { label: 'Santiago', value: 'Santiago' },
@@ -665,13 +682,17 @@ export default function CotizarPage() {
 
               <label style={locationSelectWrapStyle}>
                 <span style={locationSelectLabelStyle}>Tipo de evento</span>
-                <input
-                  type="text"
-                  placeholder="Boda, concierto, corporativo, DJ set..."
+                <select
                   value={eventType}
                   onChange={(event) => setEventType(event.target.value)}
-                  style={inputStyle}
-                />
+                  style={locationSelectStyle}
+                >
+                  {eventTypeOptions.map((option) => (
+                    <option key={option.value || 'empty-event-type'} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
               </label>
 
               <label style={locationSelectWrapStyle}>
