@@ -287,16 +287,6 @@ export default function CotizarPage() {
       return;
     }
 
-    if (!customerName.trim()) {
-      setError('Debes escribir tu nombre.');
-      return;
-    }
-
-    if (!customerEmail.trim()) {
-      setError('Debes escribir tu email.');
-      return;
-    }
-
     if (!eventType.trim()) {
       setError('Debes indicar el tipo de evento.');
       return;
@@ -319,6 +309,11 @@ export default function CotizarPage() {
     const quoteCustomerName =
       customerName.trim() || sessionEmail?.split('@')[0] || 'Cliente';
     const quoteCustomerEmail = sessionEmail || customerEmail.trim();
+
+    if (!quoteCustomerEmail) {
+      setError('Debes iniciar sesión para enviar una cotización.');
+      return;
+    }
 
     const {
       data: { user },
