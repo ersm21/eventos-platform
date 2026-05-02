@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 
 const MUSIC_STORAGE_KEY = 'sm_events_music_enabled';
 const MUSIC_VOLUME_KEY = 'sm_events_music_volume';
+const MUSIC_TIME_KEY = 'sm_events_music_current_time';
+const MUSIC_RANDOMIZED_KEY = 'sm_events_music_randomized_once';
 
 export default function AmbientMusicPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -25,6 +27,34 @@ export default function AmbientMusicPlayer() {
     audio.loop = true;
     audio.preload = 'auto';
     audio.volume = safeVolume / 100;
+
+    const restorePlaybackPosition = () => {
+      const savedTime = Number(localStorage.getItem(MUSIC_TIME_KEY) || 0);
+      const alreadyRandomized = localStorage.getItem(MUSIC_RANDOMIZED_KEY) === 'true';
+
+      if (Number.isFinite(savedTime) && savedTime > 0 && savedTime < audio.duration - 2) {
+        audio.currentTime = savedTime;
+        return;
+      }
+
+      if (!alreadyRandomized && Number.isFinite(audio.duration) && audio.duration > 60) {
+        const maxStart = Math.max(30, audio.duration - 30);
+        const randomStart = Math.floor(Math.random() * maxStart);
+        audio.currentTime = randomStart;
+        localStorage.setItem(MUSIC_RANDOMIZED_KEY, 'true');
+        localStorage.setItem(MUSIC_TIME_KEY, String(randomStart));
+      }
+    };
+
+    audio.addEventListener('loadedmetadata', restorePlaybackPosition);
+
+    const savePlaybackPosition = () => {
+      if (Number.isFinite(audio.currentTime) && audio.currentTime > 0) {
+        localStorage.setItem(MUSIC_TIME_KEY, String(audio.currentTime));
+      }
+    };
+
+    audio.addEventListener('timeupdate', savePlaybackPosition);
 
     audioRef.current = audio;
     manualPauseRef.current = savedPreference === 'false';
@@ -64,6 +94,12 @@ export default function AmbientMusicPlayer() {
       window.removeEventListener('keydown', startAfterInteraction);
       window.removeEventListener('scroll', startAfterInteraction);
 
+      if (Number.isFinite(audio.currentTime) && audio.currentTime > 0) {
+        localStorage.setItem(MUSIC_TIME_KEY, String(audio.currentTime));
+      }
+
+      audio.removeEventListener('loadedmetadata', restorePlaybackPosition);
+      audio.removeEventListener('timeupdate', savePlaybackPosition);
       audio.pause();
       audioRef.current = null;
     };
@@ -77,6 +113,10 @@ export default function AmbientMusicPlayer() {
     try {
       if (isPlaying) {
         manualPauseRef.current = true;
+        if (Number.isFinite(audio.currentTime) && audio.currentTime > 0) {
+          localStorage.setItem(MUSIC_TIME_KEY, String(audio.currentTime));
+        }
+
         audio.pause();
         setIsPlaying(false);
         setWasBlocked(false);
