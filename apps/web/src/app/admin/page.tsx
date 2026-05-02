@@ -1949,7 +1949,7 @@ export default function AdminPage() {
     setError(null);
 
     const { error: deleteError } = await supabase
-      .from('meetings')
+      .from('meeting_requests')
       .delete()
       .eq('id', meetingId);
 
