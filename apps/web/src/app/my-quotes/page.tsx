@@ -84,6 +84,42 @@ function calculateTaxableBase(
 ) {
   const subtotal = Number(value ?? 0);
 
+  const deleteQuote = async (quoteId: string) => {
+    const confirmed = window.confirm(
+      '¿Seguro que quieres eliminar esta cotización? Esta acción no se puede deshacer.'
+    );
+
+    if (!confirmed) return;
+
+    setDeletingQuoteId(quoteId);
+    setError(null);
+
+    const { error: itemsError } = await supabase
+      .from('quote_items')
+      .delete()
+      .eq('quote_id', quoteId);
+
+    if (itemsError) {
+      setError(itemsError.message);
+      setDeletingQuoteId(null);
+      return;
+    }
+
+    const { error: quoteError } = await supabase
+      .from('quotes')
+      .delete()
+      .eq('id', quoteId);
+
+    if (quoteError) {
+      setError(quoteError.message);
+      setDeletingQuoteId(null);
+      return;
+    }
+
+    setQuotes((current) => current.filter((quote) => quote.id !== quoteId));
+    setDeletingQuoteId(null);
+  };
+
   return (
     subtotal +
     calculateTechnicalSupport(subtotal) +
@@ -229,6 +265,7 @@ export default function MyQuotesPage() {
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [deletingQuoteId, setDeletingQuoteId] = useState<string | null>(null);
   const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -502,6 +539,22 @@ export default function MyQuotesPage() {
                         <Link href={`/quote/${quote.id}`} style={primaryLinkStyle}>
                           Ver detalle completo
                         </Link>
+
+                        <Link href={`/cotizar?edit=${quote.id}`} style={secondaryLinkStyle}>
+                          Editar
+                        </Link>
+
+                        <button
+                          type="button"
+                          onClick={() => deleteQuote(quote.id)}
+                          disabled={deletingQuoteId === quote.id}
+                          style={{
+                            ...dangerButtonStyle,
+                            opacity: deletingQuoteId === quote.id ? 0.65 : 1,
+                          }}
+                        >
+                          {deletingQuoteId === quote.id ? 'Eliminando...' : 'Eliminar'}
+                        </button>
 
                         {quote.payment_proof_url && (
                           <a
@@ -835,6 +888,19 @@ const primaryLinkStyle: React.CSSProperties = {
   color: '#fff',
   fontWeight: 900,
   boxShadow: '0 14px 26px rgba(236,72,153,0.20)',
+};
+
+const dangerButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '11px 14px',
+  borderRadius: 14,
+  border: '1px solid rgba(248, 113, 113, 0.32)',
+  background: 'rgba(127, 29, 29, 0.28)',
+  color: '#fecaca',
+  fontWeight: 900,
+  cursor: 'pointer',
 };
 
 const secondaryLinkStyle: React.CSSProperties = {
