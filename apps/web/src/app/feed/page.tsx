@@ -676,13 +676,18 @@ export default function FeedPage() {
                     <div style={commentsListStyle}>
                       {getPostComments(post.id).slice(-5).map((comment) => {
                         const avatarUrl = getProfileAvatar(comment.user_id);
+                        const isSmEventsComment =
+                          comment.author_name === 'SM Events' ||
+                          (comment.user_id === currentUserId && isAdmin);
 
                         return (
                           <div key={comment.id} style={commentBubbleStyle}>
-                            {avatarUrl ? (
+                            {isSmEventsComment ? (
+                              <div style={smAvatarStyle}>SM</div>
+                            ) : avatarUrl ? (
                               <img
                                 src={avatarUrl}
-                                alt={comment.author_name || (comment.user_id === currentUserId && isAdmin ? 'SM Events' : getProfileName(comment.user_id))}
+                                alt={getProfileName(comment.user_id)}
                                 style={commentAvatarStyle}
                               />
                             ) : (
@@ -693,7 +698,7 @@ export default function FeedPage() {
 
                             <div>
                               <p style={commentAuthorStyle}>
-                                {comment.author_name || (comment.user_id === currentUserId && isAdmin ? 'SM Events' : getProfileName(comment.user_id))}
+                                {isSmEventsComment ? 'SM Events' : getProfileName(comment.user_id)}
                               </p>
                               <p style={commentTextStyle}>{comment.comment}</p>
 
