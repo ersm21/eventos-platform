@@ -21,6 +21,7 @@ type Product = {
   price: number | null;
   category: string | null;
   is_active: boolean | null;
+  image_url: string | null;
 };
 
 type CatalogCartItem = Product & {
@@ -28,6 +29,16 @@ type CatalogCartItem = Product & {
 };
 
 const QUOTE_CART_STORAGE_KEY = 'sm_events_quote_cart';
+
+const CATEGORY_ORDER = [
+  'Audio',
+  'Iluminación',
+  'Pantallas LED',
+  'Truss',
+  'Tarimas',
+  'Efectos especiales',
+  'Pista de baile',
+];
 
 function formatMoney(value: number | null | undefined) {
   return `$${Number(value ?? 0).toLocaleString()}`;
@@ -252,6 +263,8 @@ export default function CatalogoScreen() {
                 {productCategories.map((category) => {
                   const isOpen = !!expandedCategories[category];
                   const categoryProducts = productsByCategory[category] || [];
+                  const categoryImageUrl =
+                    categoryProducts.find((product) => product.image_url)?.image_url ?? null;
 
                   return (
                     <View key={category} style={styles.categorySection}>
@@ -259,11 +272,26 @@ export default function CatalogoScreen() {
                         onPress={() => toggleCategory(category)}
                         style={styles.categoryHeader}
                       >
-                        <View>
-                          <Text style={styles.categoryTitle}>{category}</Text>
-                          <Text style={styles.categoryCount}>
-                            {categoryProducts.length} servicio{categoryProducts.length === 1 ? '' : 's'}
-                          </Text>
+                        <View style={styles.categoryHeaderLeft}>
+                          <View style={styles.categoryImageBox}>
+                            {categoryImageUrl ? (
+                              <Image
+                                source={{ uri: categoryImageUrl }}
+                                style={styles.categoryImage}
+                              />
+                            ) : (
+                              <Text style={styles.categoryInitials}>
+                                {category.slice(0, 2)}
+                              </Text>
+                            )}
+                          </View>
+
+                          <View>
+                            <Text style={styles.categoryTitle}>{category}</Text>
+                            <Text style={styles.categoryCount}>
+                              {categoryProducts.length} servicio{categoryProducts.length === 1 ? '' : 's'}
+                            </Text>
+                          </View>
                         </View>
 
                         <Text style={styles.categoryChevron}>{isOpen ? '⌄' : '›'}</Text>
@@ -274,6 +302,13 @@ export default function CatalogoScreen() {
                           {categoryProducts.map((product) => (
                             <View key={product.id} style={styles.productCard}>
                               <View>
+                                {product.image_url && (
+                                  <Image
+                                    source={{ uri: product.image_url }}
+                                    style={styles.productImage}
+                                  />
+                                )}
+
                                 <Text style={styles.productName}>{product.name}</Text>
                                 <Text style={styles.productDescription}>
                                   {product.description || 'Servicio disponible para cotización.'}
@@ -364,12 +399,46 @@ const styles = StyleSheet.create({
   categoryList: { gap: 10 },
   categorySection: { borderRadius: 18, overflow: 'hidden', backgroundColor: 'rgba(15, 23, 42, 0.64)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.12)' },
   categoryHeader: { minHeight: 54, paddingHorizontal: 13, paddingVertical: 9, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, backgroundColor: 'rgba(2, 6, 23, 0.42)' },
+  categoryHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
+  },
+  categoryImageBox: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(250, 204, 21, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(250, 204, 21, 0.18)',
+  },
+  categoryImage: {
+    width: '100%',
+    height: '100%',
+  },
+  categoryInitials: {
+    color: '#fbbf24',
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
   categoryTitle: { color: '#ffffff', fontSize: 15, fontWeight: '900' },
   categoryCount: { color: '#94a3b8', fontSize: 11, fontWeight: '800', marginTop: 2 },
   categoryChevron: { color: '#fbbf24', fontSize: 24, fontWeight: '900' },
 
   productGrid: { gap: 9, padding: 10 },
   productCard: { minHeight: 116, borderRadius: 16, padding: 12, backgroundColor: 'rgba(15, 23, 42, 0.84)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', justifyContent: 'space-between', gap: 9 },
+  productImage: {
+    width: '100%',
+    height: 92,
+    borderRadius: 13,
+    marginBottom: 9,
+    backgroundColor: 'rgba(2, 6, 23, 0.54)',
+  },
   productName: { color: '#ffffff', fontSize: 15, fontWeight: '900', marginBottom: 3 },
   productDescription: { color: '#94a3b8', fontSize: 11, lineHeight: 15 },
   productFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginTop: 1 },
