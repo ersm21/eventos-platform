@@ -423,33 +423,7 @@ export default function CotizarPage() {
       <div style={containerStyle}>
         <AppNavbar ctaHref="/book-meeting" ctaLabel="Hablar con nosotros" />
 
-        <section style={locationHeroStyle}>
-          <div>
-            <p style={sectionEyebrowStyle}>Lugar del evento</p>
-            <h1 style={locationHeroTitleStyle}>
-              Ciudad del evento
-            </h1>
-            <p style={locationHeroTextStyle}>
-              Calculamos el transporte según la ciudad.
-            </p>
-          </div>
 
-          <label style={locationSelectWrapStyle}>
-            <span style={locationSelectLabelStyle}>Ciudad / zona</span>
-            <select
-              required
-              value={eventLocation}
-              onChange={(event) => setEventLocation(event.target.value)}
-              style={locationSelectStyle}
-            >
-              {eventLocationOptions.map((option) => (
-                <option key={option.value || 'empty-location'} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        </section>
 
         {!isLoggedIn && (
           <section style={sessionBoxStyle}>
@@ -583,6 +557,7 @@ export default function CotizarPage() {
             )}
           </section>
 
+          <div style={quoteSideColumnStyle}>
           <aside style={quotePanelStyle}>
             <div style={panelHeaderStyle}>
               <p style={sectionEyebrowStyle}>Mi cotización</p>
@@ -665,6 +640,30 @@ export default function CotizarPage() {
               </div>
             )}
           </aside>
+            <section style={locationHeroStyle}>
+              <div>
+                <p style={sectionEyebrowStyle}>Lugar del evento</p>
+                <h1 style={locationHeroTitleStyle}>Ciudad del evento</h1>
+                <p style={locationHeroTextStyle}>Calculamos el transporte según la ciudad.</p>
+              </div>
+
+              <label style={locationSelectWrapStyle}>
+                <span style={locationSelectLabelStyle}>Ciudad / zona</span>
+                <select
+                  required
+                  value={eventLocation}
+                  onChange={(event) => setEventLocation(event.target.value)}
+                  style={locationSelectStyle}
+                >
+                  {eventLocationOptions.map((option) => (
+                    <option key={option.value || 'empty-location'} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </section>
+          </div>
         </div>
 
         <section style={panelStyle}>
@@ -763,11 +762,7 @@ const containerStyle: React.CSSProperties = {
 };
 
 const locationHeroStyle: React.CSSProperties = {
-  width: '46%',
-  minWidth: 360,
-  marginTop: 10,
   display: 'grid',
-  gridTemplateColumns: '1fr',
   gap: 10,
   background: 'rgba(15, 23, 42, 0.58)',
   border: '1px solid rgba(250, 204, 21, 0.10)',
@@ -902,6 +897,12 @@ const panelStyle: React.CSSProperties = {
   borderRadius: 22,
   padding: 16,
   boxShadow: '0 14px 26px rgba(0,0,0,0.20)',
+};
+
+const quoteSideColumnStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 14,
+  alignSelf: 'start',
 };
 
 const quotePanelStyle: React.CSSProperties = {
