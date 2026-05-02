@@ -50,59 +50,8 @@ export default function CatalogoScreen() {
   const [hasLoadedSavedCart, setHasLoadedSavedCart] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({  stickyCartBar: {
-    position: 'absolute',
-    left: 16,
-    right: 16,
-    bottom: 18,
-    zIndex: 30,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderRadius: 18,
-    backgroundColor: 'rgba(2, 6, 23, 0.96)',
-    borderWidth: 1,
-    borderColor: 'rgba(250, 204, 21, 0.24)',
-    shadowColor: '#000',
-    shadowOpacity: 0.28,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 8,
-  },
-  stickyCartInfo: {
-    flex: 1,
-  },
-  stickyCartEyebrow: {
-    color: '#fbbf24',
-    fontSize: 10,
-    fontWeight: '900',
-    textTransform: 'uppercase',
-    letterSpacing: 0.7,
-  },
-  stickyCartTitle: {
-    marginTop: 2,
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '900',
-  },
-  stickyCartButton: {
-    minWidth: 58,
-    minHeight: 38,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#facc15',
-    paddingHorizontal: 14,
-  },
-  stickyCartButtonText: {
-    color: '#111827',
-    fontSize: 13,
-    fontWeight: '900',
-  },
-});
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+
   const productsByCategory = useMemo(() => {
     const grouped = products.reduce<Record<string, Product[]>>((accumulator, product) => {
       const category = product.category || 'General';
@@ -146,6 +95,38 @@ export default function CatalogoScreen() {
       [category]: !prev[category],
     }));
   };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProducts = async () => {
+      setLoading(true);
+      setError(null);
+
+      const { data, error: productsError } = await supabase
+        .from('products')
+        .select('id, name, description, price, category, image_url, is_active')
+        .eq('is_active', true);
+
+      if (!isMounted) return;
+
+      if (productsError) {
+        setError(productsError.message);
+        setProducts([]);
+        setLoading(false);
+        return;
+      }
+
+      setProducts((data ?? []) as Product[]);
+      setLoading(false);
+    };
+
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const loadSavedCart = async () => {
@@ -521,4 +502,56 @@ const styles = StyleSheet.create({
   cartQtyActions: { flexDirection: 'row', gap: 6 },
   cartQtyButton: { width: 28, height: 28, borderRadius: 9, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(249, 115, 22, 0.18)', borderWidth: 1, borderColor: 'rgba(249, 115, 22, 0.32)' },
   cartQtyButtonText: { color: '#fed7aa', fontSize: 15, fontWeight: '900' },
+  stickyCartBar: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    bottom: 18,
+    zIndex: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 18,
+    backgroundColor: 'rgba(2, 6, 23, 0.96)',
+    borderWidth: 1,
+    borderColor: 'rgba(250, 204, 21, 0.24)',
+    shadowColor: '#000',
+    shadowOpacity: 0.28,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 8,
+  },
+  stickyCartInfo: {
+    flex: 1,
+  },
+  stickyCartEyebrow: {
+    color: '#fbbf24',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 0.7,
+  },
+  stickyCartTitle: {
+    marginTop: 2,
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  stickyCartButton: {
+    minWidth: 58,
+    minHeight: 38,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#facc15',
+    paddingHorizontal: 14,
+  },
+  stickyCartButtonText: {
+    color: '#111827',
+    fontSize: 13,
+    fontWeight: '900',
+  },
 });
