@@ -23,6 +23,7 @@ type Product = {
   price: number | null;
   category: string | null;
   is_active: boolean | null;
+  image_url: string | null;
 };
 
 type QuoteItem = Product & {
@@ -77,6 +78,46 @@ async function requireCompleteProfile() {
   return true;
 }
 
+const EVENT_LOCATION_OPTIONS = [
+  { value: '', label: 'Selecciona la ciudad / zona' },
+  { value: 'Santiago', label: 'Santiago' },
+  { value: 'Moca', label: 'Moca' },
+  { value: 'Puerto Plata', label: 'Puerto Plata' },
+  { value: 'Mao', label: 'Mao' },
+  { value: 'La Vega', label: 'La Vega' },
+  { value: 'Santo Domingo', label: 'Santo Domingo' },
+  { value: 'La Romana', label: 'La Romana' },
+  { value: 'Punta Cana', label: 'Punta Cana' },
+  { value: 'Bávaro', label: 'Bávaro' },
+];
+
+const EVENT_TYPE_OPTIONS = [
+  { value: '', label: 'Selecciona el tipo de evento' },
+  { value: 'Boda', label: 'Boda' },
+  { value: 'Cumpleaños', label: 'Cumpleaños' },
+  { value: 'Quince años', label: 'Quince años' },
+  { value: 'Evento corporativo', label: 'Evento corporativo' },
+  { value: 'Concierto', label: 'Concierto' },
+  { value: 'DJ set', label: 'DJ set' },
+  { value: 'Fiesta privada', label: 'Fiesta privada' },
+  { value: 'Graduación', label: 'Graduación' },
+  { value: 'Bautizo', label: 'Bautizo' },
+  { value: 'Actividad escolar', label: 'Actividad escolar' },
+  { value: 'Actividad religiosa', label: 'Actividad religiosa' },
+  { value: 'Feria / expo', label: 'Feria / expo' },
+  { value: 'Otro (agregar en notas)', label: 'Otro (agregar en notas)' },
+];
+
+const CATEGORY_ORDER = [
+  'Audio',
+  'Iluminación',
+  'Pantallas LED',
+  'Truss',
+  'Tarimas',
+  'Efectos especiales',
+  'Pista de baile',
+];
+
 export default function CotizarScreen() {
   const params = useLocalSearchParams<{ cart?: string }>();
   const [products, setProducts] = useState<Product[]>([]);
@@ -92,6 +133,8 @@ export default function CotizarScreen() {
   const [eventType, setEventType] = useState('');
   const [eventLocation, setEventLocation] = useState('');
   const [eventDate, setEventDate] = useState('');
+  const [showLocationOptions, setShowLocationOptions] = useState(false);
+  const [showEventTypeOptions, setShowEventTypeOptions] = useState(false);
   const [notes, setNotes] = useState('');
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -232,38 +275,7 @@ export default function CotizarScreen() {
       setSessionEmail(session?.user?.email ?? null);
       setCustomerEmail(session?.user?.email ?? '');
     });
-
-    const eventLocationOptions = [
-    { value: '', label: 'Selecciona la ciudad / zona' },
-    { value: 'Santiago', label: 'Santiago' },
-    { value: 'Moca', label: 'Moca' },
-    { value: 'Puerto Plata', label: 'Puerto Plata' },
-    { value: 'Mao', label: 'Mao' },
-    { value: 'La Vega', label: 'La Vega' },
-    { value: 'Santo Domingo', label: 'Santo Domingo' },
-    { value: 'La Romana', label: 'La Romana' },
-    { value: 'Punta Cana', label: 'Punta Cana' },
-    { value: 'Bávaro', label: 'Bávaro' },
-  ];
-
-  const eventTypeOptions = [
-    { value: '', label: 'Selecciona el tipo de evento' },
-    { value: 'Boda', label: 'Boda' },
-    { value: 'Cumpleaños', label: 'Cumpleaños' },
-    { value: 'Quince años', label: 'Quince años' },
-    { value: 'Evento corporativo', label: 'Evento corporativo' },
-    { value: 'Concierto', label: 'Concierto' },
-    { value: 'DJ set', label: 'DJ set' },
-    { value: 'Fiesta privada', label: 'Fiesta privada' },
-    { value: 'Graduación', label: 'Graduación' },
-    { value: 'Bautizo', label: 'Bautizo' },
-    { value: 'Actividad escolar', label: 'Actividad escolar' },
-    { value: 'Actividad religiosa', label: 'Actividad religiosa' },
-    { value: 'Feria / expo', label: 'Feria / expo' },
-    { value: 'Otro (agregar en notas)', label: 'Otro (agregar en notas)' },
-  ];
-
-  return () => {
+    return () => {
       subscription.unsubscribe();
     };
   }, []);
@@ -311,7 +323,7 @@ export default function CotizarScreen() {
   );
 
   const productsByCategory = useMemo(() => {
-    return products.reduce<Record<string, Product[]>>((accumulator, product) => {
+    const grouped = products.reduce<Record<string, Product[]>>((accumulator, product) => {
       const category = product.category || 'General';
 
       if (!accumulator[category]) {
@@ -321,24 +333,31 @@ export default function CotizarScreen() {
       accumulator[category].push(product);
       return accumulator;
     }, {});
+
+    Object.keys(grouped).forEach((category) => {
+      grouped[category].sort((a, b) => {
+        const priceDifference = Number(a.price ?? 0) - Number(b.price ?? 0);
+
+        if (priceDifference !== 0) return priceDifference;
+
+        return a.name.localeCompare(b.name);
+      });
+    });
+
+    return grouped;
   }, [products]);
 
-  const productCategories = useMemo(
-    () => Object.keys(productsByCategory),
-    [productsByCategory]
-  );
+  const productCategories = useMemo(() => {
+    const existingCategories = Object.keys(productsByCategory);
+    const orderedCategories = CATEGORY_ORDER.filter((category) =>
+      existingCategories.includes(category)
+    );
+    const extraCategories = existingCategories
+      .filter((category) => !CATEGORY_ORDER.includes(category))
+      .sort((a, b) => a.localeCompare(b));
 
-  useEffect(() => {
-    if (productCategories.length === 0) return;
-
-    setExpandedCategories((prev) => {
-      if (Object.keys(prev).length > 0) return prev;
-
-      return {
-        [productCategories[0]]: true,
-      };
-    });
-  }, [productCategories]);
+    return [...orderedCategories, ...extraCategories];
+  }, [productsByCategory]);
 
   const toggleCategory = (category: string) => {
     setExpandedCategories((prev) => ({
@@ -488,6 +507,13 @@ export default function CotizarScreen() {
     }, 900);
   };
 
+  const selectedServiceCount = quoteItems.reduce(
+    (count, item) => count + item.quantity,
+    0
+  );
+  const eventDetailsCompleted = Boolean(eventLocation && eventType && eventDate);
+
+
   return (
     <LinearGradient colors={['#020617', '#09090f', '#111827']} style={styles.page}>
       <SafeAreaView style={styles.safeArea}>
@@ -587,6 +613,13 @@ export default function CotizarScreen() {
                         {categoryProducts.map((product) => (
                           <View key={product.id} style={styles.productCard}>
                             <View>
+                              {product.image_url && (
+                                <Image
+                                  source={{ uri: product.image_url }}
+                                  style={styles.productImage}
+                                />
+                              )}
+
                               <Text style={styles.productName}>{product.name}</Text>
                               <Text style={styles.productDescription}>
                                 {product.description || 'Servicio disponible para cotización.'}
@@ -614,69 +647,158 @@ export default function CotizarScreen() {
           )}
 
           <View style={styles.eventDetailsPanel}>
-            <Text style={styles.sectionEyebrow}>Lugar del evento</Text>
-            <Text style={styles.panelTitle}>Ciudad del evento</Text>
-            <Text style={styles.panelText}>Calculamos el transporte según la ciudad.</Text>
+            <View style={styles.eventHeaderRow}>
+              <View style={styles.eventIconBubble}>
+                <Text style={styles.eventIconText}>EV</Text>
+              </View>
+
+              <View style={styles.eventHeaderCopy}>
+                <Text style={styles.sectionEyebrow}>Detalles del evento</Text>
+                <Text style={styles.panelTitle}>Completa tu solicitud</Text>
+                <Text style={styles.panelText}>
+                  Ciudad, tipo de evento, fecha y notas para calcular transporte y revisar tu cotización.
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.progressCard}>
+              <View style={styles.progressRow}>
+                <Text style={styles.progressLabel}>Progreso</Text>
+                <Text style={styles.progressValue}>
+                  {eventDetailsCompleted ? 'Listo' : 'Pendiente'}
+                </Text>
+              </View>
+              <View style={styles.progressTrack}>
+                <View
+                  style={[
+                    styles.progressFill,
+                    {
+                      width: eventDetailsCompleted
+                        ? '100%'
+                        : eventLocation || eventType || eventDate
+                          ? '55%'
+                          : '18%',
+                    },
+                  ]}
+                />
+              </View>
+            </View>
 
             <View style={styles.fieldGroup}>
               <Text style={styles.label}>Ciudad / zona</Text>
-              <View style={styles.optionGrid}>
-                {eventLocationOptions.map((option) => (
-                  <Pressable
-                    key={option.value || 'empty-location'}
-                    onPress={() => setEventLocation(option.value)}
+              <Pressable
+                style={styles.selectCard}
+                onPress={() => setShowLocationOptions((current) => !current)}
+              >
+                <View style={styles.selectCardTextWrap}>
+                  <Text style={styles.selectCardLabel}>Ubicación del evento</Text>
+                  <Text
                     style={[
-                      styles.optionPill,
-                      eventLocation === option.value && styles.optionPillActive,
+                      styles.selectCardText,
+                      eventLocation && styles.selectCardTextActive,
                     ]}
                   >
-                    <Text
+                    {eventLocation || 'Selecciona la ciudad / zona'}
+                  </Text>
+                </View>
+                <Text style={styles.selectChevron}>{showLocationOptions ? '⌃' : '⌄'}</Text>
+              </Pressable>
+
+              {showLocationOptions && (
+                <View style={styles.optionList}>
+                  {EVENT_LOCATION_OPTIONS.filter((option) => option.value).map((option) => (
+                    <Pressable
+                      key={option.value}
+                      onPress={() => {
+                        setEventLocation(option.value);
+                        setShowLocationOptions(false);
+                      }}
                       style={[
-                        styles.optionPillText,
-                        eventLocation === option.value && styles.optionPillTextActive,
+                        styles.optionRow,
+                        eventLocation === option.value && styles.optionRowActive,
                       ]}
                     >
-                      {option.label}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
+                      <Text
+                        style={[
+                          styles.optionRowText,
+                          eventLocation === option.value && styles.optionRowTextActive,
+                        ]}
+                      >
+                        {option.label}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              )}
             </View>
 
             <View style={styles.fieldGroup}>
               <Text style={styles.label}>Tipo de evento</Text>
-              <View style={styles.optionGrid}>
-                {eventTypeOptions.map((option) => (
-                  <Pressable
-                    key={option.value || 'empty-event-type'}
-                    onPress={() => setEventType(option.value)}
+              <Pressable
+                style={styles.selectCard}
+                onPress={() => setShowEventTypeOptions((current) => !current)}
+              >
+                <View style={styles.selectCardTextWrap}>
+                  <Text style={styles.selectCardLabel}>Categoría del evento</Text>
+                  <Text
                     style={[
-                      styles.optionPill,
-                      eventType === option.value && styles.optionPillActive,
+                      styles.selectCardText,
+                      eventType && styles.selectCardTextActive,
                     ]}
                   >
-                    <Text
+                    {eventType || 'Selecciona el tipo de evento'}
+                  </Text>
+                </View>
+                <Text style={styles.selectChevron}>{showEventTypeOptions ? '⌃' : '⌄'}</Text>
+              </Pressable>
+
+              {showEventTypeOptions && (
+                <View style={styles.optionList}>
+                  {EVENT_TYPE_OPTIONS.filter((option) => option.value).map((option) => (
+                    <Pressable
+                      key={option.value}
+                      onPress={() => {
+                        setEventType(option.value);
+                        setShowEventTypeOptions(false);
+                      }}
                       style={[
-                        styles.optionPillText,
-                        eventType === option.value && styles.optionPillTextActive,
+                        styles.optionRow,
+                        eventType === option.value && styles.optionRowActive,
                       ]}
                     >
-                      {option.label}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
+                      <Text
+                        style={[
+                          styles.optionRowText,
+                          eventType === option.value && styles.optionRowTextActive,
+                        ]}
+                      >
+                        {option.label}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              )}
             </View>
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>Fecha del evento</Text>
-              <TextInput
-                value={eventDate}
-                onChangeText={setEventDate}
-                placeholder="YYYY-MM-DD"
-                placeholderTextColor="#64748b"
-                style={styles.input}
-              />
+            <View style={styles.eventFieldGrid}>
+              <View style={[styles.fieldGroup, styles.eventFieldHalf]}>
+                <Text style={styles.label}>Fecha del evento</Text>
+                <TextInput
+                  value={eventDate}
+                  onChangeText={setEventDate}
+                  placeholder="YYYY-MM-DD"
+                  placeholderTextColor="#64748b"
+                  style={styles.input}
+                />
+              </View>
+
+              <View style={[styles.fieldGroup, styles.eventFieldHalf]}>
+                <Text style={styles.label}>Servicios</Text>
+                <View style={styles.serviceCountCard}>
+                  <Text style={styles.serviceCountValue}>{selectedServiceCount}</Text>
+                  <Text style={styles.serviceCountLabel}>agregados</Text>
+                </View>
+              </View>
             </View>
 
             <View style={styles.fieldGroup}>
@@ -684,7 +806,7 @@ export default function CotizarScreen() {
               <TextInput
                 value={notes}
                 onChangeText={setNotes}
-                placeholder="Duración, montaje, horario, detalles especiales..."
+                placeholder="Horario, duración, montaje, luces, sonido o detalles importantes..."
                 placeholderTextColor="#64748b"
                 style={[styles.input, styles.textArea]}
                 multiline
@@ -805,12 +927,17 @@ const styles = StyleSheet.create({
   successBox: { padding: 12, borderRadius: 14, backgroundColor: 'rgba(20, 83, 45, 0.35)', borderWidth: 1, borderColor: 'rgba(74, 222, 128, 0.28)' },
   successText: { color: '#bbf7d0', fontWeight: '800' },
   eventDetailsPanel: {
-    borderRadius: 28,
+    borderRadius: 30,
     borderWidth: 1,
-    borderColor: 'rgba(250, 204, 21, 0.22)',
-    backgroundColor: 'rgba(15, 23, 42, 0.86)',
+    borderColor: 'rgba(250, 204, 21, 0.16)',
+    backgroundColor: 'rgba(15, 23, 42, 0.94)',
     padding: 18,
-    gap: 14,
+    gap: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 6,
   },
   panel: { borderRadius: 20, padding: 14, backgroundColor: 'rgba(15, 23, 42, 0.78)', borderWidth: 1, borderColor: 'rgba(250, 204, 21, 0.14)', gap: 11 },
   mutedText: { color: '#94a3b8', fontSize: 12, fontWeight: '700' },
@@ -853,4 +980,182 @@ const styles = StyleSheet.create({
   quoteSummaryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
   quoteSummaryLabel: { color: '#cbd5e1', fontSize: 12, fontWeight: '700' },
   quoteSummaryValue: { color: '#ffffff', fontSize: 13, fontWeight: '900' },
+  optionGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  optionPill: {
+    paddingVertical: 9,
+    paddingHorizontal: 11,
+    borderRadius: 999,
+    backgroundColor: 'rgba(2, 6, 23, 0.62)',
+    borderWidth: 1,
+    borderColor: 'rgba(148, 163, 184, 0.22)',
+  },
+  optionPillActive: {
+    backgroundColor: 'rgba(250, 204, 21, 0.16)',
+    borderColor: 'rgba(250, 204, 21, 0.62)',
+  },
+  optionPillText: {
+    color: '#cbd5e1',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  optionPillTextActive: {
+    color: '#facc15',
+  },
+  selectCard: {
+    minHeight: 58,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(148, 163, 184, 0.24)',
+    backgroundColor: 'rgba(2, 6, 23, 0.64)',
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  selectCardText: {
+    color: '#94a3b8',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  selectCardTextActive: {
+    color: '#ffffff',
+  },
+  selectChevron: {
+    color: '#facc15',
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  optionList: {
+    marginTop: 8,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(148, 163, 184, 0.16)',
+    backgroundColor: 'rgba(2, 6, 23, 0.58)',
+    overflow: 'hidden',
+  },
+  optionRow: {
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(148, 163, 184, 0.1)',
+  },
+  optionRowActive: {
+    backgroundColor: 'rgba(250, 204, 21, 0.12)',
+  },
+  optionRowText: {
+    color: '#cbd5e1',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  optionRowTextActive: {
+    color: '#facc15',
+  },
+  selectCardTextWrap: {
+    flex: 1,
+    gap: 3,
+  },
+  selectCardLabel: {
+    color: '#facc15',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+  },
+  eventHeaderRow: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'flex-start',
+  },
+  eventIconBubble: {
+    width: 44,
+    height: 44,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(250, 204, 21, 0.13)',
+    borderWidth: 1,
+    borderColor: 'rgba(250, 204, 21, 0.22)',
+  },
+  eventIconText: {
+    color: '#facc15',
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+  },
+  eventHeaderCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  progressCard: {
+    borderRadius: 18,
+    padding: 13,
+    backgroundColor: 'rgba(2, 6, 23, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(148, 163, 184, 0.12)',
+    gap: 9,
+  },
+  progressRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  progressLabel: {
+    color: '#94a3b8',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  progressValue: {
+    color: '#facc15',
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  progressTrack: {
+    height: 7,
+    borderRadius: 999,
+    backgroundColor: 'rgba(148, 163, 184, 0.16)',
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 999,
+    backgroundColor: '#facc15',
+  },
+  eventFieldGrid: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  eventFieldHalf: {
+    flex: 1,
+  },
+  serviceCountCard: {
+    minHeight: 56,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: 'rgba(2, 6, 23, 0.56)',
+    paddingHorizontal: 14,
+    justifyContent: 'center',
+  },
+  serviceCountValue: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  serviceCountLabel: {
+    color: '#94a3b8',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  productImage: {
+    width: '100%',
+    height: 92,
+    borderRadius: 14,
+    marginBottom: 10,
+    backgroundColor: 'rgba(2, 6, 23, 0.54)',
+  },
 });
