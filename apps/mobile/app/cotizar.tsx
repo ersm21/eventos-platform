@@ -507,6 +507,7 @@ export default function CotizarScreen() {
     }, 900);
   };
 
+
   const selectedServiceCount = quoteItems.reduce(
     (count, item) => count + item.quantity,
     0
