@@ -587,65 +587,6 @@ export default function CotizarScreen() {
               <Text style={styles.mutedText}>Todavía no hay servicios disponibles.</Text>
             </View>
           ) : (
-            <View style={styles.categoryList}>
-              {productCategories.map((category) => {
-                const isOpen = !!expandedCategories[category];
-                const categoryProducts = productsByCategory[category] || [];
-
-                return (
-                  <View key={category} style={styles.categorySection}>
-                    <Pressable
-                      onPress={() => toggleCategory(category)}
-                      style={styles.categoryHeader}
-                    >
-                      <View>
-                        <Text style={styles.categoryTitle}>{category}</Text>
-                        <Text style={styles.categoryCount}>
-                          {categoryProducts.length} servicio{categoryProducts.length === 1 ? '' : 's'}
-                        </Text>
-                      </View>
-
-                      <Text style={styles.categoryChevron}>{isOpen ? '⌄' : '›'}</Text>
-                    </Pressable>
-
-                    {isOpen && (
-                      <View style={styles.productGrid}>
-                        {categoryProducts.map((product) => (
-                          <View key={product.id} style={styles.productCard}>
-                            <View>
-                              {product.image_url && (
-                                <Image
-                                  source={{ uri: product.image_url }}
-                                  style={styles.productImage}
-                                />
-                              )}
-
-                              <Text style={styles.productName}>{product.name}</Text>
-                              <Text style={styles.productDescription}>
-                                {product.description || 'Servicio disponible para cotización.'}
-                              </Text>
-                            </View>
-
-                            <View style={styles.productFooter}>
-                              <View>
-                                <Text style={styles.priceLabel}>Desde</Text>
-                                <Text style={styles.price}>{formatMoney(product.price)}</Text>
-                              </View>
-
-                              <Pressable onPress={() => addToQuote(product)} style={styles.smallButton}>
-                                <Text style={styles.primaryButtonText}>Agregar</Text>
-                              </Pressable>
-                            </View>
-                          </View>
-                        ))}
-                      </View>
-                    )}
-                  </View>
-                );
-              })}
-            </View>
-          )}
-
           <View style={styles.eventDetailsPanel}>
             <View style={styles.eventHeaderRow}>
               <View style={styles.eventIconBubble}>
@@ -814,6 +755,66 @@ export default function CotizarScreen() {
               />
             </View>
           </View>
+
+
+            <View style={styles.categoryList}>
+              {productCategories.map((category) => {
+                const isOpen = !!expandedCategories[category];
+                const categoryProducts = productsByCategory[category] || [];
+
+                return (
+                  <View key={category} style={styles.categorySection}>
+                    <Pressable
+                      onPress={() => toggleCategory(category)}
+                      style={styles.categoryHeader}
+                    >
+                      <View>
+                        <Text style={styles.categoryTitle}>{category}</Text>
+                        <Text style={styles.categoryCount}>
+                          {categoryProducts.length} servicio{categoryProducts.length === 1 ? '' : 's'}
+                        </Text>
+                      </View>
+
+                      <Text style={styles.categoryChevron}>{isOpen ? '⌄' : '›'}</Text>
+                    </Pressable>
+
+                    {isOpen && (
+                      <View style={styles.productGrid}>
+                        {categoryProducts.map((product) => (
+                          <View key={product.id} style={styles.productCard}>
+                            <View>
+                              {product.image_url && (
+                                <Image
+                                  source={{ uri: product.image_url }}
+                                  style={styles.productImage}
+                                />
+                              )}
+
+                              <Text style={styles.productName}>{product.name}</Text>
+                              <Text style={styles.productDescription}>
+                                {product.description || 'Servicio disponible para cotización.'}
+                              </Text>
+                            </View>
+
+                            <View style={styles.productFooter}>
+                              <View>
+                                <Text style={styles.priceLabel}>Desde</Text>
+                                <Text style={styles.price}>{formatMoney(product.price)}</Text>
+                              </View>
+
+                              <Pressable onPress={() => addToQuote(product)} style={styles.smallButton}>
+                                <Text style={styles.primaryButtonText}>Agregar</Text>
+                              </Pressable>
+                            </View>
+                          </View>
+                        ))}
+                      </View>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+          )}
 
           <View style={styles.quotePanel}>
             <Text style={styles.sectionEyebrow}>Mi cotización</Text>
