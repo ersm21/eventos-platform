@@ -929,9 +929,9 @@ const mobileQuotePanelStyle: React.CSSProperties = {
   padding: 12,
   borderRadius: 22,
   overflow: 'hidden',
-  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.86))',
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.88))',
   border: '1px solid rgba(250, 204, 21, 0.16)',
-  boxShadow: '0 18px 42px rgba(0, 0, 0, 0.30)',
+  boxShadow: '0 18px 42px rgba(0, 0, 0, 0.28)',
 };
 
 const mobileLocationHeroStyle: React.CSSProperties = {
