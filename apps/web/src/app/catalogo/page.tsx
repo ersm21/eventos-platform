@@ -1376,7 +1376,7 @@ const mobileCartBarStyle: React.CSSProperties = {
   left: 10,
   right: 10,
   bottom: 12,
-  zIndex: 60,
+  zIndex: 300,
   borderRadius: 22,
   padding: 8,
   background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.94))',

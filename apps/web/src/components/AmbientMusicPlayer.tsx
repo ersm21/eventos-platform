@@ -14,6 +14,7 @@ export default function AmbientMusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [wasBlocked, setWasBlocked] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [volume, setVolume] = useState(14);
 
   useEffect(() => {
@@ -162,20 +163,24 @@ export default function AmbientMusicPlayer() {
     <div
       style={{
         position: 'fixed',
-        left: 18,
-        bottom: 18,
-        zIndex: 100,
+        left: 14,
+        bottom: 92,
+        zIndex: 210,
         display: 'grid',
-        gap: 8,
-        padding: 12,
-        borderRadius: 18,
+        gap: isExpanded ? 8 : 0,
+        padding: isExpanded ? 12 : 10,
+        borderRadius: isExpanded ? 18 : 999,
         border: '1px solid rgba(250, 204, 21, 0.24)',
-        background: 'rgba(2, 6, 23, 0.84)',
+        background: isExpanded ? 'rgba(2, 6, 23, 0.82)' : 'rgba(2, 6, 23, 0.42)',
+        opacity: isExpanded ? 1 : 0.78,
         color: '#fde68a',
         boxShadow: '0 14px 30px rgba(0,0,0,0.28)',
         backdropFilter: 'blur(14px)',
         WebkitBackdropFilter: 'blur(14px)',
-        minWidth: 210,
+        minWidth: isExpanded ? 210 : 48,
+        width: isExpanded ? 210 : 48,
+        minHeight: isExpanded ? 'auto' : 48,
+        overflow: 'hidden',
       }}
     >
       <button
@@ -186,8 +191,8 @@ export default function AmbientMusicPlayer() {
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 8,
+          justifyContent: isExpanded ? 'space-between' : 'center',
+          gap: isExpanded ? 8 : 0,
           width: '100%',
           padding: 0,
           border: 'none',
@@ -198,18 +203,21 @@ export default function AmbientMusicPlayer() {
         }}
       >
         <span>{isPlaying ? '⏸ Pausar ambiente' : wasBlocked ? '♪ Activar ambiente' : '♪ Ambiente'}</span>
-        <span
-          style={{
-            color: isPlaying ? '#86efac' : '#fbbf24',
-            fontSize: 11,
-            fontWeight: 900,
-          }}
-        >
-          {isPlaying ? 'ON' : 'OFF'}
-        </span>
+        {isExpanded && (
+          <span
+            style={{
+              color: isPlaying ? '#86efac' : '#fbbf24',
+              fontSize: 11,
+              fontWeight: 900,
+            }}
+          >
+            {isPlaying ? 'ON' : 'OFF'}
+          </span>
+        )}
       </button>
 
-      <label
+      {isExpanded && (
+        <label
         style={{
           display: 'grid',
           gap: 5,
@@ -231,7 +239,27 @@ export default function AmbientMusicPlayer() {
             cursor: 'pointer',
           }}
         />
-      </label>
+        </label>
+      )}
+
+      {isExpanded && (
+        <button
+          type="button"
+          onClick={() => setIsExpanded(false)}
+          style={{
+            border: '1px solid rgba(250, 204, 21, 0.18)',
+            background: 'rgba(15, 23, 42, 0.5)',
+            color: '#fde68a',
+            borderRadius: 999,
+            padding: '6px 8px',
+            fontSize: 11,
+            fontWeight: 900,
+            cursor: 'pointer',
+          }}
+        >
+          Plegar
+        </button>
+      )}
     </div>
   );
 }
