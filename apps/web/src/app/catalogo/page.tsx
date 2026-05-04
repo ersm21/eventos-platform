@@ -255,7 +255,28 @@ export default function CatalogoPage() {
         <AppNavbar ctaHref="/cotizar" ctaLabel="Cotizar ahora" />
 
         {isMobileCatalog ? (
-          <section style={mobileCatalogIntroStripStyle}>
+          
+        <style jsx global>{`
+          @media (max-width: 760px) {
+            html,
+            body {
+              max-width: 100vw;
+              overflow-x: hidden;
+            }
+
+            body * {
+              box-sizing: border-box;
+            }
+
+            img,
+            video,
+            canvas,
+            svg {
+              max-width: 100%;
+            }
+          }
+        `}</style>
+<section style={mobileCatalogIntroStripStyle}>
             <div>
               <h1 style={mobileCatalogIntroTitleStyle}>Catálogo SM Events</h1>
               <p style={mobileCatalogIntroTextStyle}>
@@ -556,6 +577,10 @@ const mobileSecondaryHeroButtonStyle: React.CSSProperties = {
 };
 
 const mobileSectionCardStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  boxSizing: 'border-box',
   borderRadius: 18,
   padding: 12,
   background: 'rgba(15, 23, 42, 0.78)',
@@ -589,11 +614,13 @@ const mobileSectionTextStyle: React.CSSProperties = {
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
+  maxWidth: '100%',
 };
 
 const mobileCatalogIntroStripStyle: React.CSSProperties = {
   width: '100%',
   maxWidth: '100%',
+  minWidth: 0,
   boxSizing: 'border-box',
   display: 'flex',
   alignItems: 'center',
@@ -610,18 +637,22 @@ const mobileCatalogIntroStripStyle: React.CSSProperties = {
 const mobileCatalogIntroTitleStyle: React.CSSProperties = {
   margin: 0,
   color: '#ffffff',
-  fontSize: 18,
-  lineHeight: 1.05,
+  fontSize: 24,
+  lineHeight: 1.02,
   fontWeight: 900,
-  letterSpacing: '-0.04em',
+  letterSpacing: '-0.05em',
+  maxWidth: '100%',
+  whiteSpace: 'normal',
+  overflowWrap: 'break-word',
 };
 
 const mobileCatalogIntroTextStyle: React.CSSProperties = {
-  margin: '3px 0 0',
+  margin: '4px 0 0',
   color: '#94a3b8',
-  fontSize: 11,
+  fontSize: 13,
   lineHeight: 1.25,
-  maxWidth: 250,
+  maxWidth: '100%',
+  overflowWrap: 'break-word',
 };
 
 const mobileCatalogIntroBadgeStyle: React.CSSProperties = {
@@ -641,8 +672,9 @@ const mobileCatalogLayoutStyle: React.CSSProperties = {
   display: 'grid',
   gridTemplateColumns: 'minmax(0, 1fr)',
   width: '100%',
-  maxWidth: '100vw',
-  overflowX: 'hidden',
+  maxWidth: '100%',
+  minWidth: 0,
+  overflowX: 'clip',
   gap: 9,
   alignItems: 'start',
   padding: '10px 10px 88px',
@@ -652,18 +684,21 @@ const mobileCatalogLayoutStyle: React.CSSProperties = {
 const mobileCategoryRailStyle: React.CSSProperties = {
   width: '100%',
   maxWidth: '100%',
+  minWidth: 0,
   boxSizing: 'border-box',
   display: 'flex',
   gap: 7,
   overflowX: 'auto',
   overflowY: 'hidden',
-  padding: '0 0 3px',
+  padding: '0 2px 3px',
   WebkitOverflowScrolling: 'touch',
   scrollbarWidth: 'none',
+  overscrollBehaviorX: 'contain',
 };
 
 const mobileCategoryChipStyle: React.CSSProperties = {
   flex: '0 0 auto',
+  maxWidth: 140,
   border: '1px solid rgba(148, 163, 184, 0.16)',
   background: 'rgba(15, 23, 42, 0.74)',
   color: '#cbd5e1',
@@ -673,6 +708,8 @@ const mobileCategoryChipStyle: React.CSSProperties = {
   fontWeight: 900,
   cursor: 'pointer',
   whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
 };
 
 const mobileCategoryChipActiveStyle: React.CSSProperties = {
@@ -687,14 +724,16 @@ const mobileCategoryListStyle: React.CSSProperties = {
   gridTemplateColumns: 'minmax(0, 1fr)',
   width: '100%',
   maxWidth: '100%',
+  minWidth: 0,
   gap: 7,
-  overflowX: 'hidden',
+  overflowX: 'clip',
   boxSizing: 'border-box',
 };
 
 const mobileCategorySectionStyle: React.CSSProperties = {
   width: '100%',
   maxWidth: '100%',
+  minWidth: 0,
   boxSizing: 'border-box',
   borderRadius: 16,
   background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.76))',
@@ -706,6 +745,7 @@ const mobileCategorySectionStyle: React.CSSProperties = {
 const mobileCategoryHeaderStyle: React.CSSProperties = {
   width: '100%',
   maxWidth: '100%',
+  minWidth: 0,
   boxSizing: 'border-box',
   display: 'flex',
   alignItems: 'center',
@@ -738,10 +778,11 @@ const mobileProductListStyle: React.CSSProperties = {
   gridTemplateColumns: 'minmax(0, 1fr)',
   width: '100%',
   maxWidth: '100%',
+  minWidth: 0,
   gap: 7,
   padding: '0 8px 8px',
   boxSizing: 'border-box',
-  overflowX: 'hidden',
+  overflowX: 'clip',
 };
 
 const mobileProductCardStyle: React.CSSProperties = {
