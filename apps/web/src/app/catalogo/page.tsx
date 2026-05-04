@@ -325,8 +325,17 @@ export default function CatalogoPage() {
                 <p style={mutedTextStyle}>Todavía no hay servicios disponibles.</p>
               </div>
             ) : (
-<div style={isMobileCatalog ? mobileCategoryListStyle : categoryListStyle}>
-                {visibleProductCategories.map((category) => {
+              <div style={isMobileCatalog ? mobileCategoryListStyle : categoryListStyle}>
+                {isMobileCatalog && !activeMobileCategory ? (
+                  <div style={mobileCategoryEmptyStateStyle}>
+                    <p style={mobileCategoryEmptyEyebrowStyle}>Elige una categoría</p>
+                    <h2 style={mobileCategoryEmptyTitleStyle}>Selecciona un servicio arriba</h2>
+                    <p style={mobileCategoryEmptyTextStyle}>
+                      Toca una categoría para ver solo los productos de esa sección.
+                    </p>
+                  </div>
+                ) : (
+                  visibleProductCategories.map((category) => {
                   const isOpen = !!expandedCategories[category];
                   const categoryProducts = productsByCategory[category] || [];
                   const categoryVisual = categoryVisuals[category] || {
@@ -412,7 +421,8 @@ export default function CatalogoPage() {
             )}
                     </section>
                   );
-                })}
+                  })
+                )}
               </div>
             )}
           </section>
