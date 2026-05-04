@@ -301,15 +301,15 @@ export default function CatalogoPage() {
                         onClick={() => toggleCategory(category)}
                         style={isMobileCatalog ? mobileCategoryHeaderStyle : categoryHeaderStyle}
                       >
-                        <div style={categoryHeaderContentStyle}>
+                        <div style={isMobileCatalog ? mobileCategoryHeaderContentStyle : categoryHeaderContentStyle}>
                           <div style={isMobileCatalog ? mobileCategoryThumbStyle : categoryThumbStyle}>
                             <span>{categoryVisual.label.slice(0, 2).toUpperCase()}</span>
                           </div>
 
                           <div>
-                            <h3 style={categoryTitleStyle}>{categoryVisual.label}</h3>
+                            <h3 style={isMobileCatalog ? mobileCategoryTitleStyle : categoryTitleStyle}>{categoryVisual.label}</h3>
                             {!isMobileCatalog && <p style={categoryDescriptionStyle}>{categoryVisual.description}</p>}
-                            <p style={categoryCountStyle}>
+                            <p style={isMobileCatalog ? mobileCategoryCountStyle : categoryCountStyle}>
                               {categoryProducts.length > 0
                                 ? `${categoryProducts.length} producto${categoryProducts.length === 1 ? '' : 's'}`
                                 : 'Próximamente agregaremos productos'}
@@ -345,16 +345,16 @@ export default function CatalogoPage() {
                                 </div>
                               )}
 
-                              <div style={productBodyStyle}>
-                                <h4 style={productNameStyle}>{product.name}</h4>
+                              <div style={isMobileCatalog ? mobileProductBodyStyle : productBodyStyle}>
+                                <h4 style={isMobileCatalog ? mobileProductNameStyle : productNameStyle}>{product.name}</h4>
                                 <p style={isMobileCatalog ? mobileProductDescriptionStyle : productDescriptionStyle}>
                                   {product.description || 'Servicio disponible para cotización.'}
                                 </p>
 
-                                <div style={productFooterStyle}>
+                                <div style={isMobileCatalog ? mobileProductFooterStyle : productFooterStyle}>
                                   <div>
                                     <p style={priceLabelStyle}>Desde</p>
-                                    <p style={priceStyle}>{formatMoney(product.price)}</p>
+                                    <p style={isMobileCatalog ? mobilePriceStyle : priceStyle}>{formatMoney(product.price)}</p>
                                   </div>
 
                                   <button
@@ -447,21 +447,23 @@ export default function CatalogoPage() {
 }
 
 const mobileCatalogLayoutStyle: React.CSSProperties = {
+  ...pageStyle,
   display: 'grid',
   gridTemplateColumns: '1fr',
-  gap: 14,
+  gap: 12,
   alignItems: 'start',
+  padding: '18px 14px 108px',
 };
 
 const mobileCategoryListStyle: React.CSSProperties = {
   display: 'grid',
-  gap: 10,
+  gap: 9,
 };
 
 const mobileCategorySectionStyle: React.CSSProperties = {
   borderRadius: 18,
-  background: 'rgba(15, 23, 42, 0.78)',
-  border: '1px solid rgba(250, 204, 21, 0.10)',
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.72))',
+  border: '1px solid rgba(250, 204, 21, 0.11)',
   overflow: 'hidden',
   boxShadow: '0 14px 34px rgba(0, 0, 0, 0.18)',
 };
@@ -472,21 +474,21 @@ const mobileCategoryHeaderStyle: React.CSSProperties = {
   alignItems: 'center',
   justifyContent: 'space-between',
   gap: 10,
-  padding: 12,
+  padding: '12px 12px',
   border: 'none',
-  background: 'linear-gradient(135deg, rgba(15,23,42,0.92), rgba(30,41,59,0.74))',
+  background: 'transparent',
   color: '#fff',
   cursor: 'pointer',
   textAlign: 'left',
 };
 
 const mobileCategoryThumbStyle: React.CSSProperties = {
-  width: 42,
-  height: 42,
+  width: 40,
+  height: 40,
   borderRadius: 14,
   display: 'grid',
   placeItems: 'center',
-  background: 'rgba(250, 204, 21, 0.14)',
+  background: 'linear-gradient(135deg, rgba(250, 204, 21, 0.22), rgba(249, 115, 22, 0.12))',
   color: '#facc15',
   fontSize: 12,
   fontWeight: 900,
@@ -495,48 +497,49 @@ const mobileCategoryThumbStyle: React.CSSProperties = {
 
 const mobileProductListStyle: React.CSSProperties = {
   display: 'grid',
-  gap: 10,
-  padding: 10,
+  gap: 9,
+  padding: '0 10px 10px',
 };
 
 const mobileProductCardStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '86px minmax(0, 1fr)',
-  gap: 11,
+  gridTemplateColumns: '74px minmax(0, 1fr)',
+  gap: 10,
   alignItems: 'stretch',
-  padding: 10,
+  padding: 9,
   borderRadius: 16,
-  background: 'rgba(2, 6, 23, 0.48)',
-  border: '1px solid rgba(148, 163, 184, 0.12)',
+  background: 'rgba(2, 6, 23, 0.5)',
+  border: '1px solid rgba(148, 163, 184, 0.11)',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
 };
 
 const mobileProductImageStyle: React.CSSProperties = {
-  width: 86,
-  height: 86,
-  borderRadius: 14,
+  width: 74,
+  height: 74,
+  borderRadius: 13,
   objectFit: 'cover',
   background: 'rgba(2, 6, 23, 0.7)',
 };
 
 const mobileProductImagePlaceholderStyle: React.CSSProperties = {
-  width: 86,
-  height: 86,
-  borderRadius: 14,
+  width: 74,
+  height: 74,
+  borderRadius: 13,
   display: 'grid',
   placeItems: 'center',
   background: 'rgba(250, 204, 21, 0.10)',
   color: '#facc15',
-  fontSize: 10,
+  fontSize: 9,
   fontWeight: 900,
   textAlign: 'center',
   padding: 6,
 };
 
 const mobileProductDescriptionStyle: React.CSSProperties = {
-  margin: '5px 0 0',
+  margin: '3px 0 0',
   color: '#94a3b8',
-  fontSize: 11,
-  lineHeight: 1.35,
+  fontSize: 10.5,
+  lineHeight: 1.3,
   display: '-webkit-box',
   WebkitLineClamp: 2,
   WebkitBoxOrient: 'vertical',
@@ -703,6 +706,12 @@ const categoryHeaderStyle: React.CSSProperties = {
   textAlign: 'left',
 };
 
+const mobileCategoryHeaderContentStyle: React.CSSProperties = {
+  ...categoryHeaderContentStyle,
+  gap: 10,
+  minWidth: 0,
+};
+
 const categoryHeaderContentStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
@@ -737,6 +746,21 @@ const emptyCategoryStyle: React.CSSProperties = {
   borderRadius: 16,
   background: 'rgba(2, 6, 23, 0.38)',
   border: '1px solid rgba(250, 204, 21, 0.11)',
+};
+
+const mobileCategoryTitleStyle: React.CSSProperties = {
+  ...categoryTitleStyle,
+  fontSize: 15,
+  lineHeight: 1.15,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+};
+
+const mobileCategoryCountStyle: React.CSSProperties = {
+  ...categoryCountStyle,
+  fontSize: 11,
+  marginTop: 3,
 };
 
 const categoryTitleStyle: React.CSSProperties = {
@@ -801,6 +825,43 @@ const productImagePlaceholderStyle: React.CSSProperties = {
   fontSize: 12,
   textTransform: 'uppercase',
   letterSpacing: '0.08em',
+};
+
+const mobileProductBodyStyle: React.CSSProperties = {
+  ...productBodyStyle,
+  minWidth: 0,
+  gap: 4,
+};
+
+const mobileProductNameStyle: React.CSSProperties = {
+  ...productNameStyle,
+  fontSize: 13,
+  lineHeight: 1.2,
+  display: '-webkit-box',
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+};
+
+const mobileProductFooterStyle: React.CSSProperties = {
+  ...productFooterStyle,
+  alignItems: 'center',
+  gap: 8,
+  marginTop: 6,
+};
+
+const mobilePriceStyle: React.CSSProperties = {
+  ...priceStyle,
+  fontSize: 13,
+};
+
+const mobileAddButtonStyle: React.CSSProperties = {
+  ...addButtonStyle,
+  minHeight: 34,
+  padding: '8px 10px',
+  borderRadius: 12,
+  fontSize: 12,
+  whiteSpace: 'nowrap',
 };
 
 const productBodyStyle: React.CSSProperties = {
@@ -873,7 +934,9 @@ const mobileCartPanelStyle: React.CSSProperties = {
   bottom: 12,
   zIndex: 20,
   borderRadius: 20,
-  padding: 14,
+  padding: 12,
+  maxHeight: '44vh',
+  overflowY: 'auto',
   boxShadow: '0 18px 44px rgba(0,0,0,0.35)',
 };
 
