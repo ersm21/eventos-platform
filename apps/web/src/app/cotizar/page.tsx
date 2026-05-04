@@ -660,16 +660,16 @@ export default function CotizarPage() {
             ) : (
               <div style={quoteStackStyle}>
                 {quoteItems.map((item) => (
-                  <div key={item.id} style={quoteItemCardStyle}>
-                    <div style={quoteItemHeaderStyle}>
+                  <div key={item.id} style={isMobileQuote ? mobileQuoteItemCardStyle : quoteItemCardStyle}>
+                    <div style={isMobileQuote ? mobileQuoteItemHeaderStyle : quoteItemHeaderStyle}>
                       <div>
-                        <p style={quoteItemNameStyle}>{item.name}</p>
-                        <p style={quoteItemMetaStyle}>
+                        <p style={isMobileQuote ? mobileQuoteItemNameStyle : quoteItemNameStyle}>{item.name}</p>
+                        <p style={isMobileQuote ? mobileQuoteItemMetaStyle : quoteItemMetaStyle}>
                           {formatMoney(item.price)} por unidad
                         </p>
                       </div>
 
-                      <div style={quoteItemActionsStyle}>
+                      <div style={isMobileQuote ? mobileQuoteItemActionsStyle : quoteItemActionsStyle}>
                         <button
                           type="button"
                           onClick={() => decreaseQuantity(item.id)}
@@ -688,7 +688,7 @@ export default function CotizarPage() {
                       </div>
                     </div>
 
-                    <p style={quoteSubtotalStyle}>
+                    <p style={isMobileQuote ? mobileQuoteSubtotalStyle : quoteSubtotalStyle}>
                       Subtotal: {formatMoney(Number(item.price ?? 0) * item.quantity)}
                     </p>
                   </div>
@@ -809,6 +809,63 @@ export default function CotizarPage() {
   );
 }
 
+const mobileQuoteItemCardStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  boxSizing: 'border-box',
+  display: 'grid',
+  gap: 8,
+  padding: 10,
+  borderRadius: 16,
+  background: 'rgba(2, 6, 23, 0.52)',
+  border: '1px solid rgba(148, 163, 184, 0.12)',
+  overflow: 'hidden',
+};
+
+const mobileQuoteItemHeaderStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr) auto',
+  alignItems: 'center',
+  gap: 8,
+  width: '100%',
+  minWidth: 0,
+};
+
+const mobileQuoteItemNameStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#ffffff',
+  fontSize: 13,
+  fontWeight: 900,
+  lineHeight: 1.18,
+  display: '-webkit-box',
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+};
+
+const mobileQuoteItemMetaStyle: React.CSSProperties = {
+  margin: '3px 0 0',
+  color: '#94a3b8',
+  fontSize: 10.5,
+  lineHeight: 1.25,
+};
+
+const mobileQuoteItemActionsStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  gap: 6,
+  flex: '0 0 auto',
+};
+
+const mobileQuoteSubtotalStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#facc15',
+  fontSize: 12,
+  fontWeight: 900,
+  textAlign: 'right',
+};
+
 const mobilePageStyle: React.CSSProperties = {
   minHeight: '100vh',
   width: '100%',
@@ -870,11 +927,11 @@ const mobileQuotePanelStyle: React.CSSProperties = {
   minWidth: 0,
   boxSizing: 'border-box',
   padding: 12,
-  borderRadius: 20,
+  borderRadius: 22,
   overflow: 'hidden',
-  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.84))',
-  border: '1px solid rgba(250, 204, 21, 0.14)',
-  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.24)',
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.88))',
+  border: '1px solid rgba(250, 204, 21, 0.16)',
+  boxShadow: '0 18px 42px rgba(0, 0, 0, 0.28)',
 };
 
 const mobileLocationHeroStyle: React.CSSProperties = {
