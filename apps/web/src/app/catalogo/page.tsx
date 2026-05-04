@@ -543,16 +543,6 @@ const mobileProductDescriptionStyle: React.CSSProperties = {
   overflow: 'hidden',
 };
 
-const mobileCartPanelStyle: React.CSSProperties = {
-  ...cartPanelStyle,
-  position: 'sticky',
-  bottom: 12,
-  zIndex: 20,
-  borderRadius: 20,
-  padding: 14,
-  boxShadow: '0 18px 44px rgba(0,0,0,0.35)',
-};
-
 const pageStyle: React.CSSProperties = {
   minHeight: '100vh',
   color: '#f8fafc',
@@ -876,6 +866,17 @@ const cartPanelStyle: React.CSSProperties = {
   padding: 16,
   boxShadow: '0 14px 30px rgba(0,0,0,0.24)',
 };
+
+const mobileCartPanelStyle: React.CSSProperties = {
+  ...cartPanelStyle,
+  position: 'sticky',
+  bottom: 12,
+  zIndex: 20,
+  borderRadius: 20,
+  padding: 14,
+  boxShadow: '0 18px 44px rgba(0,0,0,0.35)',
+};
+
 
 const cartHeaderStyle: React.CSSProperties = {
   display: 'flex',
