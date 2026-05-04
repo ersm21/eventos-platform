@@ -247,7 +247,18 @@ export default function CatalogoPage() {
       <div style={containerStyle}>
         <AppNavbar ctaHref="/cotizar" ctaLabel="Cotizar ahora" />
 
-        <section style={isMobileCatalog ? mobileHeroCardStyle : heroCardStyle}>
+        {isMobileCatalog ? (
+          <section style={mobileCatalogIntroStripStyle}>
+            <div>
+              <h1 style={mobileCatalogIntroTitleStyle}>Catálogo SM Events</h1>
+              <p style={mobileCatalogIntroTextStyle}>
+                Explora servicios por categoría y agrega lo que necesitas.
+              </p>
+            </div>
+            <div style={mobileCatalogIntroBadgeStyle}>{products.length}</div>
+          </section>
+        ) : (
+          <section style={isMobileCatalog ? mobileHeroCardStyle : heroCardStyle}>
           <p style={eyebrowStyle}>Catálogo</p>
           <h1 style={isMobileCatalog ? mobileHeroTitleStyle : heroTitleStyle}>Servicios para tu evento</h1>
           <p style={isMobileCatalog ? mobileHeroTextStyle : heroTextStyle}>
@@ -263,6 +274,7 @@ export default function CatalogoPage() {
             </Link>
           </div>
         </section>
+        )}
 
         {error && <div style={errorBoxStyle}>{error}</div>}
 
@@ -507,6 +519,46 @@ const mobileSecondaryHeroButtonStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
+};
+
+const mobileCatalogIntroStripStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 10,
+  padding: '10px 12px',
+  borderRadius: 18,
+  background: 'rgba(15, 23, 42, 0.72)',
+  border: '1px solid rgba(250, 204, 21, 0.10)',
+  boxShadow: '0 12px 28px rgba(0,0,0,0.16)',
+};
+
+const mobileCatalogIntroTitleStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#ffffff',
+  fontSize: 16,
+  fontWeight: 900,
+  letterSpacing: '-0.02em',
+};
+
+const mobileCatalogIntroTextStyle: React.CSSProperties = {
+  margin: '3px 0 0',
+  color: '#94a3b8',
+  fontSize: 11,
+  lineHeight: 1.25,
+};
+
+const mobileCatalogIntroBadgeStyle: React.CSSProperties = {
+  minWidth: 36,
+  height: 36,
+  borderRadius: 14,
+  display: 'grid',
+  placeItems: 'center',
+  background: 'linear-gradient(135deg, rgba(250,204,21,0.24), rgba(249,115,22,0.16))',
+  border: '1px solid rgba(250, 204, 21, 0.16)',
+  color: '#facc15',
+  fontSize: 11,
+  fontWeight: 900,
 };
 
 const mobileCatalogLayoutStyle: React.CSSProperties = {
