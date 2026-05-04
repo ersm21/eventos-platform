@@ -194,7 +194,8 @@ export default function CatalogoPage() {
   }, [productsByCategory]);
 
   const visibleProductCategories = useMemo(() => {
-    if (!isMobileCatalog || !activeMobileCategory) return productCategories;
+    if (!isMobileCatalog) return productCategories;
+    if (!activeMobileCategory) return [];
 
     return productCategories.filter((category) => category === activeMobileCategory);
   }, [activeMobileCategory, isMobileCatalog, productCategories]);
@@ -324,7 +325,7 @@ export default function CatalogoPage() {
                 <p style={mutedTextStyle}>Todavía no hay servicios disponibles.</p>
               </div>
             ) : (
-              <div style={isMobileCatalog ? mobileCategoryListStyle : categoryListStyle}>
+<div style={isMobileCatalog ? mobileCategoryListStyle : categoryListStyle}>
                 {visibleProductCategories.map((category) => {
                   const isOpen = !!expandedCategories[category];
                   const categoryProducts = productsByCategory[category] || [];
@@ -408,7 +409,7 @@ export default function CatalogoPage() {
                             </article>
                           ))}
                         </div>
-                      )}
+            )}
                     </section>
                   );
                 })}
@@ -687,6 +688,38 @@ const mobileCategoryChipActiveStyle: React.CSSProperties = {
   border: '1px solid rgba(250, 204, 21, 0.42)',
   background: 'linear-gradient(135deg, rgba(250,204,21,0.22), rgba(249,115,22,0.12))',
   color: '#facc15',
+};
+
+const mobileCategoryEmptyStateStyle: React.CSSProperties = {
+  borderRadius: 18,
+  padding: 16,
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.88), rgba(2, 6, 23, 0.68))',
+  border: '1px solid rgba(250, 204, 21, 0.10)',
+  textAlign: 'center',
+};
+
+const mobileCategoryEmptyEyebrowStyle: React.CSSProperties = {
+  margin: '0 0 6px',
+  color: '#facc15',
+  fontSize: 11,
+  fontWeight: 900,
+  letterSpacing: '0.12em',
+  textTransform: 'uppercase',
+};
+
+const mobileCategoryEmptyTitleStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#ffffff',
+  fontSize: 18,
+  fontWeight: 900,
+  letterSpacing: '-0.03em',
+};
+
+const mobileCategoryEmptyTextStyle: React.CSSProperties = {
+  margin: '7px 0 0',
+  color: '#94a3b8',
+  fontSize: 12,
+  lineHeight: 1.4,
 };
 
 const mobileCategoryListStyle: React.CSSProperties = {
