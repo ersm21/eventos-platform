@@ -256,26 +256,6 @@ export default function CatalogoPage() {
 
         {isMobileCatalog ? (
           
-        <style jsx global>{`
-          @media (max-width: 760px) {
-            html,
-            body {
-              max-width: 100vw;
-              overflow-x: hidden;
-            }
-
-            body * {
-              box-sizing: border-box;
-            }
-
-            img,
-            video,
-            canvas,
-            svg {
-              max-width: 100%;
-            }
-          }
-        `}</style>
 <section style={mobileCatalogIntroStripStyle}>
             <div>
               <h1 style={mobileCatalogIntroTitleStyle}>Catálogo SM Events</h1>
