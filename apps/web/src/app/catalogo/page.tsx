@@ -892,10 +892,20 @@ const productImagePlaceholderStyle: React.CSSProperties = {
   letterSpacing: '0.08em',
 };
 
+const productBodyStyle: React.CSSProperties = {
+  padding: 12,
+};
+
 const mobileProductBodyStyle: React.CSSProperties = {
   ...productBodyStyle,
   minWidth: 0,
   gap: 4,
+};
+
+
+const productNameStyle: React.CSSProperties = {
+  margin: 0,
+  fontSize: 15,
 };
 
 const mobileProductNameStyle: React.CSSProperties = {
@@ -908,35 +918,6 @@ const mobileProductNameStyle: React.CSSProperties = {
   overflow: 'hidden',
 };
 
-const mobileProductFooterStyle: React.CSSProperties = {
-  ...productFooterStyle,
-  alignItems: 'center',
-  gap: 8,
-  marginTop: 6,
-};
-
-const mobilePriceStyle: React.CSSProperties = {
-  ...priceStyle,
-  fontSize: 13,
-};
-
-const mobileAddButtonStyle: React.CSSProperties = {
-  ...addButtonStyle,
-  minHeight: 34,
-  padding: '8px 10px',
-  borderRadius: 12,
-  fontSize: 12,
-  whiteSpace: 'nowrap',
-};
-
-const productBodyStyle: React.CSSProperties = {
-  padding: 12,
-};
-
-const productNameStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: 15,
-};
 
 const productDescriptionStyle: React.CSSProperties = {
   margin: '5px 0 0',
@@ -952,6 +933,14 @@ const productFooterStyle: React.CSSProperties = {
   gap: 10,
   marginTop: 12,
 };
+
+const mobileProductFooterStyle: React.CSSProperties = {
+  ...productFooterStyle,
+  alignItems: 'center',
+  gap: 8,
+  marginTop: 6,
+};
+
 
 const priceLabelStyle: React.CSSProperties = {
   margin: 0,
@@ -969,6 +958,12 @@ const priceStyle: React.CSSProperties = {
   whiteSpace: 'nowrap',
 };
 
+const mobilePriceStyle: React.CSSProperties = {
+  ...priceStyle,
+  fontSize: 13,
+};
+
+
 const smallButtonStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
@@ -981,6 +976,16 @@ const smallButtonStyle: React.CSSProperties = {
   fontWeight: 900,
   cursor: 'pointer',
 };
+
+const mobileAddButtonStyle: React.CSSProperties = {
+  ...smallButtonStyle,
+  minHeight: 34,
+  padding: '8px 10px',
+  borderRadius: 12,
+  fontSize: 12,
+  whiteSpace: 'nowrap',
+};
+
 
 const cartPanelStyle: React.CSSProperties = {
   position: 'sticky',
