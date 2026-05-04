@@ -167,8 +167,9 @@ export default function AmbientMusicPlayer() {
         bottom: 92,
         zIndex: 210,
         display: 'grid',
+        placeItems: isExpanded ? undefined : 'center',
         gap: isExpanded ? 8 : 0,
-        padding: isExpanded ? 12 : 10,
+        padding: isExpanded ? 12 : 0,
         borderRadius: isExpanded ? 18 : 999,
         border: '1px solid rgba(250, 204, 21, 0.24)',
         background: isExpanded ? 'rgba(2, 6, 23, 0.82)' : 'rgba(2, 6, 23, 0.42)',
@@ -179,6 +180,8 @@ export default function AmbientMusicPlayer() {
         WebkitBackdropFilter: 'blur(14px)',
         minWidth: isExpanded ? 210 : 48,
         width: isExpanded ? 210 : 48,
+        maxWidth: isExpanded ? 210 : 48,
+        height: isExpanded ? 'auto' : 48,
         minHeight: isExpanded ? 'auto' : 48,
         overflow: 'hidden',
       }}
@@ -202,7 +205,18 @@ export default function AmbientMusicPlayer() {
           cursor: isReady ? 'pointer' : 'not-allowed',
         }}
       >
-        <span>{isPlaying ? '⏸ Pausar ambiente' : wasBlocked ? '♪ Activar ambiente' : '♪ Ambiente'}</span>
+        <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              whiteSpace: 'nowrap',
+              lineHeight: 1,
+              fontSize: isExpanded ? 13 : 22,
+            }}
+          >
+            {isExpanded ? (isPlaying ? '⏸ Pausar ambiente' : wasBlocked ? '♪ Activar ambiente' : '♪ Ambiente') : '♪'}
+          </span>
         {isExpanded && (
           <span
             style={{
