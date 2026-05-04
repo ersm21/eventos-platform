@@ -598,47 +598,48 @@ const mobileCatalogIntroStripStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  gap: 9,
-  padding: '10px 11px',
-  borderRadius: 16,
-  background: 'rgba(15, 23, 42, 0.72)',
-  border: '1px solid rgba(250, 204, 21, 0.10)',
-  boxShadow: '0 10px 24px rgba(0,0,0,0.14)',
+  gap: 10,
+  padding: '12px 12px',
+  borderRadius: 18,
+  background: 'linear-gradient(145deg, rgba(15,23,42,0.92), rgba(2,6,23,0.72))',
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+  boxShadow: '0 14px 32px rgba(0,0,0,0.18)',
   overflow: 'hidden',
 };
 
 const mobileCatalogIntroTitleStyle: React.CSSProperties = {
   margin: 0,
   color: '#ffffff',
-  fontSize: 24,
+  fontSize: 22,
   lineHeight: 1.02,
-  fontWeight: 900,
-  letterSpacing: '-0.05em',
+  fontWeight: 950,
+  letterSpacing: '-0.055em',
   maxWidth: '100%',
   whiteSpace: 'normal',
   overflowWrap: 'break-word',
 };
 
 const mobileCatalogIntroTextStyle: React.CSSProperties = {
-  margin: '4px 0 0',
+  margin: '5px 0 0',
   color: '#94a3b8',
-  fontSize: 13,
-  lineHeight: 1.25,
+  fontSize: 12.5,
+  lineHeight: 1.28,
   maxWidth: '100%',
   overflowWrap: 'break-word',
 };
 
 const mobileCatalogIntroBadgeStyle: React.CSSProperties = {
-  minWidth: 34,
-  height: 34,
-  borderRadius: 13,
+  minWidth: 38,
+  height: 38,
+  borderRadius: 14,
   display: 'grid',
   placeItems: 'center',
-  background: 'linear-gradient(135deg, rgba(250,204,21,0.24), rgba(249,115,22,0.16))',
-  border: '1px solid rgba(250, 204, 21, 0.16)',
+  background: 'linear-gradient(135deg, rgba(250,204,21,0.28), rgba(249,115,22,0.16))',
+  border: '1px solid rgba(250, 204, 21, 0.18)',
   color: '#facc15',
-  fontSize: 11,
-  fontWeight: 900,
+  fontSize: 12,
+  fontWeight: 950,
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
 };
 
 const mobileCatalogLayoutStyle: React.CSSProperties = {
@@ -647,10 +648,10 @@ const mobileCatalogLayoutStyle: React.CSSProperties = {
   width: '100%',
   maxWidth: '100%',
   minWidth: 0,
-  overflowX: 'clip',
-  gap: 9,
+  overflowX: 'hidden',
+  gap: 10,
   alignItems: 'start',
-  padding: '10px 10px 88px',
+  padding: '10px 10px 92px',
   boxSizing: 'border-box',
 };
 
@@ -664,14 +665,14 @@ const mobileCategoryRailStyle: React.CSSProperties = {
   gap: 7,
   overflowX: 'hidden',
   overflowY: 'visible',
-  padding: '0 0 3px',
+  padding: '1px 0 4px',
 };
 
 const mobileCategoryChipStyle: React.CSSProperties = {
   flex: '0 1 auto',
   maxWidth: '100%',
-  border: '1px solid rgba(148, 163, 184, 0.16)',
-  background: 'rgba(15, 23, 42, 0.74)',
+  border: '1px solid rgba(148, 163, 184, 0.14)',
+  background: 'rgba(15, 23, 42, 0.68)',
   color: '#cbd5e1',
   borderRadius: 999,
   padding: '7px 10px',
@@ -681,12 +682,13 @@ const mobileCategoryChipStyle: React.CSSProperties = {
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
 };
 
 const mobileCategoryChipActiveStyle: React.CSSProperties = {
   ...mobileCategoryChipStyle,
-  border: '1px solid rgba(250, 204, 21, 0.42)',
-  background: 'linear-gradient(135deg, rgba(250,204,21,0.22), rgba(249,115,22,0.12))',
+  border: '1px solid rgba(250, 204, 21, 0.44)',
+  background: 'linear-gradient(135deg, rgba(250,204,21,0.24), rgba(249,115,22,0.14))',
   color: '#facc15',
 };
 
@@ -728,8 +730,8 @@ const mobileCategoryListStyle: React.CSSProperties = {
   width: '100%',
   maxWidth: '100%',
   minWidth: 0,
-  gap: 7,
-  overflowX: 'clip',
+  gap: 8,
+  overflowX: 'hidden',
   boxSizing: 'border-box',
 };
 
@@ -738,11 +740,11 @@ const mobileCategorySectionStyle: React.CSSProperties = {
   maxWidth: '100%',
   minWidth: 0,
   boxSizing: 'border-box',
-  borderRadius: 16,
-  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.76))',
-  border: '1px solid rgba(250, 204, 21, 0.09)',
+  borderRadius: 18,
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(2, 6, 23, 0.78))',
+  border: '1px solid rgba(250, 204, 21, 0.10)',
   overflow: 'hidden',
-  boxShadow: '0 10px 24px rgba(0, 0, 0, 0.16)',
+  boxShadow: '0 12px 28px rgba(0, 0, 0, 0.17)',
 };
 
 const mobileCategoryHeaderStyle: React.CSSProperties = {
@@ -754,7 +756,7 @@ const mobileCategoryHeaderStyle: React.CSSProperties = {
   alignItems: 'center',
   justifyContent: 'space-between',
   gap: 8,
-  padding: '9px 10px',
+  padding: '10px 11px',
   border: 'none',
   background: 'transparent',
   color: '#fff',
@@ -764,15 +766,15 @@ const mobileCategoryHeaderStyle: React.CSSProperties = {
 };
 
 const mobileCategoryThumbStyle: React.CSSProperties = {
-  width: 34,
-  height: 34,
-  borderRadius: 12,
+  width: 36,
+  height: 36,
+  borderRadius: 13,
   display: 'grid',
   placeItems: 'center',
-  background: 'linear-gradient(135deg, rgba(250, 204, 21, 0.22), rgba(249, 115, 22, 0.12))',
+  background: 'linear-gradient(135deg, rgba(250, 204, 21, 0.25), rgba(249, 115, 22, 0.14))',
   color: '#facc15',
   fontSize: 10,
-  fontWeight: 900,
+  fontWeight: 950,
   flex: '0 0 auto',
 };
 
@@ -783,9 +785,9 @@ const mobileProductListStyle: React.CSSProperties = {
   maxWidth: '100%',
   minWidth: 0,
   gap: 7,
-  padding: '0 8px 8px',
+  padding: '0 8px 9px',
   boxSizing: 'border-box',
-  overflowX: 'clip',
+  overflowX: 'hidden',
 };
 
 const mobileProductCardStyle: React.CSSProperties = {
@@ -794,35 +796,35 @@ const mobileProductCardStyle: React.CSSProperties = {
   minWidth: 0,
   boxSizing: 'border-box',
   display: 'grid',
-  gridTemplateColumns: '62px minmax(0, 1fr)',
+  gridTemplateColumns: '64px minmax(0, 1fr)',
   gap: 9,
   alignItems: 'center',
   padding: 8,
-  borderRadius: 14,
-  background: 'rgba(2, 6, 23, 0.52)',
+  borderRadius: 15,
+  background: 'linear-gradient(145deg, rgba(2, 6, 23, 0.58), rgba(15, 23, 42, 0.44))',
   border: '1px solid rgba(148, 163, 184, 0.10)',
-  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.035)',
   overflow: 'hidden',
 };
 
 const mobileProductImageStyle: React.CSSProperties = {
-  width: 62,
-  height: 62,
-  borderRadius: 12,
+  width: 64,
+  height: 64,
+  borderRadius: 13,
   objectFit: 'cover',
   background: 'rgba(2, 6, 23, 0.7)',
 };
 
 const mobileProductImagePlaceholderStyle: React.CSSProperties = {
-  width: 62,
-  height: 62,
-  borderRadius: 12,
+  width: 64,
+  height: 64,
+  borderRadius: 13,
   display: 'grid',
   placeItems: 'center',
   background: 'rgba(250, 204, 21, 0.10)',
   color: '#facc15',
   fontSize: 8,
-  fontWeight: 900,
+  fontWeight: 950,
   textAlign: 'center',
   padding: 5,
 };
@@ -830,7 +832,7 @@ const mobileProductImagePlaceholderStyle: React.CSSProperties = {
 const mobileProductDescriptionStyle: React.CSSProperties = {
   margin: '2px 0 0',
   color: '#94a3b8',
-  fontSize: 9.5,
+  fontSize: 9.7,
   lineHeight: 1.25,
   display: '-webkit-box',
   WebkitLineClamp: 1,
@@ -1052,8 +1054,8 @@ const categoryTitleStyle: React.CSSProperties = {
 
 const mobileCategoryTitleStyle: React.CSSProperties = {
   ...categoryTitleStyle,
-  fontSize: 14,
-  lineHeight: 1.1,
+  fontSize: 14.5,
+  lineHeight: 1.08,
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
@@ -1071,8 +1073,9 @@ const categoryCountStyle: React.CSSProperties = {
 
 const mobileCategoryCountStyle: React.CSSProperties = {
   ...categoryCountStyle,
-  fontSize: 10,
+  fontSize: 10.5,
   marginTop: 2,
+  color: '#94a3b8',
 };
 
 
@@ -1149,7 +1152,8 @@ const productNameStyle: React.CSSProperties = {
 const mobileProductNameStyle: React.CSSProperties = {
   ...productNameStyle,
   fontSize: 12.5,
-  lineHeight: 1.15,
+  lineHeight: 1.16,
+  fontWeight: 900,
   display: '-webkit-box',
   WebkitLineClamp: 2,
   WebkitBoxOrient: 'vertical',
@@ -1201,6 +1205,8 @@ const priceStyle: React.CSSProperties = {
 const mobilePriceStyle: React.CSSProperties = {
   ...priceStyle,
   fontSize: 12.5,
+  fontWeight: 950,
+  color: '#facc15',
 };
 
 
@@ -1223,6 +1229,7 @@ const mobileAddButtonStyle: React.CSSProperties = {
   padding: '7px 9px',
   borderRadius: 11,
   fontSize: 11,
+  fontWeight: 950,
   whiteSpace: 'nowrap',
 };
 
@@ -1246,7 +1253,7 @@ const mobileCartPanelStyle: React.CSSProperties = {
   position: 'sticky',
   bottom: 8,
   zIndex: 20,
-  borderRadius: 17,
+  borderRadius: 18,
   padding: 10,
   maxHeight: '34vh',
   overflowY: 'auto',
