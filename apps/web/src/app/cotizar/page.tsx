@@ -105,6 +105,7 @@ export default function CotizarPage() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [quoteItems, setQuoteItems] = useState<QuoteItem[]>([]);
+  const [isMobileQuote, setIsMobileQuote] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -327,6 +328,17 @@ export default function CotizarPage() {
     [quoteItems]
   );
 
+  useEffect(() => {
+    const updateViewport = () => {
+      setIsMobileQuote(window.innerWidth <= 760);
+    };
+
+    updateViewport();
+    window.addEventListener('resize', updateViewport);
+
+    return () => window.removeEventListener('resize', updateViewport);
+  }, []);
+
   const eventTypeOptions = [
     { value: '', label: 'Selecciona el tipo de evento' },
     { value: 'Boda', label: 'Boda' },
@@ -494,8 +506,8 @@ export default function CotizarPage() {
   };
 
   return (
-    <main style={pageStyle}>
-      <div style={containerStyle}>
+    <main style={isMobileQuote ? mobilePageStyle : pageStyle}>
+      <div style={isMobileQuote ? mobileContainerStyle : containerStyle}>
         <AppNavbar ctaHref="/book-meeting" ctaLabel="Hablar con nosotros" />
 
 
@@ -519,8 +531,8 @@ export default function CotizarPage() {
         {error && <div style={errorBoxStyle}>{error}</div>}
         {successMessage && <div style={successBoxStyle}>{successMessage}</div>}
 
-        <div style={mainGridStyle}>
-          <section style={panelStyle}>
+        <div style={isMobileQuote ? mobileMainGridStyle : mainGridStyle}>
+          <section style={isMobileQuote ? mobileServicesPanelStyle : panelStyle}>
             <div style={panelHeaderStyle}>
               <p style={sectionEyebrowStyle}>Servicios</p>
               <h2 style={panelTitleStyle}>Selecciona lo que necesitas</h2>
@@ -632,8 +644,8 @@ export default function CotizarPage() {
             )}
           </section>
 
-          <div style={quoteSideColumnStyle}>
-          <aside style={quotePanelStyle}>
+          <div style={isMobileQuote ? mobileQuoteSideColumnStyle : quoteSideColumnStyle}>
+          <aside style={isMobileQuote ? mobileQuotePanelStyle : quotePanelStyle}>
             <div style={panelHeaderStyle}>
               <p style={sectionEyebrowStyle}>Mi cotización</p>
               <h2 style={panelTitleStyle}>Resumen</h2>
@@ -715,7 +727,7 @@ export default function CotizarPage() {
               </div>
             )}
           </aside>
-            <section style={locationHeroStyle}>
+            <section style={isMobileQuote ? mobileLocationHeroStyle : locationHeroStyle}>
               <div>
                 <p style={sectionEyebrowStyle}>Lugar del evento</p>
                 <h1 style={locationHeroTitleStyle}>Ciudad del evento</h1>
@@ -796,6 +808,87 @@ export default function CotizarPage() {
     </main>
   );
 }
+
+const mobilePageStyle: React.CSSProperties = {
+  minHeight: '100vh',
+  width: '100%',
+  maxWidth: '100%',
+  overflowX: 'hidden',
+  background:
+    'radial-gradient(circle at top left, rgba(250, 204, 21, 0.12), transparent 28%), #020617',
+  color: '#f8fafc',
+};
+
+const mobileContainerStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  margin: '0 auto',
+  padding: '12px 10px 104px',
+  boxSizing: 'border-box',
+  display: 'grid',
+  gap: 10,
+  overflowX: 'hidden',
+};
+
+const mobileMainGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr)',
+  gap: 10,
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  overflowX: 'hidden',
+};
+
+const mobileServicesPanelStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  boxSizing: 'border-box',
+  padding: 12,
+  borderRadius: 20,
+  overflow: 'hidden',
+  order: 2,
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(2, 6, 23, 0.76))',
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.22)',
+};
+
+const mobileQuoteSideColumnStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 10,
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  order: 1,
+};
+
+const mobileQuotePanelStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  boxSizing: 'border-box',
+  padding: 12,
+  borderRadius: 20,
+  overflow: 'hidden',
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.84))',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.24)',
+};
+
+const mobileLocationHeroStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  boxSizing: 'border-box',
+  padding: 12,
+  borderRadius: 20,
+  overflow: 'hidden',
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.72))',
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.2)',
+};
 
 const pageStyle: React.CSSProperties = {
   minHeight: '100vh',
