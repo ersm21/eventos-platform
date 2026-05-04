@@ -811,6 +811,11 @@ const emptyCategoryStyle: React.CSSProperties = {
   border: '1px solid rgba(250, 204, 21, 0.11)',
 };
 
+const categoryTitleStyle: React.CSSProperties = {
+  margin: 0,
+  fontSize: 17,
+};
+
 const mobileCategoryTitleStyle: React.CSSProperties = {
   ...categoryTitleStyle,
   fontSize: 15,
@@ -820,16 +825,6 @@ const mobileCategoryTitleStyle: React.CSSProperties = {
   textOverflow: 'ellipsis',
 };
 
-const mobileCategoryCountStyle: React.CSSProperties = {
-  ...categoryCountStyle,
-  fontSize: 11,
-  marginTop: 3,
-};
-
-const categoryTitleStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: 17,
-};
 
 const categoryCountStyle: React.CSSProperties = {
   margin: '3px 0 0',
@@ -837,6 +832,13 @@ const categoryCountStyle: React.CSSProperties = {
   fontSize: 12,
   fontWeight: 700,
 };
+
+const mobileCategoryCountStyle: React.CSSProperties = {
+  ...categoryCountStyle,
+  fontSize: 11,
+  marginTop: 3,
+};
+
 
 const categoryChevronStyle: React.CSSProperties = {
   width: 30,
