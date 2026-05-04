@@ -508,6 +508,32 @@ export default function CotizarPage() {
   return (
     <main style={isMobileQuote ? mobilePageStyle : pageStyle}>
       <div style={isMobileQuote ? mobileContainerStyle : containerStyle}>
+        {isMobileQuote && (
+          <section style={mobileQuoteAppHeaderStyle}>
+            <p style={mobileQuoteEyebrowStyle}>SM Events</p>
+            <h1 style={mobileQuoteAppTitleStyle}>Cotiza tu evento</h1>
+            <p style={mobileQuoteAppTextStyle}>
+              Revisa tus servicios, completa los detalles y envía tu solicitud.
+            </p>
+            <div style={mobileQuoteStepsStyle}>
+              <span style={quoteItems.length > 0 ? mobileQuoteStepActiveStyle : mobileQuoteStepStyle}>
+                Servicios
+              </span>
+              <span style={eventLocation && eventType && eventDate ? mobileQuoteStepActiveStyle : mobileQuoteStepStyle}>
+                Evento
+              </span>
+              <span
+                style={
+                  quoteItems.length > 0 && eventLocation && eventType && eventDate
+                    ? mobileQuoteStepActiveStyle
+                    : mobileQuoteStepStyle
+                }
+              >
+                Resumen
+              </span>
+            </div>
+          </section>
+        )}
         <AppNavbar ctaHref="/book-meeting" ctaLabel="Hablar con nosotros" />
 
 
@@ -646,6 +672,23 @@ export default function CotizarPage() {
 
           <div style={isMobileQuote ? mobileQuoteSideColumnStyle : quoteSideColumnStyle}>
           <aside style={isMobileQuote ? mobileQuotePanelStyle : quotePanelStyle}>
+            {isMobileQuote && (
+              <div style={mobileQuotePanelHeaderStyle}>
+                <p style={mobileQuoteEyebrowStyle}>Servicios seleccionados</p>
+                <h2 style={mobileQuotePanelTitleStyle}>
+                  {quoteItems.length > 0
+                    ? `${quoteItems.reduce((sum, item) => sum + item.quantity, 0)} servicio${
+                        quoteItems.reduce((sum, item) => sum + item.quantity, 0) === 1 ? '' : 's'
+                      } agregados`
+                    : 'Tu selección está vacía'}
+                </h2>
+                <p style={mobileQuotePanelTextStyle}>
+                  {quoteItems.length > 0
+                    ? 'Ajusta cantidades o elimina servicios antes de enviar.'
+                    : 'Agrega servicios desde el catálogo o desde las categorías disponibles.'}
+                </p>
+              </div>
+            )}
             <div style={panelHeaderStyle}>
               <p style={sectionEyebrowStyle}>Mi cotización</p>
               <h2 style={panelTitleStyle}>Resumen</h2>
@@ -728,6 +771,15 @@ export default function CotizarPage() {
             )}
           </aside>
             <section style={isMobileQuote ? mobileLocationHeroStyle : locationHeroStyle}>
+            {isMobileQuote && (
+              <div style={mobileQuotePanelHeaderStyle}>
+                <p style={mobileQuoteEyebrowStyle}>Detalles del evento</p>
+                <h2 style={mobileQuotePanelTitleStyle}>Cuéntanos dónde y cuándo</h2>
+                <p style={mobileQuotePanelTextStyle}>
+                  Estos datos nos ayudan a calcular logística, soporte y disponibilidad.
+                </p>
+              </div>
+            )}
               <div>
                 <p style={sectionEyebrowStyle}>Lugar del evento</p>
                 <h1 style={locationHeroTitleStyle}>Ciudad del evento</h1>
@@ -866,6 +918,103 @@ const mobileQuoteSubtotalStyle: React.CSSProperties = {
   textAlign: 'right',
 };
 
+const mobileQuoteAppHeaderStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  boxSizing: 'border-box',
+  borderRadius: 24,
+  padding: '16px 14px',
+  background:
+    'linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.78))',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  boxShadow: '0 18px 44px rgba(0, 0, 0, 0.28)',
+  overflow: 'hidden',
+};
+
+const mobileQuoteEyebrowStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#facc15',
+  fontSize: 10.5,
+  fontWeight: 950,
+  letterSpacing: '0.15em',
+  textTransform: 'uppercase',
+};
+
+const mobileQuoteAppTitleStyle: React.CSSProperties = {
+  margin: '7px 0 0',
+  color: '#ffffff',
+  fontSize: 30,
+  lineHeight: 1.02,
+  fontWeight: 950,
+  letterSpacing: '-0.055em',
+};
+
+const mobileQuoteAppTextStyle: React.CSSProperties = {
+  margin: '7px 0 0',
+  color: '#94a3b8',
+  fontSize: 13,
+  lineHeight: 1.4,
+};
+
+const mobileQuoteStepsStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+  gap: 7,
+  marginTop: 14,
+};
+
+const mobileQuoteStepStyle: React.CSSProperties = {
+  minWidth: 0,
+  borderRadius: 999,
+  padding: '8px 6px',
+  background: 'rgba(15, 23, 42, 0.72)',
+  border: '1px solid rgba(148, 163, 184, 0.13)',
+  color: '#94a3b8',
+  fontSize: 10.5,
+  fontWeight: 900,
+  textAlign: 'center',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+};
+
+const mobileQuoteStepActiveStyle: React.CSSProperties = {
+  minWidth: 0,
+  borderRadius: 999,
+  padding: '8px 6px',
+  color: '#111827',
+  background: '#facc15',
+  border: '1px solid rgba(250, 204, 21, 0.7)',
+  fontSize: 10.5,
+  fontWeight: 900,
+  textAlign: 'center',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+};
+
+const mobileQuotePanelHeaderStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 5,
+  marginBottom: 12,
+};
+
+const mobileQuotePanelTitleStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#ffffff',
+  fontSize: 18,
+  lineHeight: 1.08,
+  fontWeight: 950,
+  letterSpacing: '-0.035em',
+};
+
+const mobileQuotePanelTextStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#94a3b8',
+  fontSize: 12,
+  lineHeight: 1.35,
+};
+
 const mobilePageStyle: React.CSSProperties = {
   minHeight: '100vh',
   width: '100%',
@@ -881,7 +1030,7 @@ const mobileContainerStyle: React.CSSProperties = {
   maxWidth: '100%',
   minWidth: 0,
   margin: '0 auto',
-  padding: '10px 10px 118px',
+  padding: '10px 10px 132px',
   boxSizing: 'border-box',
   display: 'grid',
   gap: 10,
@@ -926,12 +1075,12 @@ const mobileQuotePanelStyle: React.CSSProperties = {
   maxWidth: '100%',
   minWidth: 0,
   boxSizing: 'border-box',
-  padding: 12,
-  borderRadius: 22,
+  padding: 13,
+  borderRadius: 24,
   overflow: 'hidden',
-  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.88))',
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.86))',
   border: '1px solid rgba(250, 204, 21, 0.16)',
-  boxShadow: '0 18px 42px rgba(0, 0, 0, 0.28)',
+  boxShadow: '0 18px 42px rgba(0, 0, 0, 0.30)',
 };
 
 const mobileLocationHeroStyle: React.CSSProperties = {
@@ -939,8 +1088,8 @@ const mobileLocationHeroStyle: React.CSSProperties = {
   maxWidth: '100%',
   minWidth: 0,
   boxSizing: 'border-box',
-  padding: 12,
-  borderRadius: 22,
+  padding: 13,
+  borderRadius: 24,
   overflow: 'hidden',
   background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(2, 6, 23, 0.74))',
   border: '1px solid rgba(250, 204, 21, 0.12)',
