@@ -592,6 +592,9 @@ const mobileSectionTextStyle: React.CSSProperties = {
 };
 
 const mobileCatalogIntroStripStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  boxSizing: 'border-box',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -601,6 +604,7 @@ const mobileCatalogIntroStripStyle: React.CSSProperties = {
   background: 'rgba(15, 23, 42, 0.72)',
   border: '1px solid rgba(250, 204, 21, 0.10)',
   boxShadow: '0 10px 24px rgba(0,0,0,0.14)',
+  overflow: 'hidden',
 };
 
 const mobileCatalogIntroTitleStyle: React.CSSProperties = {
@@ -635,16 +639,24 @@ const mobileCatalogIntroBadgeStyle: React.CSSProperties = {
 
 const mobileCatalogLayoutStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '1fr',
+  gridTemplateColumns: 'minmax(0, 1fr)',
+  width: '100%',
+  maxWidth: '100vw',
+  overflowX: 'hidden',
   gap: 9,
   alignItems: 'start',
   padding: '10px 10px 88px',
+  boxSizing: 'border-box',
 };
 
 const mobileCategoryRailStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  boxSizing: 'border-box',
   display: 'flex',
   gap: 7,
   overflowX: 'auto',
+  overflowY: 'hidden',
   padding: '0 0 3px',
   WebkitOverflowScrolling: 'touch',
   scrollbarWidth: 'none',
@@ -672,10 +684,18 @@ const mobileCategoryChipActiveStyle: React.CSSProperties = {
 
 const mobileCategoryListStyle: React.CSSProperties = {
   display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr)',
+  width: '100%',
+  maxWidth: '100%',
   gap: 7,
+  overflowX: 'hidden',
+  boxSizing: 'border-box',
 };
 
 const mobileCategorySectionStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  boxSizing: 'border-box',
   borderRadius: 16,
   background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.76))',
   border: '1px solid rgba(250, 204, 21, 0.09)',
@@ -685,6 +705,8 @@ const mobileCategorySectionStyle: React.CSSProperties = {
 
 const mobileCategoryHeaderStyle: React.CSSProperties = {
   width: '100%',
+  maxWidth: '100%',
+  boxSizing: 'border-box',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -695,6 +717,7 @@ const mobileCategoryHeaderStyle: React.CSSProperties = {
   color: '#fff',
   cursor: 'pointer',
   textAlign: 'left',
+  overflow: 'hidden',
 };
 
 const mobileCategoryThumbStyle: React.CSSProperties = {
@@ -712,11 +735,20 @@ const mobileCategoryThumbStyle: React.CSSProperties = {
 
 const mobileProductListStyle: React.CSSProperties = {
   display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr)',
+  width: '100%',
+  maxWidth: '100%',
   gap: 7,
   padding: '0 8px 8px',
+  boxSizing: 'border-box',
+  overflowX: 'hidden',
 };
 
 const mobileProductCardStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  boxSizing: 'border-box',
   display: 'grid',
   gridTemplateColumns: '62px minmax(0, 1fr)',
   gap: 9,
@@ -726,6 +758,7 @@ const mobileProductCardStyle: React.CSSProperties = {
   background: 'rgba(2, 6, 23, 0.52)',
   border: '1px solid rgba(148, 163, 184, 0.10)',
   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
+  overflow: 'hidden',
 };
 
 const mobileProductImageStyle: React.CSSProperties = {
@@ -759,6 +792,8 @@ const mobileProductDescriptionStyle: React.CSSProperties = {
   WebkitLineClamp: 1,
   WebkitBoxOrient: 'vertical',
   overflow: 'hidden',
+  minWidth: 0,
+  maxWidth: '100%',
 };
 
 const pageStyle: React.CSSProperties = {
@@ -932,6 +967,8 @@ const mobileCategoryHeaderContentStyle: React.CSSProperties = {
   ...categoryHeaderContentStyle,
   gap: 10,
   minWidth: 0,
+  maxWidth: '100%',
+  overflow: 'hidden',
 };
 
 
@@ -976,6 +1013,8 @@ const mobileCategoryTitleStyle: React.CSSProperties = {
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
+  minWidth: 0,
+  maxWidth: '100%',
 };
 
 
@@ -1052,7 +1091,9 @@ const productBodyStyle: React.CSSProperties = {
 const mobileProductBodyStyle: React.CSSProperties = {
   ...productBodyStyle,
   minWidth: 0,
+  maxWidth: '100%',
   gap: 2,
+  overflow: 'hidden',
 };
 
 
@@ -1069,6 +1110,8 @@ const mobileProductNameStyle: React.CSSProperties = {
   WebkitLineClamp: 2,
   WebkitBoxOrient: 'vertical',
   overflow: 'hidden',
+  minWidth: 0,
+  maxWidth: '100%',
 };
 
 
@@ -1153,6 +1196,9 @@ const cartPanelStyle: React.CSSProperties = {
 
 const mobileCartPanelStyle: React.CSSProperties = {
   ...cartPanelStyle,
+  width: '100%',
+  maxWidth: '100%',
+  boxSizing: 'border-box',
   position: 'sticky',
   bottom: 8,
   zIndex: 20,
@@ -1160,6 +1206,7 @@ const mobileCartPanelStyle: React.CSSProperties = {
   padding: 10,
   maxHeight: '34vh',
   overflowY: 'auto',
+  overflowX: 'hidden',
   boxShadow: '0 18px 44px rgba(0,0,0,0.35)',
 };
 
