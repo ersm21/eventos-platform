@@ -245,6 +245,12 @@ export default function CatalogoPage() {
   const goToQuoteWithCart = () => {
     const cart = cartItems.map((item) => ({
       id: item.id,
+      name: item.name,
+      description: item.description,
+      price: item.price,
+      category: item.category,
+      image_url: item.image_url,
+      is_active: item.is_active,
       quantity: item.quantity,
     }));
 
