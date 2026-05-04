@@ -452,9 +452,8 @@ export default function CatalogoPage() {
                 </button>
               </div>
             ) : (
-
-
-            <div style={cartHeaderStyle}>
+              <>
+                <div style={cartHeaderStyle}>
               <div>
                 <p style={sectionEyebrowStyle}>Selección</p>
                 <h2 style={cartTitleStyle}>Carrito para cotizar</h2>
@@ -515,7 +514,7 @@ export default function CatalogoPage() {
                 </button>
               </div>
             )}
-
+              </>
             )}
           </aside>
         </div>
