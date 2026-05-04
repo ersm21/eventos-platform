@@ -112,6 +112,7 @@ export default function CatalogoPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<CatalogCartItem[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const [isMobileCatalog, setIsMobileCatalog] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -137,8 +138,19 @@ export default function CatalogoPage() {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    const updateViewport = () => {
+      setIsMobileCatalog(window.innerWidth <= 760);
+    };
+
+    updateViewport();
+    window.addEventListener('resize', updateViewport);
+
+    return () => window.removeEventListener('resize', updateViewport);
+  }, []);
+
   const productsByCategory = useMemo(() => {
-    return products.reduce<Record<string, Product[]>>((accumulator, product) => {
+    const grouped = products.reduce<Record<string, Product[]>>((accumulator, product) => {
       const category = normalizeCategory(product.category);
 
       if (!accumulator[category]) {
@@ -148,6 +160,18 @@ export default function CatalogoPage() {
       accumulator[category].push(product);
       return accumulator;
     }, {});
+
+    Object.keys(grouped).forEach((category) => {
+      grouped[category].sort((a, b) => {
+        const priceDifference = Number(a.price ?? 0) - Number(b.price ?? 0);
+
+        if (priceDifference !== 0) return priceDifference;
+
+        return a.name.localeCompare(b.name);
+      });
+    });
+
+    return grouped;
   }, [products]);
 
   const productCategories = useMemo(() => {
@@ -219,7 +243,7 @@ export default function CatalogoPage() {
   };
 
   return (
-    <main style={pageStyle}>
+    <main style={isMobileCatalog ? mobileCatalogLayoutStyle : pageStyle}>
       <div style={containerStyle}>
         <AppNavbar ctaHref="/cotizar" ctaLabel="Cotizar ahora" />
 
@@ -261,7 +285,7 @@ export default function CatalogoPage() {
                 <p style={mutedTextStyle}>Todavía no hay servicios disponibles.</p>
               </div>
             ) : (
-              <div style={categoryListStyle}>
+              <div style={isMobileCatalog ? mobileCategoryListStyle : categoryListStyle}>
                 {productCategories.map((category) => {
                   const isOpen = !!expandedCategories[category];
                   const categoryProducts = productsByCategory[category] || [];
@@ -271,20 +295,20 @@ export default function CatalogoPage() {
                   };
 
                   return (
-                    <section key={category} style={categorySectionStyle}>
+                    <section key={category} style={isMobileCatalog ? mobileCategorySectionStyle : categorySectionStyle}>
                       <button
                         type="button"
                         onClick={() => toggleCategory(category)}
-                        style={categoryHeaderStyle}
+                        style={isMobileCatalog ? mobileCategoryHeaderStyle : categoryHeaderStyle}
                       >
                         <div style={categoryHeaderContentStyle}>
-                          <div style={categoryThumbStyle}>
+                          <div style={isMobileCatalog ? mobileCategoryThumbStyle : categoryThumbStyle}>
                             <span>{categoryVisual.label.slice(0, 2).toUpperCase()}</span>
                           </div>
 
                           <div>
                             <h3 style={categoryTitleStyle}>{categoryVisual.label}</h3>
-                            <p style={categoryDescriptionStyle}>{categoryVisual.description}</p>
+                            {!isMobileCatalog && <p style={categoryDescriptionStyle}>{categoryVisual.description}</p>}
                             <p style={categoryCountStyle}>
                               {categoryProducts.length > 0
                                 ? `${categoryProducts.length} producto${categoryProducts.length === 1 ? '' : 's'}`
@@ -306,24 +330,24 @@ export default function CatalogoPage() {
                       )}
 
                       {isOpen && categoryProducts.length > 0 && (
-                        <div style={productGridStyle}>
+                        <div style={isMobileCatalog ? mobileProductListStyle : productGridStyle}>
                           {categoryProducts.map((product) => (
-                            <article key={product.id} style={productCardStyle}>
+                            <article key={product.id} style={isMobileCatalog ? mobileProductCardStyle : productCardStyle}>
                               {product.image_url ? (
                                 <img
                                   src={product.image_url}
                                   alt={product.name}
-                                  style={productImageStyle}
+                                  style={isMobileCatalog ? mobileProductImageStyle : productImageStyle}
                                 />
                               ) : (
-                                <div style={productImagePlaceholderStyle}>
+                                <div style={isMobileCatalog ? mobileProductImagePlaceholderStyle : productImagePlaceholderStyle}>
                                   <span>{category}</span>
                                 </div>
                               )}
 
                               <div style={productBodyStyle}>
                                 <h4 style={productNameStyle}>{product.name}</h4>
-                                <p style={productDescriptionStyle}>
+                                <p style={isMobileCatalog ? mobileProductDescriptionStyle : productDescriptionStyle}>
                                   {product.description || 'Servicio disponible para cotización.'}
                                 </p>
 
@@ -353,7 +377,7 @@ export default function CatalogoPage() {
             )}
           </section>
 
-          <aside style={cartPanelStyle}>
+          <aside style={isMobileCatalog ? mobileCartPanelStyle : cartPanelStyle}>
             <div style={cartHeaderStyle}>
               <div>
                 <p style={sectionEyebrowStyle}>Selección</p>
@@ -421,6 +445,113 @@ export default function CatalogoPage() {
     </main>
   );
 }
+
+const mobileCatalogLayoutStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  gap: 14,
+  alignItems: 'start',
+};
+
+const mobileCategoryListStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 10,
+};
+
+const mobileCategorySectionStyle: React.CSSProperties = {
+  borderRadius: 18,
+  background: 'rgba(15, 23, 42, 0.78)',
+  border: '1px solid rgba(250, 204, 21, 0.10)',
+  overflow: 'hidden',
+  boxShadow: '0 14px 34px rgba(0, 0, 0, 0.18)',
+};
+
+const mobileCategoryHeaderStyle: React.CSSProperties = {
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 10,
+  padding: 12,
+  border: 'none',
+  background: 'linear-gradient(135deg, rgba(15,23,42,0.92), rgba(30,41,59,0.74))',
+  color: '#fff',
+  cursor: 'pointer',
+  textAlign: 'left',
+};
+
+const mobileCategoryThumbStyle: React.CSSProperties = {
+  width: 42,
+  height: 42,
+  borderRadius: 14,
+  display: 'grid',
+  placeItems: 'center',
+  background: 'rgba(250, 204, 21, 0.14)',
+  color: '#facc15',
+  fontSize: 12,
+  fontWeight: 900,
+  flex: '0 0 auto',
+};
+
+const mobileProductListStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 10,
+  padding: 10,
+};
+
+const mobileProductCardStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '86px minmax(0, 1fr)',
+  gap: 11,
+  alignItems: 'stretch',
+  padding: 10,
+  borderRadius: 16,
+  background: 'rgba(2, 6, 23, 0.48)',
+  border: '1px solid rgba(148, 163, 184, 0.12)',
+};
+
+const mobileProductImageStyle: React.CSSProperties = {
+  width: 86,
+  height: 86,
+  borderRadius: 14,
+  objectFit: 'cover',
+  background: 'rgba(2, 6, 23, 0.7)',
+};
+
+const mobileProductImagePlaceholderStyle: React.CSSProperties = {
+  width: 86,
+  height: 86,
+  borderRadius: 14,
+  display: 'grid',
+  placeItems: 'center',
+  background: 'rgba(250, 204, 21, 0.10)',
+  color: '#facc15',
+  fontSize: 10,
+  fontWeight: 900,
+  textAlign: 'center',
+  padding: 6,
+};
+
+const mobileProductDescriptionStyle: React.CSSProperties = {
+  margin: '5px 0 0',
+  color: '#94a3b8',
+  fontSize: 11,
+  lineHeight: 1.35,
+  display: '-webkit-box',
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+};
+
+const mobileCartPanelStyle: React.CSSProperties = {
+  ...cartPanelStyle,
+  position: 'sticky',
+  bottom: 12,
+  zIndex: 20,
+  borderRadius: 20,
+  padding: 14,
+  boxShadow: '0 18px 44px rgba(0,0,0,0.35)',
+};
 
 const pageStyle: React.CSSProperties = {
   minHeight: '100vh',
