@@ -247,18 +247,18 @@ export default function CatalogoPage() {
       <div style={containerStyle}>
         <AppNavbar ctaHref="/cotizar" ctaLabel="Cotizar ahora" />
 
-        <section style={heroCardStyle}>
+        <section style={isMobileCatalog ? mobileHeroCardStyle : heroCardStyle}>
           <p style={eyebrowStyle}>Catálogo</p>
-          <h1 style={heroTitleStyle}>Servicios para tu evento</h1>
-          <p style={heroTextStyle}>
+          <h1 style={isMobileCatalog ? mobileHeroTitleStyle : heroTitleStyle}>Servicios para tu evento</h1>
+          <p style={isMobileCatalog ? mobileHeroTextStyle : heroTextStyle}>
             Explora por subdivisión, agrega productos a tu selección y continúa directo a cotizar.
           </p>
 
-          <div style={heroActionsStyle}>
-            <Link href="/cotizar" style={primaryButtonStyle}>
+          <div style={isMobileCatalog ? mobileHeroActionsStyle : heroActionsStyle}>
+            <Link href="/cotizar" style={isMobileCatalog ? mobilePrimaryHeroButtonStyle : primaryButtonStyle}>
               Ir a cotizar
             </Link>
-            <Link href="/book-meeting" style={secondaryButtonStyle}>
+            <Link href="/book-meeting" style={isMobileCatalog ? mobileSecondaryHeroButtonStyle : secondaryButtonStyle}>
               Solicitar reunión
             </Link>
           </div>
@@ -446,13 +446,75 @@ export default function CatalogoPage() {
   );
 }
 
+const mobileHeroCardStyle: React.CSSProperties = {
+  borderRadius: 22,
+  padding: 16,
+  background: 'linear-gradient(135deg, rgba(15,23,42,0.92), rgba(30,41,59,0.68))',
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+  boxShadow: '0 14px 34px rgba(0,0,0,0.2)',
+};
+
+const mobileHeroTitleStyle: React.CSSProperties = {
+  margin: '6px 0 6px',
+  color: '#ffffff',
+  fontSize: 25,
+  lineHeight: 1.05,
+  fontWeight: 800,
+  letterSpacing: '-0.04em',
+};
+
+const mobileHeroTextStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#94a3b8',
+  fontSize: 14,
+  lineHeight: 1.45,
+};
+
+const mobileHeroActionsStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 9,
+  marginTop: 14,
+};
+
+const mobilePrimaryHeroButtonStyle: React.CSSProperties = {
+  padding: '12px 12px',
+  minHeight: 44,
+  borderRadius: 16,
+  border: 'none',
+  background: 'linear-gradient(135deg, #fb923c, #ec4899, #8b5cf6)',
+  color: '#ffffff',
+  fontSize: 14,
+  fontWeight: 900,
+  textAlign: 'center',
+  textDecoration: 'none',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
+const mobileSecondaryHeroButtonStyle: React.CSSProperties = {
+  padding: '12px 12px',
+  minHeight: 44,
+  borderRadius: 16,
+  border: '1px solid rgba(250, 204, 21, 0.18)',
+  background: 'rgba(2, 6, 23, 0.42)',
+  color: '#ffffff',
+  fontSize: 14,
+  fontWeight: 900,
+  textAlign: 'center',
+  textDecoration: 'none',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
 const mobileCatalogLayoutStyle: React.CSSProperties = {
-  ...pageStyle,
   display: 'grid',
   gridTemplateColumns: '1fr',
   gap: 12,
   alignItems: 'start',
-  padding: '18px 14px 108px',
+  padding: '14px 12px 96px',
 };
 
 const mobileCategoryListStyle: React.CSSProperties = {
