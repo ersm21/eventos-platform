@@ -202,3 +202,42 @@ textarea {
     justify-content: flex-start !important;
   }
 }
+
+/* Mobile overflow guard: prevents inline card/layout styles from making pages wider than the phone viewport. */
+@media (max-width: 760px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    position: relative;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  main,
+  header,
+  nav,
+  section,
+  article,
+  aside,
+  footer {
+    max-width: 100vw;
+    overflow-x: clip;
+  }
+
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+}
