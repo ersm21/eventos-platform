@@ -428,7 +428,31 @@ export default function CatalogoPage() {
             )}
           </section>
 
-          <aside style={isMobileCatalog ? mobileCartPanelStyle : cartPanelStyle}>
+          <aside style={isMobileCatalog ? mobileCartBarStyle : cartPanelStyle}>
+            {isMobileCatalog ? (
+              <div style={mobileCartBarInnerStyle}>
+                <div style={mobileCartBarCopyStyle}>
+                  <span style={mobileCartBarEyebrowStyle}>
+                    {cartItemCount > 0
+                      ? `${cartItemCount} servicio${cartItemCount === 1 ? '' : 's'}`
+                      : 'Cotización'}
+                  </span>
+                  <strong style={mobileCartBarTotalStyle}>
+                    {cartItemCount > 0 ? formatMoney(cartSubtotal) : 'Agrega servicios'}
+                  </strong>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={goToQuoteWithCart}
+                  disabled={cartItems.length === 0}
+                  style={cartItems.length === 0 ? mobileCartBarButtonDisabledStyle : mobileCartBarButtonStyle}
+                >
+                  Cotizar
+                </button>
+              </div>
+            ) : (
+
 
             <div style={cartHeaderStyle}>
               <div>
@@ -490,6 +514,8 @@ export default function CatalogoPage() {
                   Continuar a cotizar
                 </button>
               </div>
+            )}
+
             )}
           </aside>
         </div>
@@ -1341,6 +1367,79 @@ const mobileCartItemsStyle: React.CSSProperties = {
   overflowY: 'auto',
   overflowX: 'hidden',
   paddingRight: 2,
+};
+
+const mobileCartBarStyle: React.CSSProperties = {
+  width: 'calc(100% - 20px)',
+  maxWidth: 'calc(100vw - 20px)',
+  boxSizing: 'border-box',
+  position: 'fixed',
+  left: 10,
+  right: 10,
+  bottom: 12,
+  zIndex: 60,
+  borderRadius: 22,
+  padding: 8,
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.94))',
+  border: '1px solid rgba(250, 204, 21, 0.18)',
+  boxShadow: '0 24px 60px rgba(0,0,0,0.46)',
+  backdropFilter: 'blur(18px)',
+  overflow: 'hidden',
+};
+
+const mobileCartBarInnerStyle: React.CSSProperties = {
+  width: '100%',
+  minHeight: 58,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 12,
+};
+
+const mobileCartBarCopyStyle: React.CSSProperties = {
+  minWidth: 0,
+  display: 'grid',
+  gap: 2,
+  paddingLeft: 6,
+};
+
+const mobileCartBarEyebrowStyle: React.CSSProperties = {
+  color: '#facc15',
+  fontSize: 11,
+  fontWeight: 900,
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase',
+};
+
+const mobileCartBarTotalStyle: React.CSSProperties = {
+  color: '#ffffff',
+  fontSize: 18,
+  fontWeight: 950,
+  lineHeight: 1.1,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+};
+
+const mobileCartBarButtonStyle: React.CSSProperties = {
+  flex: '0 0 auto',
+  minHeight: 46,
+  border: 'none',
+  borderRadius: 16,
+  padding: '0 18px',
+  background: 'linear-gradient(135deg, #fb923c, #ec4899, #8b5cf6)',
+  color: '#ffffff',
+  fontSize: 14,
+  fontWeight: 950,
+  cursor: 'pointer',
+  boxShadow: '0 12px 28px rgba(236, 72, 153, 0.28)',
+};
+
+const mobileCartBarButtonDisabledStyle: React.CSSProperties = {
+  ...mobileCartBarButtonStyle,
+  opacity: 0.45,
+  cursor: 'not-allowed',
+  boxShadow: 'none',
 };
 
 const mobileCartPanelStyle: React.CSSProperties = {
