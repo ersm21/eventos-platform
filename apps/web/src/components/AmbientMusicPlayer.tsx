@@ -7,11 +7,8 @@ const MUSIC_VOLUME_KEY = 'sm_events_music_volume';
 const MUSIC_TIME_KEY = 'sm_events_music_current_time';
 const MUSIC_RANDOMIZED_KEY = 'sm_events_music_randomized_once';
 
-const AMBIENT_POSITION_KEY = 'sm-events-ambient-position';
-
 export default function AmbientMusicPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const hasInitializedPositionRef = useRef(false);
   const manualPauseRef = useRef(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -92,60 +89,7 @@ export default function AmbientMusicPlayer() {
     window.addEventListener('keydown', startAfterInteraction);
     window.addEventListener('scroll', startAfterInteraction, { once: false });
 
-  
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const handleLoadedMetadata = () => {
-      if (hasInitializedPositionRef.current) return;
-      if (!Number.isFinite(audio.duration) || audio.duration <= 1) return;
-
-      const savedPosition = Number(window.localStorage.getItem(AMBIENT_POSITION_KEY));
-      const hasSavedPosition =
-        Number.isFinite(savedPosition) &&
-        savedPosition > 0 &&
-        savedPosition < audio.duration - 1;
-
-      audio.currentTime = hasSavedPosition
-        ? savedPosition
-        : Math.floor(Math.random() * Math.max(audio.duration - 2, 1));
-
-      hasInitializedPositionRef.current = true;
-    };
-
-    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-
-    if (audio.readyState >= 1) {
-      handleLoadedMetadata();
-    }
-
     return () => {
-      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const savePosition = () => {
-      if (Number.isFinite(audio.currentTime) && audio.currentTime > 0) {
-        window.localStorage.setItem(AMBIENT_POSITION_KEY, String(audio.currentTime));
-      }
-    };
-
-    audio.addEventListener('timeupdate', savePosition);
-    window.addEventListener('beforeunload', savePosition);
-
-    return () => {
-      savePosition();
-      audio.removeEventListener('timeupdate', savePosition);
-      window.removeEventListener('beforeunload', savePosition);
-    };
-  }, []);
-
-  return () => {
       window.removeEventListener('click', startAfterInteraction);
       window.removeEventListener('touchstart', startAfterInteraction);
       window.removeEventListener('keydown', startAfterInteraction);
