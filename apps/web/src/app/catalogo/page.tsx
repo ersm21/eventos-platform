@@ -112,6 +112,7 @@ export default function CatalogoPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<CatalogCartItem[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const [activeMobileCategory, setActiveMobileCategory] = useState<string | null>(null);
   const [isMobileCatalog, setIsMobileCatalog] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -191,6 +192,12 @@ export default function CatalogoPage() {
       return aIndex - bIndex;
     });
   }, [productsByCategory]);
+
+  const visibleProductCategories = useMemo(() => {
+    if (!isMobileCatalog || !activeMobileCategory) return productCategories;
+
+    return productCategories.filter((category) => category === activeMobileCategory);
+  }, [activeMobileCategory, isMobileCatalog, productCategories]);
 
   const cartItemCount = useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
@@ -276,6 +283,33 @@ export default function CatalogoPage() {
         </section>
         )}
 
+        {isMobileCatalog && productCategories.length > 0 && (
+          <div style={mobileCategoryRailStyle}>
+            <button
+              type="button"
+              onClick={() => setActiveMobileCategory(null)}
+              style={!activeMobileCategory ? mobileCategoryChipActiveStyle : mobileCategoryChipStyle}
+            >
+              Todo
+            </button>
+
+            {productCategories.map((category) => {
+              const isActive = activeMobileCategory === category;
+
+              return (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => setActiveMobileCategory(category)}
+                  style={isActive ? mobileCategoryChipActiveStyle : mobileCategoryChipStyle}
+                >
+                  {category}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {error && <div style={errorBoxStyle}>{error}</div>}
 
         <div style={mainGridStyle}>
@@ -298,7 +332,7 @@ export default function CatalogoPage() {
               </div>
             ) : (
               <div style={isMobileCatalog ? mobileCategoryListStyle : categoryListStyle}>
-                {productCategories.map((category) => {
+                {visibleProductCategories.map((category) => {
                   const isOpen = !!expandedCategories[category];
                   const categoryProducts = productsByCategory[category] || [];
                   const categoryVisual = categoryVisuals[category] || {
@@ -567,6 +601,35 @@ const mobileCatalogLayoutStyle: React.CSSProperties = {
   gap: 12,
   alignItems: 'start',
   padding: '14px 12px 96px',
+};
+
+const mobileCategoryRailStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: 8,
+  overflowX: 'auto',
+  padding: '2px 0 4px',
+  WebkitOverflowScrolling: 'touch',
+  scrollbarWidth: 'none',
+};
+
+const mobileCategoryChipStyle: React.CSSProperties = {
+  flex: '0 0 auto',
+  border: '1px solid rgba(148, 163, 184, 0.16)',
+  background: 'rgba(15, 23, 42, 0.74)',
+  color: '#cbd5e1',
+  borderRadius: 999,
+  padding: '9px 12px',
+  fontSize: 12,
+  fontWeight: 900,
+  cursor: 'pointer',
+  whiteSpace: 'nowrap',
+};
+
+const mobileCategoryChipActiveStyle: React.CSSProperties = {
+  ...mobileCategoryChipStyle,
+  border: '1px solid rgba(250, 204, 21, 0.42)',
+  background: 'linear-gradient(135deg, rgba(250,204,21,0.22), rgba(249,115,22,0.12))',
+  color: '#facc15',
 };
 
 const mobileCategoryListStyle: React.CSSProperties = {
