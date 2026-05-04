@@ -372,7 +372,7 @@ export default function CatalogoPage() {
                                   <button
                                     type="button"
                                     onClick={() => addToCart(product)}
-                                    style={smallButtonStyle}
+                                    style={isMobileCatalog ? mobileAddButtonStyle : smallButtonStyle}
                                   >
                                     Agregar
                                   </button>
@@ -617,28 +617,28 @@ const mobileProductListStyle: React.CSSProperties = {
 
 const mobileProductCardStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '74px minmax(0, 1fr)',
+  gridTemplateColumns: '70px minmax(0, 1fr)',
   gap: 10,
   alignItems: 'stretch',
-  padding: 9,
-  borderRadius: 16,
-  background: 'rgba(2, 6, 23, 0.5)',
-  border: '1px solid rgba(148, 163, 184, 0.11)',
+  padding: 8,
+  borderRadius: 15,
+  background: 'rgba(2, 6, 23, 0.52)',
+  border: '1px solid rgba(148, 163, 184, 0.10)',
   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
 };
 
 const mobileProductImageStyle: React.CSSProperties = {
-  width: 74,
-  height: 74,
-  borderRadius: 13,
+  width: 70,
+  height: 70,
+  borderRadius: 12,
   objectFit: 'cover',
   background: 'rgba(2, 6, 23, 0.7)',
 };
 
 const mobileProductImagePlaceholderStyle: React.CSSProperties = {
-  width: 74,
-  height: 74,
-  borderRadius: 13,
+  width: 70,
+  height: 70,
+  borderRadius: 12,
   display: 'grid',
   placeItems: 'center',
   background: 'rgba(250, 204, 21, 0.10)',
@@ -650,10 +650,10 @@ const mobileProductImagePlaceholderStyle: React.CSSProperties = {
 };
 
 const mobileProductDescriptionStyle: React.CSSProperties = {
-  margin: '3px 0 0',
+  margin: '2px 0 0',
   color: '#94a3b8',
-  fontSize: 10.5,
-  lineHeight: 1.3,
+  fontSize: 10,
+  lineHeight: 1.25,
   display: '-webkit-box',
   WebkitLineClamp: 2,
   WebkitBoxOrient: 'vertical',
@@ -1053,11 +1053,11 @@ const cartPanelStyle: React.CSSProperties = {
 const mobileCartPanelStyle: React.CSSProperties = {
   ...cartPanelStyle,
   position: 'sticky',
-  bottom: 12,
+  bottom: 10,
   zIndex: 20,
-  borderRadius: 20,
-  padding: 12,
-  maxHeight: '44vh',
+  borderRadius: 18,
+  padding: 11,
+  maxHeight: '38vh',
   overflowY: 'auto',
   boxShadow: '0 18px 44px rgba(0,0,0,0.35)',
 };
