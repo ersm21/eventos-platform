@@ -176,16 +176,51 @@ export default function CotizarPage() {
     if (!savedCart) return;
 
     try {
-      const parsedCart = JSON.parse(savedCart) as Array<Product & { quantity?: number }>;
+      type CatalogCartPayloadItem = Partial<Product> & {
+        product?: Partial<Product>;
+        product_id?: string;
+        productId?: string;
+        title?: string;
+        unit_price?: number | string | null;
+        unitPrice?: number | string | null;
+        base_price?: number | string | null;
+        pricePerUnit?: number | string | null;
+        imageUrl?: string | null;
+        quantity?: number | string | null;
+      };
+
+      const parsedCart = JSON.parse(savedCart) as CatalogCartPayloadItem[];
 
       if (!Array.isArray(parsedCart) || parsedCart.length === 0) return;
 
-      setQuoteItems(
-        parsedCart.map((item) => ({
-          ...item,
-          quantity: Number(item.quantity || 1),
-        }))
-      );
+      const normalizedItems: QuoteItem[] = parsedCart.map((item, index) => {
+        const product = item.product || item;
+
+        const rawPrice =
+          product.price ??
+          item.price ??
+          item.unit_price ??
+          item.unitPrice ??
+          item.base_price ??
+          item.pricePerUnit ??
+          0;
+
+        const price = Number(rawPrice ?? 0);
+        const quantity = Number(item.quantity || 1);
+
+        return {
+          id: String(product.id || item.id || item.product_id || item.productId || `catalog-${index}`),
+          name: String(product.name || item.name || item.title || 'Servicio'),
+          description: product.description ?? item.description ?? null,
+          price: Number.isFinite(price) ? price : 0,
+          category: product.category ?? item.category ?? 'General',
+          is_active: product.is_active ?? item.is_active ?? true,
+          image_url: product.image_url ?? item.image_url ?? item.imageUrl ?? null,
+          quantity: Number.isFinite(quantity) && quantity > 0 ? quantity : 1,
+        };
+      });
+
+      setQuoteItems(normalizedItems);
     } catch (error) {
       console.error('No se pudo cargar el carrito del catálogo', error);
     }
