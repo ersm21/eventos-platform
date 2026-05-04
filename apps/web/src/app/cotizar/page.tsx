@@ -106,6 +106,7 @@ export default function CotizarPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [quoteItems, setQuoteItems] = useState<QuoteItem[]>([]);
   const [isMobileQuote, setIsMobileQuote] = useState(false);
+  const [mobileQuoteStep, setMobileQuoteStep] = useState<1 | 2 | 3>(1);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -516,21 +517,27 @@ export default function CotizarPage() {
               Revisa tus servicios, completa los detalles y envía tu solicitud.
             </p>
             <div style={mobileQuoteStepsStyle}>
-              <span style={quoteItems.length > 0 ? mobileQuoteStepActiveStyle : mobileQuoteStepStyle}>
-                Servicios
-              </span>
-              <span style={eventLocation && eventType && eventDate ? mobileQuoteStepActiveStyle : mobileQuoteStepStyle}>
-                Evento
-              </span>
-              <span
-                style={
-                  quoteItems.length > 0 && eventLocation && eventType && eventDate
-                    ? mobileQuoteStepActiveStyle
-                    : mobileQuoteStepStyle
-                }
+              <button
+                type="button"
+                onClick={() => setMobileQuoteStep(1)}
+                style={mobileQuoteStep === 1 ? mobileQuoteStepActiveStyle : mobileQuoteStepStyle}
               >
-                Resumen
-              </span>
+                1. Evento
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileQuoteStep(2)}
+                style={mobileQuoteStep === 2 ? mobileQuoteStepActiveStyle : mobileQuoteStepStyle}
+              >
+                2. Servicios
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileQuoteStep(3)}
+                style={mobileQuoteStep === 3 ? mobileQuoteStepActiveStyle : mobileQuoteStepStyle}
+              >
+                3. Resumen
+              </button>
             </div>
           </section>
         )}
@@ -558,7 +565,10 @@ export default function CotizarPage() {
         {successMessage && <div style={successBoxStyle}>{successMessage}</div>}
 
         <div style={isMobileQuote ? mobileMainGridStyle : mainGridStyle}>
-          <section style={isMobileQuote ? mobileServicesPanelStyle : panelStyle}>
+          <section
+            style={isMobileQuote ? mobileServicesPanelStyle : panelStyle}
+            hidden={isMobileQuote && mobileQuoteStep !== 2}
+          >
             <div style={panelHeaderStyle}>
               <p style={sectionEyebrowStyle}>Servicios</p>
               <h2 style={panelTitleStyle}>Selecciona lo que necesitas</h2>
@@ -662,7 +672,26 @@ export default function CotizarPage() {
                           ))}
                         </div>
                       )}
-                    </section>
+          
+              {isMobileQuote && (
+                <div style={mobileStepActionsStyle}>
+                  <button
+                    type="button"
+                    onClick={() => setMobileQuoteStep(1)}
+                    style={mobileStepSecondaryButtonStyle}
+                  >
+                    Atrás
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMobileQuoteStep(3)}
+                    style={mobileStepPrimaryButtonStyle}
+                  >
+                    Ver resumen
+                  </button>
+                </div>
+              )}
+          </section>
                   );
                 })}
                 </div>
@@ -671,7 +700,10 @@ export default function CotizarPage() {
           </section>
 
           <div style={isMobileQuote ? mobileQuoteSideColumnStyle : quoteSideColumnStyle}>
-          <aside style={isMobileQuote ? mobileQuotePanelStyle : quotePanelStyle}>
+          <aside
+              style={isMobileQuote ? mobileQuotePanelStyle : quotePanelStyle}
+              hidden={isMobileQuote && mobileQuoteStep !== 3}
+            >
             {isMobileQuote && (
               <div style={mobileQuotePanelHeaderStyle}>
                 <p style={mobileQuoteEyebrowStyle}>Servicios seleccionados</p>
@@ -770,7 +802,10 @@ export default function CotizarPage() {
               </div>
             )}
           </aside>
-            <section style={isMobileQuote ? mobileLocationHeroStyle : locationHeroStyle}>
+            <section
+            style={isMobileQuote ? mobileLocationHeroStyle : locationHeroStyle}
+            hidden={isMobileQuote && mobileQuoteStep !== 1}
+          >
             {isMobileQuote && (
               <div style={mobileQuotePanelHeaderStyle}>
                 <p style={mobileQuoteEyebrowStyle}>Detalles del evento</p>
@@ -837,7 +872,17 @@ export default function CotizarPage() {
                 />
               </label>
 
-              <button
+                            {isMobileQuote && (
+                <button
+                  type="button"
+                  onClick={() => setMobileQuoteStep(2)}
+                  style={mobileStepPrimaryButtonStyle}
+                >
+                  Continuar a servicios
+                </button>
+              )}
+
+<button
                           type="button"
                           onClick={saveQuote}
                           disabled={saving}
@@ -918,6 +963,40 @@ const mobileQuoteSubtotalStyle: React.CSSProperties = {
   textAlign: 'right',
 };
 
+const mobileStepActionsStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 8,
+  marginTop: 12,
+};
+
+const mobileStepPrimaryButtonStyle: React.CSSProperties = {
+  width: '100%',
+  minHeight: 46,
+  border: 'none',
+  borderRadius: 16,
+  padding: '0 14px',
+  background: 'linear-gradient(135deg, #fb923c, #ec4899, #8b5cf6)',
+  color: '#ffffff',
+  fontSize: 14,
+  fontWeight: 950,
+  cursor: 'pointer',
+  boxShadow: '0 12px 28px rgba(236, 72, 153, 0.24)',
+};
+
+const mobileStepSecondaryButtonStyle: React.CSSProperties = {
+  width: '100%',
+  minHeight: 46,
+  borderRadius: 16,
+  padding: '0 14px',
+  background: 'rgba(15, 23, 42, 0.72)',
+  color: '#f8fafc',
+  border: '1px solid rgba(148, 163, 184, 0.16)',
+  fontSize: 14,
+  fontWeight: 900,
+  cursor: 'pointer',
+};
+
 const mobileQuoteAppHeaderStyle: React.CSSProperties = {
   width: '100%',
   maxWidth: '100%',
@@ -976,6 +1055,7 @@ const mobileQuoteStepStyle: React.CSSProperties = {
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
+  cursor: 'pointer',
 };
 
 const mobileQuoteStepActiveStyle: React.CSSProperties = {
@@ -991,6 +1071,7 @@ const mobileQuoteStepActiveStyle: React.CSSProperties = {
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
+  cursor: 'pointer',
 };
 
 const mobileQuotePanelHeaderStyle: React.CSSProperties = {
