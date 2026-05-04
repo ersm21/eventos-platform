@@ -817,8 +817,8 @@ const mobileQuoteItemCardStyle: React.CSSProperties = {
   gap: 8,
   padding: 10,
   borderRadius: 16,
-  background: 'rgba(2, 6, 23, 0.52)',
-  border: '1px solid rgba(148, 163, 184, 0.12)',
+  background: 'linear-gradient(145deg, rgba(2, 6, 23, 0.56), rgba(15, 23, 42, 0.44))',
+  border: '1px solid rgba(148, 163, 184, 0.11)',
   overflow: 'hidden',
 };
 
@@ -872,7 +872,7 @@ const mobilePageStyle: React.CSSProperties = {
   maxWidth: '100%',
   overflowX: 'hidden',
   background:
-    'radial-gradient(circle at top left, rgba(250, 204, 21, 0.12), transparent 28%), #020617',
+    'radial-gradient(circle at top left, rgba(250, 204, 21, 0.10), transparent 26%), radial-gradient(circle at bottom right, rgba(236, 72, 153, 0.08), transparent 28%), #020617',
   color: '#f8fafc',
 };
 
@@ -881,7 +881,7 @@ const mobileContainerStyle: React.CSSProperties = {
   maxWidth: '100%',
   minWidth: 0,
   margin: '0 auto',
-  padding: '12px 10px 104px',
+  padding: '10px 10px 118px',
   boxSizing: 'border-box',
   display: 'grid',
   gap: 10,
@@ -904,12 +904,12 @@ const mobileServicesPanelStyle: React.CSSProperties = {
   minWidth: 0,
   boxSizing: 'border-box',
   padding: 12,
-  borderRadius: 20,
+  borderRadius: 22,
   overflow: 'hidden',
   order: 2,
-  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(2, 6, 23, 0.76))',
-  border: '1px solid rgba(250, 204, 21, 0.12)',
-  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.22)',
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.72))',
+  border: '1px solid rgba(250, 204, 21, 0.10)',
+  boxShadow: '0 14px 32px rgba(0, 0, 0, 0.20)',
 };
 
 const mobileQuoteSideColumnStyle: React.CSSProperties = {
@@ -929,9 +929,9 @@ const mobileQuotePanelStyle: React.CSSProperties = {
   padding: 12,
   borderRadius: 22,
   overflow: 'hidden',
-  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.88))',
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.86))',
   border: '1px solid rgba(250, 204, 21, 0.16)',
-  boxShadow: '0 18px 42px rgba(0, 0, 0, 0.28)',
+  boxShadow: '0 18px 42px rgba(0, 0, 0, 0.30)',
 };
 
 const mobileLocationHeroStyle: React.CSSProperties = {
@@ -940,11 +940,11 @@ const mobileLocationHeroStyle: React.CSSProperties = {
   minWidth: 0,
   boxSizing: 'border-box',
   padding: 12,
-  borderRadius: 20,
+  borderRadius: 22,
   overflow: 'hidden',
-  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.72))',
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(2, 6, 23, 0.74))',
   border: '1px solid rgba(250, 204, 21, 0.12)',
-  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.2)',
+  boxShadow: '0 14px 32px rgba(0, 0, 0, 0.22)',
 };
 
 const pageStyle: React.CSSProperties = {
@@ -1037,9 +1037,9 @@ const eyebrowStyle: React.CSSProperties = {
 
 const heroTitleStyle: React.CSSProperties = {
   margin: '8px 0 6px',
-  fontSize: 36,
+  fontSize: 32,
   lineHeight: 1.02,
-  letterSpacing: '-0.04em',
+  letterSpacing: '-0.05em',
 };
 
 const heroTextStyle: React.CSSProperties = {
@@ -1145,22 +1145,23 @@ const panelHeaderStyle: React.CSSProperties = {
 };
 
 const panelTitleStyle: React.CSSProperties = {
-  margin: '6px 0 5px',
-  fontSize: 22,
+  margin: '5px 0 4px',
+  fontSize: 20,
+  letterSpacing: '-0.03em',
 };
 
 const panelTextStyle: React.CSSProperties = {
   margin: 0,
   color: '#94a3b8',
-  lineHeight: 1.5,
-  fontSize: 13,
+  lineHeight: 1.42,
+  fontSize: 12,
 };
 
 const softBoxStyle: React.CSSProperties = {
-  padding: 14,
+  padding: 12,
   borderRadius: 16,
   background: 'rgba(2, 6, 23, 0.38)',
-  border: '1px solid rgba(250, 204, 21, 0.11)',
+  border: '1px solid rgba(250, 204, 21, 0.10)',
 };
 
 const mutedTextStyle: React.CSSProperties = {
@@ -1170,12 +1171,12 @@ const mutedTextStyle: React.CSSProperties = {
 
 const categoryTabsStyle: React.CSSProperties = {
   display: 'flex',
-  gap: 8,
+  gap: 7,
   overflowX: 'auto',
-  padding: '4px 2px 12px',
-  marginTop: 16,
+  padding: '3px 1px 10px',
+  marginTop: 12,
   marginBottom: 4,
-  WebkitOverflowScrolling: 'touch',
+  scrollbarWidth: 'none',
 };
 
 const categoryTabButtonStyle: React.CSSProperties = {
