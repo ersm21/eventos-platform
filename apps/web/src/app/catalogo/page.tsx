@@ -248,7 +248,8 @@ export default function CatalogoPage() {
       quantity: item.quantity,
     }));
 
-    router.push(`/cotizar?cart=${encodeURIComponent(JSON.stringify(cart))}`);
+    window.localStorage.setItem('sm-events-catalog-cart', JSON.stringify(cart));
+    router.push('/cotizar?from=catalogo');
   };
 
   return (

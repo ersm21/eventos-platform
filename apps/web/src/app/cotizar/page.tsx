@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import AppNavbar from '../../components/AppNavbar';
 import { supabase } from '../../lib/supabase/client';
 
@@ -102,6 +102,7 @@ function calculateTotalWithItbis(
 
 export default function CotizarPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [quoteItems, setQuoteItems] = useState<QuoteItem[]>([]);
@@ -167,6 +168,29 @@ export default function CotizarPage() {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    const fromCatalog = searchParams.get('from') === 'catalogo';
+    if (!fromCatalog) return;
+
+    const savedCart = window.localStorage.getItem('sm-events-catalog-cart');
+    if (!savedCart) return;
+
+    try {
+      const parsedCart = JSON.parse(savedCart) as Array<Product & { quantity?: number }>;
+
+      if (!Array.isArray(parsedCart) || parsedCart.length === 0) return;
+
+      setQuoteItems(
+        parsedCart.map((item) => ({
+          ...item,
+          quantity: Number(item.quantity || 1),
+        }))
+      );
+    } catch (error) {
+      console.error('No se pudo cargar el carrito del catálogo', error);
+    }
+  }, [searchParams]);
 
   const productsByCategory = useMemo(() => {
     return products.reduce<Record<string, Product[]>>((accumulator, product) => {
