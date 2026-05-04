@@ -286,14 +286,6 @@ export default function CatalogoPage() {
 
         {isMobileCatalog && productCategories.length > 0 && (
           <div style={mobileCategoryRailStyle}>
-            <button
-              type="button"
-              onClick={() => setActiveMobileCategory(null)}
-              style={!activeMobileCategory ? mobileCategoryChipActiveStyle : mobileCategoryChipStyle}
-            >
-              Todo
-            </button>
-
             {productCategories.map((category) => {
               const isActive = activeMobileCategory === category;
 
@@ -301,7 +293,7 @@ export default function CatalogoPage() {
                 <button
                   key={category}
                   type="button"
-                  onClick={() => setActiveMobileCategory(category)}
+                  onClick={() => setActiveMobileCategory(isActive ? null : category)}
                   style={isActive ? mobileCategoryChipActiveStyle : mobileCategoryChipStyle}
                 >
                   {category}
