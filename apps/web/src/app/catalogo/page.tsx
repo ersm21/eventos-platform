@@ -111,6 +111,7 @@ export default function CatalogoPage() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<CatalogCartItem[]>([]);
+  const [isMobileCartExpanded, setIsMobileCartExpanded] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [activeMobileCategory, setActiveMobileCategory] = useState<string | null>(null);
   const [isMobileCatalog, setIsMobileCatalog] = useState(false);
@@ -428,6 +429,7 @@ export default function CatalogoPage() {
           </section>
 
           <aside style={isMobileCatalog ? mobileCartPanelStyle : cartPanelStyle}>
+
             <div style={cartHeaderStyle}>
               <div>
                 <p style={sectionEyebrowStyle}>Selección</p>
@@ -1256,6 +1258,89 @@ const cartPanelStyle: React.CSSProperties = {
   borderRadius: 22,
   padding: 16,
   boxShadow: '0 14px 30px rgba(0,0,0,0.24)',
+};
+
+const mobileCartShellStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  boxSizing: 'border-box',
+  position: 'sticky',
+  bottom: 8,
+  zIndex: 30,
+  borderRadius: 20,
+  padding: 8,
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.94))',
+  border: '1px solid rgba(250, 204, 21, 0.16)',
+  boxShadow: '0 22px 52px rgba(0,0,0,0.42)',
+  backdropFilter: 'blur(16px)',
+  overflow: 'hidden',
+};
+
+const mobileCartSummaryButtonStyle: React.CSSProperties = {
+  width: '100%',
+  minHeight: 56,
+  border: 'none',
+  borderRadius: 16,
+  padding: '10px 12px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 12,
+  background: 'linear-gradient(135deg, rgba(250,204,21,0.16), rgba(249,115,22,0.08))',
+  color: '#ffffff',
+  cursor: 'pointer',
+  textAlign: 'left',
+};
+
+const mobileCartSummaryCopyStyle: React.CSSProperties = {
+  minWidth: 0,
+  display: 'grid',
+  gap: 2,
+};
+
+const mobileCartSummaryEyebrowStyle: React.CSSProperties = {
+  color: '#facc15',
+  fontSize: 11,
+  fontWeight: 900,
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase',
+};
+
+const mobileCartSummaryTitleStyle: React.CSSProperties = {
+  color: '#ffffff',
+  fontSize: 17,
+  fontWeight: 950,
+  lineHeight: 1.1,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+};
+
+const mobileCartSummaryActionStyle: React.CSSProperties = {
+  flex: '0 0 auto',
+  borderRadius: 999,
+  padding: '8px 11px',
+  background: '#facc15',
+  color: '#111827',
+  fontSize: 12,
+  fontWeight: 950,
+};
+
+const mobileCartDetailsStyle: React.CSSProperties = {
+  marginTop: 8,
+  maxHeight: '42vh',
+  overflowY: 'auto',
+  overflowX: 'hidden',
+  padding: '2px 2px 4px',
+};
+
+const mobileCartItemsStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 8,
+  maxHeight: 210,
+  overflowY: 'auto',
+  overflowX: 'hidden',
+  paddingRight: 2,
 };
 
 const mobileCartPanelStyle: React.CSSProperties = {
