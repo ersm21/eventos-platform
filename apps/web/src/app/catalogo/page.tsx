@@ -1181,6 +1181,7 @@ const productFooterStyle: React.CSSProperties = {
 const mobileProductFooterStyle: React.CSSProperties = {
   ...productFooterStyle,
   alignItems: 'center',
+  justifyContent: 'space-between',
   gap: 7,
   marginTop: 5,
 };
@@ -1207,6 +1208,7 @@ const mobilePriceStyle: React.CSSProperties = {
   fontSize: 12.5,
   fontWeight: 950,
   color: '#facc15',
+  whiteSpace: 'nowrap',
 };
 
 
@@ -1231,6 +1233,7 @@ const mobileAddButtonStyle: React.CSSProperties = {
   fontSize: 11,
   fontWeight: 950,
   whiteSpace: 'nowrap',
+  boxShadow: '0 8px 18px rgba(250, 204, 21, 0.14)',
 };
 
 
@@ -1255,10 +1258,13 @@ const mobileCartPanelStyle: React.CSSProperties = {
   zIndex: 20,
   borderRadius: 18,
   padding: 10,
-  maxHeight: '34vh',
+  maxHeight: '30vh',
   overflowY: 'auto',
   overflowX: 'hidden',
-  boxShadow: '0 18px 44px rgba(0,0,0,0.35)',
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.9))',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  boxShadow: '0 18px 42px rgba(0,0,0,0.38)',
+  backdropFilter: 'blur(14px)',
 };
 
 
