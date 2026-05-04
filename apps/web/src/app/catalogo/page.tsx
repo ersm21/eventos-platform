@@ -768,18 +768,19 @@ const categoryHeaderStyle: React.CSSProperties = {
   textAlign: 'left',
 };
 
-const mobileCategoryHeaderContentStyle: React.CSSProperties = {
-  ...categoryHeaderContentStyle,
-  gap: 10,
-  minWidth: 0,
-};
-
 const categoryHeaderContentStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   gap: 12,
   minWidth: 0,
 };
+
+const mobileCategoryHeaderContentStyle: React.CSSProperties = {
+  ...categoryHeaderContentStyle,
+  gap: 10,
+  minWidth: 0,
+};
+
 
 const categoryThumbStyle: React.CSSProperties = {
   width: 54,
