@@ -196,7 +196,7 @@ export default function CatalogoPage() {
 
   const visibleProductCategories = useMemo(() => {
     if (!isMobileCatalog) return productCategories;
-    if (!activeMobileCategory) return [];
+    if (!activeMobileCategory) return productCategories;
 
     return productCategories.filter((category) => category === activeMobileCategory);
   }, [activeMobileCategory, isMobileCatalog, productCategories]);
@@ -334,7 +334,7 @@ export default function CatalogoPage() {
               </div>
             ) : (
               <div style={isMobileCatalog ? mobileCategoryListStyle : categoryListStyle}>
-                {isMobileCatalog && !activeMobileCategory ? (
+                {false && isMobileCatalog && !activeMobileCategory ? (
                   <div style={mobileCategoryPickerStyle}>
                     <div style={mobileCategoryPickerHeaderStyle}>
                       <p style={mobileCategoryEmptyEyebrowStyle}>Primero elige una categoría</p>
@@ -858,7 +858,7 @@ const mobileCategoryRailStyle: React.CSSProperties = {
   maxWidth: '100%',
   minWidth: 0,
   boxSizing: 'border-box',
-  display: 'flex',
+  display: 'none',
   flexWrap: 'wrap',
   gap: 7,
   overflowX: 'hidden',
