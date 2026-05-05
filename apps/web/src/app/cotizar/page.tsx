@@ -509,6 +509,8 @@ export default function CotizarPage() {
   return (
     <main style={isMobileQuote ? mobilePageStyle : pageStyle}>
       <div style={isMobileQuote ? mobileContainerStyle : containerStyle}>
+        <AppNavbar ctaHref="/book-meeting" ctaLabel="Hablar con nosotros" />
+
         {isMobileQuote && (
           <section style={mobileQuoteAppHeaderStyle}>
             <p style={mobileQuoteEyebrowStyle}>SM Events</p>
@@ -541,7 +543,7 @@ export default function CotizarPage() {
             </div>
           </section>
         )}
-        <AppNavbar ctaHref="/book-meeting" ctaLabel="Hablar con nosotros" />
+
 
 
 
@@ -801,6 +803,17 @@ export default function CotizarPage() {
                 </div>
               </div>
             )}
+              {isMobileQuote && mobileQuoteStep === 3 && (
+                <button
+                  type="button"
+                  onClick={saveQuote}
+                  disabled={saving}
+                  style={submitButtonStyle}
+                >
+                  {saving ? 'Enviando...' : 'Enviar cotización'}
+                </button>
+              )}
+
           </aside>
             <section
             style={isMobileQuote ? mobileLocationHeroStyle : locationHeroStyle}
