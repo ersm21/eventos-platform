@@ -335,12 +335,52 @@ export default function CatalogoPage() {
             ) : (
               <div style={isMobileCatalog ? mobileCategoryListStyle : categoryListStyle}>
                 {isMobileCatalog && !activeMobileCategory ? (
-                  <div style={mobileCategoryEmptyStateStyle}>
-                    <p style={mobileCategoryEmptyEyebrowStyle}>Elige una categoría</p>
-                    <h2 style={mobileCategoryEmptyTitleStyle}>Selecciona un servicio arriba</h2>
-                    <p style={mobileCategoryEmptyTextStyle}>
-                      Toca una categoría para ver solo los productos de esa sección.
-                    </p>
+                  <div style={mobileCategoryPickerStyle}>
+                    <div style={mobileCategoryPickerHeaderStyle}>
+                      <p style={mobileCategoryEmptyEyebrowStyle}>Primero elige una categoría</p>
+                      <h2 style={mobileCategoryEmptyTitleStyle}>Toca una opción para ver los servicios</h2>
+                      <p style={mobileCategoryEmptyTextStyle}>
+                        Selecciona el tipo de servicio que necesitas. Luego podrás agregar productos a tu cotización.
+                      </p>
+                    </div>
+
+                    <div style={mobileCategoryCardListStyle}>
+                      {productCategories.map((category) => {
+                        const visual = categoryVisuals[category] ?? {
+                          label: category,
+                          description: '',
+                        };
+                        const initials = visual.label.slice(0, 2).toUpperCase();
+                        const productCount = productsByCategory[category]?.length || 0;
+
+                        return (
+                          <button
+                            key={category}
+                            type="button"
+                            onClick={() => setActiveMobileCategory(category)}
+                            style={mobileCategoryCardButtonStyle}
+                          >
+                            <span style={mobileCategoryCardIconStyle}>{initials}</span>
+                            <span style={mobileCategoryCardCopyStyle}>
+                              <strong style={mobileCategoryCardTitleStyle}>{visual.label}</strong>
+                              <span style={mobileCategoryCardMetaStyle}>
+                                {productCount} servicio{productCount === 1 ? '' : 's'} disponibles
+                              </span>
+                            </span>
+                            <span style={mobileCategoryCardActionStyle}>Ver</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div style={mobileQuoteGuideStyle}>
+                      <p style={mobileQuoteGuideTitleStyle}>¿Cómo cotizar?</p>
+                      <div style={mobileQuoteGuideStepsStyle}>
+                        <span>1. Elige una categoría</span>
+                        <span>2. Agrega servicios</span>
+                        <span>3. Toca Cotizar</span>
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   visibleProductCategories.map((category) => {
@@ -697,6 +737,120 @@ const mobileCatalogLayoutStyle: React.CSSProperties = {
   alignItems: 'start',
   padding: '10px 10px 92px',
   boxSizing: 'border-box',
+};
+
+const mobileCategoryPickerStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 12,
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+};
+
+const mobileCategoryPickerHeaderStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  boxSizing: 'border-box',
+  borderRadius: 18,
+  padding: 14,
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.68))',
+  border: '1px solid rgba(250, 204, 21, 0.10)',
+  textAlign: 'left',
+};
+
+const mobileCategoryCardListStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 9,
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+};
+
+const mobileCategoryCardButtonStyle: React.CSSProperties = {
+  width: '100%',
+  minHeight: 72,
+  border: '1px solid rgba(250, 204, 21, 0.13)',
+  borderRadius: 18,
+  padding: 10,
+  display: 'grid',
+  gridTemplateColumns: '48px minmax(0, 1fr) auto',
+  alignItems: 'center',
+  gap: 10,
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.72))',
+  color: '#ffffff',
+  cursor: 'pointer',
+  textAlign: 'left',
+  boxShadow: '0 12px 28px rgba(0,0,0,0.18)',
+};
+
+const mobileCategoryCardIconStyle: React.CSSProperties = {
+  width: 48,
+  height: 48,
+  borderRadius: 15,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  background: 'linear-gradient(135deg, rgba(250, 204, 21, 0.20), rgba(249, 115, 22, 0.10))',
+  border: '1px solid rgba(250, 204, 21, 0.16)',
+  color: '#facc15',
+  fontSize: 13,
+  fontWeight: 950,
+};
+
+const mobileCategoryCardCopyStyle: React.CSSProperties = {
+  minWidth: 0,
+  display: 'grid',
+  gap: 3,
+};
+
+const mobileCategoryCardTitleStyle: React.CSSProperties = {
+  color: '#ffffff',
+  fontSize: 16,
+  fontWeight: 950,
+  lineHeight: 1.1,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+};
+
+const mobileCategoryCardMetaStyle: React.CSSProperties = {
+  color: '#94a3b8',
+  fontSize: 12,
+  fontWeight: 800,
+};
+
+const mobileCategoryCardActionStyle: React.CSSProperties = {
+  borderRadius: 999,
+  padding: '8px 10px',
+  background: '#facc15',
+  color: '#111827',
+  fontSize: 12,
+  fontWeight: 950,
+};
+
+const mobileQuoteGuideStyle: React.CSSProperties = {
+  borderRadius: 18,
+  padding: 13,
+  background: 'rgba(2, 6, 23, 0.48)',
+  border: '1px solid rgba(148, 163, 184, 0.10)',
+};
+
+const mobileQuoteGuideTitleStyle: React.CSSProperties = {
+  margin: '0 0 8px',
+  color: '#facc15',
+  fontSize: 12,
+  fontWeight: 950,
+  letterSpacing: '0.10em',
+  textTransform: 'uppercase',
+};
+
+const mobileQuoteGuideStepsStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 7,
+  color: '#e5e7eb',
+  fontSize: 13,
+  fontWeight: 800,
+  lineHeight: 1.25,
 };
 
 const mobileCategoryRailStyle: React.CSSProperties = {
