@@ -333,7 +333,19 @@ export default function CatalogoPage() {
                 <p style={mutedTextStyle}>Todavía no hay servicios disponibles.</p>
               </div>
             ) : (
-              <div style={isMobileCatalog ? mobileCategoryListStyle : categoryListStyle}>
+              <>
+        {isMobileCatalog && (
+          <div style={mobileQuoteGuideStyle}>
+            <p style={mobileQuoteGuideTitleStyle}>Catálogo completo</p>
+            <div style={mobileQuoteGuideStepsStyle}>
+              <span>1. Mira los servicios disponibles</span>
+              <span>2. Toca Agregar en lo que necesitas</span>
+              <span>3. Toca Cotizar abajo</span>
+            </div>
+          </div>
+        )}
+
+<div style={isMobileCatalog ? mobileCategoryListStyle : categoryListStyle}>
                 {false && isMobileCatalog && !activeMobileCategory ? (
                   <div style={mobileCategoryPickerStyle}>
                     <div style={mobileCategoryPickerHeaderStyle}>
@@ -472,6 +484,7 @@ export default function CatalogoPage() {
                   })
                 )}
               </div>
+              </>
             )}
           </section>
 
