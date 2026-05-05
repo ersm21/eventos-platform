@@ -872,7 +872,7 @@ export default function CotizarPage() {
                 />
               </label>
 
-                            {isMobileQuote && (
+                            {isMobileQuote && mobileQuoteStep === 1 && (
                 <button
                   type="button"
                   onClick={() => setMobileQuoteStep(2)}
@@ -882,18 +882,16 @@ export default function CotizarPage() {
                 </button>
               )}
 
-<button
-                          type="button"
-                          onClick={saveQuote}
-                          disabled={saving}
-                          style={{
-                            ...primaryButtonStyle,
-                            opacity: saving ? 0.72 : 1,
-                            cursor: saving ? 'not-allowed' : 'pointer',
-                          }}
-                        >
-                          {saving ? 'Enviando...' : 'Enviar cotización'}
-                        </button>
+              {(!isMobileQuote || mobileQuoteStep === 3) && (
+                <button
+                  type="button"
+                  onClick={saveQuote}
+                  disabled={saving}
+                  style={submitButtonStyle}
+                >
+                  {saving ? 'Enviando...' : 'Enviar cotización'}
+                </button>
+              )}
             </section>
 
 
@@ -1727,6 +1725,20 @@ const textareaStyle: React.CSSProperties = {
   ...inputStyle,
   minHeight: 110,
   resize: 'vertical',
+};
+
+const submitButtonStyle: React.CSSProperties = {
+  width: '100%',
+  minHeight: 52,
+  border: 'none',
+  borderRadius: 18,
+  padding: '0 18px',
+  background: 'linear-gradient(135deg, #fb923c, #ec4899, #8b5cf6)',
+  color: '#ffffff',
+  fontSize: 15,
+  fontWeight: 950,
+  cursor: 'pointer',
+  boxShadow: '0 14px 30px rgba(236, 72, 153, 0.26)',
 };
 
 const submitWrapStyle: React.CSSProperties = {
