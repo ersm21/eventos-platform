@@ -19,6 +19,18 @@ type QuoteSuggestionItem = Product & {
   quantity: number;
 };
 
+type RequestedNeed =
+  | 'audio'
+  | 'microphones'
+  | 'led_screen'
+  | 'stage'
+  | 'truss'
+  | 'roof'
+  | 'lighting'
+  | 'dj'
+  | 'effects'
+  | 'dance_floor';
+
 const SYSTEM_PROMPT = `
 Eres el asistente oficial de SM Events, una empresa de producción de eventos en República Dominicana.
 
@@ -40,8 +52,9 @@ Tono:
 - Si el cliente escribe en inglés, responde en inglés.
 - No inventes precios exactos si el cliente no da detalles.
 - Para cotizaciones, pide datos clave: tipo de evento, fecha, lugar, horario/duración, cantidad aproximada de personas, servicios que necesita y presupuesto aproximado si lo tiene.
-- Si el cliente quiere cotizar, ayúdalo a armar una selección inicial de servicios y explícale que puede ajustar cantidades antes de enviarla.
+- Si el sistema prepara una selección inicial, explica que el cliente puede agregarla a cotización y luego ajustar cantidades, ciudad, tipo de evento, fecha y notas antes de enviarla.
 - Si preguntan por disponibilidad, explica que deben solicitar reunión o cotización para confirmar agenda.
+- Nunca prometas disponibilidad sin confirmación humana.
 `;
 
 function normalizeText(value: string | null | undefined) {
@@ -49,6 +62,52 @@ function normalizeText(value: string | null | undefined) {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
+}
+
+function numberFromText(value: string) {
+  const normalized = normalizeText(value)
+    .replace(/rd\$|dop|pesos|peso|dominicanos|dominicano/g, '')
+    .replace(/,/g, '');
+
+  const matches = normalized.match(/\d+(?:\.\d+)?/g);
+  if (!matches) return null;
+
+  const numbers = matches.map((match) => Number(match)).filter(Number.isFinite);
+  if (numbers.length === 0) return null;
+
+  const budgetWords = [
+    'presupuesto',
+    'budget',
+    'tengo',
+    'cuento con',
+    'hasta',
+    'maximo',
+    'máximo',
+  ];
+
+  const hasBudgetWord = budgetWords.some((word) => normalized.includes(normalizeText(word)));
+
+  if (hasBudgetWord) {
+    return Math.max(...numbers);
+  }
+
+  const possibleBudget = numbers.filter((number) => number >= 10000);
+  if (possibleBudget.length > 0) {
+    return Math.max(...possibleBudget);
+  }
+
+  return null;
+}
+
+function extractGuestCount(value: string) {
+  const normalized = normalizeText(value);
+  const peoplePattern = /(\d+)\s*(personas|persona|pax|invitados|invitado|gente|asistentes|asistente)/;
+  const match = normalized.match(peoplePattern);
+
+  if (!match) return null;
+
+  const count = Number(match[1]);
+  return Number.isFinite(count) ? count : null;
 }
 
 function isQuoteIntent(text: string) {
@@ -73,188 +132,374 @@ function isQuoteIntent(text: string) {
     'corporativo',
     'actividad',
     'fiesta',
+    'tarima',
+    'pantalla',
+    'sonido',
+    'microfono',
+    'luces',
+    'truss',
+    'techo',
+    'dj',
   ].some((word) => value.includes(word));
 }
 
-function wantedCategories(text: string) {
+function detectRequestedNeeds(text: string): RequestedNeed[] {
   const value = normalizeText(text);
-  const categories = new Set<string>();
+  const needs = new Set<RequestedNeed>();
 
-  if (
+  const hasAudio =
     value.includes('sonido') ||
     value.includes('audio') ||
     value.includes('bocina') ||
+    value.includes('bocinas') ||
+    value.includes('speaker') ||
+    value.includes('speakers');
+
+  const hasMicrophones =
     value.includes('microfono') ||
-    value.includes('musica')
-  ) {
-    categories.add('audio');
-  }
+    value.includes('microfonos') ||
+    value.includes('microphone') ||
+    value.includes('mic ') ||
+    value.includes('mics');
 
-  if (
-    value.includes('luz') ||
-    value.includes('luces') ||
-    value.includes('iluminacion') ||
-    value.includes('robotica') ||
-    value.includes('beam') ||
-    value.includes('wash')
-  ) {
-    categories.add('iluminacion');
-  }
-
-  if (
+  const hasLedScreen =
     value.includes('pantalla') ||
+    value.includes('pantallas') ||
     value.includes('led') ||
-    value.includes('visual') ||
-    value.includes('video')
-  ) {
-    categories.add('pantallas led');
-  }
+    value.includes('video wall') ||
+    value.includes('visuales') ||
+    value.includes('visuales');
 
-  if (
+  const hasStage =
     value.includes('tarima') ||
+    value.includes('tarimas') ||
     value.includes('stage') ||
-    value.includes('escenario')
-  ) {
-    categories.add('tarimas');
-  }
+    value.includes('escenario');
 
-  if (
-    value.includes('truss') ||
+  const hasRoof =
     value.includes('techo') ||
-    value.includes('estructura')
-  ) {
-    categories.add('truss');
-  }
+    value.includes('roof');
 
-  if (
+  const hasTruss =
+    value.includes('truss') ||
+    value.includes('estructura') ||
+    value.includes('rigging');
+
+  const hasLighting =
+    value.includes('luces') ||
+    value.includes('luz ') ||
+    value.includes('iluminacion') ||
+    value.includes('iluminación') ||
+    value.includes('robotica') ||
+    value.includes('robótica') ||
+    value.includes('beam') ||
+    value.includes('wash') ||
+    value.includes('par led') ||
+    value.includes('laser');
+
+  const hasDj =
     value.includes('dj') ||
     value.includes('disc jockey') ||
-    value.includes('musicalizacion')
-  ) {
-    categories.add('dj');
-  }
+    value.includes('musicalizacion') ||
+    value.includes('musicalización');
 
-  if (
+  const hasEffects =
     value.includes('confeti') ||
     value.includes('humo') ||
+    value.includes('co2') ||
+    value.includes('pirotecnia') ||
     value.includes('chispa') ||
-    value.includes('spark') ||
-    value.includes('efecto')
-  ) {
-    categories.add('efectos especiales');
-  }
+    value.includes('chispas') ||
+    value.includes('flama') ||
+    value.includes('efecto especial') ||
+    value.includes('efectos especiales');
 
-  const eventNeedsBase =
-    value.includes('boda') ||
-    value.includes('cumple') ||
-    value.includes('quince') ||
-    value.includes('fiesta') ||
-    value.includes('corporativo') ||
-    value.includes('concierto') ||
-    value.includes('actividad') ||
-    value.includes('evento');
+  const hasDanceFloor =
+    value.includes('pista') ||
+    value.includes('pista de baile') ||
+    value.includes('dance floor') ||
+    value.includes('parquet');
 
-  if (eventNeedsBase && categories.size === 0) {
-    categories.add('audio');
-    categories.add('iluminacion');
-  }
+  if (hasAudio) needs.add('audio');
+  if (hasMicrophones) needs.add('microphones');
+  if (hasLedScreen) needs.add('led_screen');
+  if (hasStage) needs.add('stage');
+  if (hasRoof) needs.add('roof');
+  if (hasTruss) needs.add('truss');
+  if (hasLighting) needs.add('lighting');
+  if (hasDj) needs.add('dj');
+  if (hasEffects) needs.add('effects');
+  if (hasDanceFloor) needs.add('dance_floor');
 
-  if (
-    value.includes('boda') ||
-    value.includes('quince') ||
-    value.includes('concierto') ||
-    value.includes('corporativo')
-  ) {
-    categories.add('audio');
-    categories.add('iluminacion');
-  }
-
-  return Array.from(categories);
+  return Array.from(needs);
 }
 
-function productMatchesCategory(product: Product, category: string) {
-  const categoryText = normalizeText(product.category);
-  const nameText = normalizeText(product.name);
-  const descriptionText = normalizeText(product.description);
-  const combined = `${categoryText} ${nameText} ${descriptionText}`;
+function productText(product: Product) {
+  return normalizeText(`${product.name} ${product.category ?? ''} ${product.description ?? ''}`);
+}
 
-  if (category === 'audio') {
-    return (
-      combined.includes('audio') ||
-      combined.includes('sonido') ||
-      combined.includes('bocina') ||
-      combined.includes('microfono')
-    );
+function priceOf(product: Product) {
+  return Number(product.price ?? 0);
+}
+
+function getProductsByNeed(products: Product[], need: RequestedNeed) {
+  return products.filter((product) => {
+    const text = productText(product);
+
+    if (need === 'audio') {
+      return (
+        text.includes('sonido') ||
+        text.includes('speaker') ||
+        text.includes('audio') ||
+        text.includes('bocina')
+      ) && !text.includes('microfono');
+    }
+
+    if (need === 'microphones') {
+      return text.includes('microfono') || text.includes('mic ');
+    }
+
+    if (need === 'led_screen') {
+      return text.includes('pantalla') || text.includes('led por metro');
+    }
+
+    if (need === 'stage') {
+      return text.includes('tarima');
+    }
+
+    if (need === 'roof') {
+      return text.includes('techo en truss');
+    }
+
+    if (need === 'truss') {
+      return (
+        text.includes('truss') ||
+        text.includes('puente') ||
+        text.includes('cuadro')
+      ) && !text.includes('techo en truss');
+    }
+
+    if (need === 'lighting') {
+      return (
+        text.includes('iluminacion') ||
+        text.includes('par led') ||
+        text.includes('moving') ||
+        text.includes('luz') ||
+        text.includes('laser') ||
+        text.includes('perseguidor') ||
+        text.includes('minibruto')
+      );
+    }
+
+    if (need === 'effects') {
+      return (
+        text.includes('confeti') ||
+        text.includes('humo') ||
+        text.includes('flama') ||
+        text.includes('pirotecnia') ||
+        text.includes('co2')
+      );
+    }
+
+    if (need === 'dance_floor') {
+      return text.includes('pista de baile') || text.includes('parquet');
+    }
+
+    if (need === 'dj') {
+      return text.includes('dj');
+    }
+
+    return false;
+  });
+}
+
+function pickClosestToTarget(products: Product[], target: number) {
+  if (products.length === 0) return null;
+
+  return [...products].sort((a, b) => {
+    const aPrice = priceOf(a);
+    const bPrice = priceOf(b);
+
+    const aDistance = Math.abs(aPrice - target);
+    const bDistance = Math.abs(bPrice - target);
+
+    if (aDistance !== bDistance) return aDistance - bDistance;
+    return bPrice - aPrice;
+  })[0];
+}
+
+function pickBestAudio(products: Product[], budget: number | null, guestCount: number | null) {
+  const audioProducts = getProductsByNeed(products, 'audio');
+
+  if (audioProducts.length === 0) return null;
+
+  let target = 15000;
+
+  if (guestCount && guestCount <= 60) target = 12000;
+  if (guestCount && guestCount > 60 && guestCount <= 120) target = 18000;
+  if (guestCount && guestCount > 120 && guestCount <= 220) target = 25000;
+  if (guestCount && guestCount > 220) target = 35000;
+
+  if (budget && budget >= 100000) {
+    target = Math.max(target, 25000);
   }
 
-  if (category === 'iluminacion') {
-    return (
-      combined.includes('ilumin') ||
-      combined.includes('luz') ||
-      combined.includes('luces') ||
-      combined.includes('beam') ||
-      combined.includes('wash')
-    );
+  return pickClosestToTarget(audioProducts, target);
+}
+
+function pickBestMicrophones(products: Product[], budget: number | null) {
+  const microphoneProducts = getProductsByNeed(products, 'microphones');
+  if (microphoneProducts.length === 0) return [];
+
+  const normalized = microphoneProducts.sort((a, b) => priceOf(a) - priceOf(b));
+  const wireless = normalized.find((product) => productText(product).includes('inalambrico'));
+  const wired = normalized.find((product) => productText(product).includes('alambrico') && !productText(product).includes('inalambrico'));
+  const podium = normalized.find((product) => productText(product).includes('podium'));
+
+  if (budget && budget >= 80000) {
+    return [wireless, podium].filter(Boolean) as Product[];
   }
 
-  if (category === 'pantallas led') {
-    return (
-      combined.includes('pantalla') ||
-      combined.includes('led') ||
-      combined.includes('video')
-    );
+  return [wireless || wired || normalized[0]].filter(Boolean) as Product[];
+}
+
+function pickBestLedScreen(products: Product[], budget: number | null, requestedNeedsCount: number) {
+  const ledProducts = getProductsByNeed(products, 'led_screen');
+  if (ledProducts.length === 0) return null;
+
+  let target = 24000;
+
+  if (budget) {
+    const availableForLed = budget / Math.max(requestedNeedsCount, 1);
+
+    if (availableForLed >= 60000) target = 60000;
+    else if (availableForLed >= 30000) target = 30000;
+    else target = 24000;
   }
 
-  if (category === 'tarimas') {
-    return combined.includes('tarima') || combined.includes('stage');
+  return pickClosestToTarget(ledProducts, target);
+}
+
+function pickBestStage(products: Product[], budget: number | null, guestCount: number | null, requestedNeedsCount: number) {
+  const stageProducts = getProductsByNeed(products, 'stage');
+  if (stageProducts.length === 0) return null;
+
+  let target = 16000;
+
+  if (guestCount && guestCount <= 80) target = 13000;
+  if (guestCount && guestCount > 80 && guestCount <= 180) target = 20000;
+  if (guestCount && guestCount > 180) target = 28000;
+
+  if (budget) {
+    const availableForStage = budget / Math.max(requestedNeedsCount, 1);
+    target = Math.min(Math.max(target, availableForStage * 0.8), 40000);
   }
 
-  if (category === 'truss') {
-    return combined.includes('truss') || combined.includes('techo') || combined.includes('estructura');
+  return pickClosestToTarget(stageProducts, target);
+}
+
+function pickBestLighting(products: Product[], budget: number | null) {
+  const lightingProducts = getProductsByNeed(products, 'lighting');
+  if (lightingProducts.length === 0) return [];
+
+  const sorted = lightingProducts.sort((a, b) => priceOf(a) - priceOf(b));
+  const moving = sorted.find((product) => {
+    const text = productText(product);
+    return text.includes('moving') || text.includes('robotica');
+  });
+
+  const wash = sorted.find((product) => productText(product).includes('wash'));
+  const par = sorted.find((product) => productText(product).includes('par led'));
+
+  if (budget && budget >= 80000) {
+    return [moving, wash, par].filter(Boolean) as Product[];
   }
 
-  if (category === 'dj') {
-    return combined.includes('dj') || combined.includes('disc jockey');
+  return [moving || wash || par || sorted[0]].filter(Boolean) as Product[];
+}
+
+function pickBestSingle(products: Product[], need: RequestedNeed, budget: number | null, requestedNeedsCount: number) {
+  const matches = getProductsByNeed(products, need);
+  if (matches.length === 0) return null;
+
+  let target = 10000;
+
+  if (budget) {
+    target = budget / Math.max(requestedNeedsCount, 1);
   }
 
-  if (category === 'efectos especiales') {
-    return (
-      combined.includes('confeti') ||
-      combined.includes('humo') ||
-      combined.includes('chispa') ||
-      combined.includes('spark') ||
-      combined.includes('efecto')
-    );
-  }
+  return pickClosestToTarget(matches, target);
+}
 
-  return false;
+function dedupeItems(items: QuoteSuggestionItem[]) {
+  const map = new Map<string, QuoteSuggestionItem>();
+
+  items.forEach((item) => {
+    if (!map.has(item.id)) {
+      map.set(item.id, item);
+      return;
+    }
+
+    const existing = map.get(item.id);
+    if (existing) {
+      map.set(item.id, {
+        ...existing,
+        quantity: existing.quantity + item.quantity,
+      });
+    }
+  });
+
+  return Array.from(map.values());
 }
 
 function buildQuoteSuggestions(products: Product[], message: string): QuoteSuggestionItem[] {
   if (!isQuoteIntent(message)) return [];
 
-  const categories = wantedCategories(message);
-  if (categories.length === 0) return [];
+  const requestedNeeds = detectRequestedNeeds(message);
+  if (requestedNeeds.length === 0) return [];
 
-  const selected = new Map<string, QuoteSuggestionItem>();
+  const budget = numberFromText(message);
+  const guestCount = extractGuestCount(message);
 
-  categories.forEach((category) => {
-    const matches = products
-      .filter((product) => productMatchesCategory(product, category))
-      .sort((a, b) => Number(a.price ?? 0) - Number(b.price ?? 0))
-      .slice(0, category === 'audio' || category === 'iluminacion' ? 2 : 1);
+  const selected: QuoteSuggestionItem[] = [];
+  const requestedNeedsCount = requestedNeeds.length;
 
-    matches.forEach((product) => {
-      if (!selected.has(product.id)) {
-        selected.set(product.id, {
-          ...product,
-          quantity: 1,
-        });
-      }
-    });
+  requestedNeeds.forEach((need) => {
+    if (need === 'audio') {
+      const product = pickBestAudio(products, budget, guestCount);
+      if (product) selected.push({ ...product, quantity: 1 });
+      return;
+    }
+
+    if (need === 'microphones') {
+      const microphones = pickBestMicrophones(products, budget);
+      microphones.forEach((product) => selected.push({ ...product, quantity: 1 }));
+      return;
+    }
+
+    if (need === 'led_screen') {
+      const product = pickBestLedScreen(products, budget, requestedNeedsCount);
+      if (product) selected.push({ ...product, quantity: 1 });
+      return;
+    }
+
+    if (need === 'stage') {
+      const product = pickBestStage(products, budget, guestCount, requestedNeedsCount);
+      if (product) selected.push({ ...product, quantity: 1 });
+      return;
+    }
+
+    if (need === 'lighting') {
+      const lighting = pickBestLighting(products, budget);
+      lighting.forEach((product) => selected.push({ ...product, quantity: 1 }));
+      return;
+    }
+
+    const product = pickBestSingle(products, need, budget, requestedNeedsCount);
+    if (product) selected.push({ ...product, quantity: 1 });
   });
 
-  return Array.from(selected.values()).slice(0, 7);
+  return dedupeItems(selected).slice(0, 9);
 }
 
 async function supabaseRest(
@@ -383,6 +628,7 @@ export async function POST(request: Request) {
       .find((message) => message.role === 'user');
 
     const activeProducts = await fetchActiveProducts();
+
     const quoteItems = lastUserMessage
       ? buildQuoteSuggestions(activeProducts, lastUserMessage.content)
       : [];
@@ -395,18 +641,29 @@ export async function POST(request: Request) {
       );
     }
 
+    const requestedNeeds = lastUserMessage
+      ? detectRequestedNeeds(lastUserMessage.content)
+      : [];
+
     const productContext =
       quoteItems.length > 0
         ? `
-Selección inicial detectada para cotización:
+El sistema detectó que el cliente pidió explícitamente estos tipos de servicios:
+${requestedNeeds.join(', ')}
+
+Selección inicial preparada desde productos reales del catálogo:
 ${quoteItems
   .map(
     (item) =>
-      `- ${item.name} | Categoría: ${item.category || 'General'} | Precio desde: ${item.price ?? 0}`
+      `- ${item.name} | Categoría: ${item.category || 'General'} | Precio desde: ${item.price ?? 0} | Cantidad: ${item.quantity}`
   )
   .join('\n')}
 
-En tu respuesta, dile al cliente que preparaste una selección inicial que puede agregar a la cotización con el botón del chat. Aclara que podrá ajustar cantidades y completar ciudad, tipo de evento, fecha y notas antes de enviar.
+Importante:
+- No digas que agregaste servicios que no estén en la selección.
+- No menciones categorías no pedidas por el cliente.
+- Explica que la selección es inicial y que puede ajustarse antes de enviar la cotización.
+- Si el cliente dio presupuesto, explica que la selección intenta mantenerse razonable dentro de ese presupuesto, pero que transporte, soporte técnico e ITBIS pueden afectar el total final.
 `
         : '';
 
@@ -428,7 +685,7 @@ En tu respuesta, dile al cliente que preparaste una selección inicial que puede
             content: message.content,
           })),
         ],
-        temperature: 0.5,
+        temperature: 0.35,
         max_output_tokens: 450,
       }),
     });
