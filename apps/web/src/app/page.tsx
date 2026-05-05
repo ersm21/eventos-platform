@@ -369,13 +369,13 @@ export default function Home() {
           </div>
         </section>
 
-        <section style={aboutSectionStyle}>
-          <div style={aboutHeaderStyle}>
+        <section style={isMobileHome ? mobileAboutSectionStyle : aboutSectionStyle}>
+          <div style={isMobileHome ? mobileAboutHeaderStyle : aboutHeaderStyle}>
             <p style={sectionEyebrowStyle}>Sobre nosotros</p>
           </div>
 
-          <div style={aboutGridStyle}>
-            <section style={aboutMainCardStyle}>
+          <div style={isMobileHome ? mobileAboutGridStyle : aboutGridStyle}>
+            <section style={isMobileHome ? mobileAboutMainCardStyle : aboutMainCardStyle}>
               <p style={aboutCardEyebrowStyle}>Quiénes somos</p>
               <h3 style={aboutCardTitleStyle}>Tu equipo técnico para eventos sociales, corporativos y producciones en vivo.</h3>
               <p style={aboutTextStyle}>
@@ -391,7 +391,7 @@ export default function Home() {
               </div>
             </section>
 
-            <section style={missionVisionCardStyle}>
+            <section style={isMobileHome ? mobileMissionVisionCardStyle : missionVisionCardStyle}>
               <div>
                 <p style={aboutCardEyebrowStyle}>Misión</p>
                 <p style={aboutTextStyle}>
@@ -411,35 +411,35 @@ export default function Home() {
           </div>
 
 
-          <div style={locationGridStyle}>
-            <section style={locationCardStyle}>
+          <div style={isMobileHome ? mobileLocationGridStyle : locationGridStyle}>
+            <section style={isMobileHome ? mobileLocationCardStyle : locationCardStyle}>
               <p style={aboutCardEyebrowStyle}>Cobertura</p>
               <h3 style={locationTitleStyle}>Estamos en Santiago y vamos a todo el país.</h3>
               <p style={aboutTextStyle}>
                 Nuestra base está en C. Penetración Flor de Gurabo, Santiago de los Caballeros 51000, pero realizamos eventos en todo el territorio nacional. También brindamos soporte técnico y asesoría para proyectos en Estados Unidos.
               </p>
 
-              <div style={contactListStyle}>
-                <div style={contactItemStyle}>
+              <div style={isMobileHome ? mobileContactListStyle : contactListStyle}>
+                <div style={isMobileHome ? mobileContactItemStyle : contactItemStyle}>
                   <span style={contactLabelStyle}>WhatsApp / Teléfono</span>
                   <a href="https://wa.me/18299359774" target="_blank" rel="noreferrer" style={contactLinkStyle}>
                     829-935-9774
                   </a>
                 </div>
 
-                <div style={contactItemStyle}>
+                <div style={isMobileHome ? mobileContactItemStyle : contactItemStyle}>
                   <span style={contactLabelStyle}>Ubicación</span>
                   <span style={contactValueStyle}>C. Penetración Flor de Gurabo, Santiago de los Caballeros 51000</span>
                 </div>
 
-                <div style={contactItemStyle}>
+                <div style={isMobileHome ? mobileContactItemStyle : contactItemStyle}>
                   <span style={contactLabelStyle}>Cobertura</span>
                   <span style={contactValueStyle}>Todo República Dominicana · Soporte técnico en Estados Unidos</span>
                 </div>
               </div>
             </section>
 
-            <section style={mapCardStyle}>
+            <section style={isMobileHome ? mobileMapCardStyle : mapCardStyle}>
               <div style={mapHeaderStyle}>
                 <p style={aboutCardEyebrowStyle}>Ubicación geográfica</p>
                 <a
@@ -452,7 +452,7 @@ export default function Home() {
                 </a>
               </div>
 
-              <div style={mapFrameStyle}>
+              <div style={isMobileHome ? mobileMapFrameStyle : mapFrameStyle}>
                 <iframe
                   title="Ubicación SM Events en Santiago de los Caballeros"
                   src="https://www.google.com/maps?q=SM%20Events%20C.%20Penetraci%C3%B3n%20Flor%20de%20Gurabo%20Santiago%20de%20los%20Caballeros%2051000&output=embed"
@@ -626,6 +626,101 @@ const mobileHighlightCardStyle: React.CSSProperties = {
   padding: 12,
   background: 'rgba(2, 6, 23, 0.54)',
   border: '1px solid rgba(250, 204, 21, 0.12)',
+};
+
+const mobileAboutSectionStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 12,
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  boxSizing: 'border-box',
+};
+
+const mobileAboutHeaderStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 6,
+  width: '100%',
+};
+
+const mobileAboutGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr)',
+  gap: 10,
+  width: '100%',
+  minWidth: 0,
+};
+
+const mobileAboutMainCardStyle: React.CSSProperties = {
+  width: '100%',
+  boxSizing: 'border-box',
+  padding: 14,
+  borderRadius: 22,
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.72))',
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+  overflow: 'hidden',
+};
+
+const mobileMissionVisionCardStyle: React.CSSProperties = {
+  width: '100%',
+  boxSizing: 'border-box',
+  padding: 14,
+  borderRadius: 22,
+  background: 'rgba(2, 6, 23, 0.42)',
+  border: '1px solid rgba(148, 163, 184, 0.12)',
+  overflow: 'hidden',
+};
+
+const mobileLocationGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr)',
+  gap: 10,
+  width: '100%',
+  minWidth: 0,
+};
+
+const mobileLocationCardStyle: React.CSSProperties = {
+  width: '100%',
+  boxSizing: 'border-box',
+  padding: 14,
+  borderRadius: 22,
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.72))',
+  border: '1px solid rgba(250, 204, 21, 0.13)',
+  overflow: 'hidden',
+};
+
+const mobileContactListStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 8,
+  marginTop: 12,
+};
+
+const mobileContactItemStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 5,
+  padding: 12,
+  borderRadius: 16,
+  background: 'rgba(2, 6, 23, 0.45)',
+  border: '1px solid rgba(148, 163, 184, 0.10)',
+};
+
+const mobileMapCardStyle: React.CSSProperties = {
+  width: '100%',
+  boxSizing: 'border-box',
+  padding: 14,
+  borderRadius: 22,
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.72))',
+  border: '1px solid rgba(250, 204, 21, 0.11)',
+  overflow: 'hidden',
+};
+
+const mobileMapFrameStyle: React.CSSProperties = {
+  width: '100%',
+  height: 260,
+  borderRadius: 18,
+  overflow: 'hidden',
+  border: '1px solid rgba(148, 163, 184, 0.14)',
+  marginTop: 12,
 };
 
 const pageStyle: React.CSSProperties = {
