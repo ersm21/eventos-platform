@@ -1,13 +1,27 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 type ChatMessage = {
   role: 'user' | 'assistant';
   content: string;
 };
 
+type QuoteSuggestionItem = {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number | null;
+  category: string | null;
+  image_url: string | null;
+  is_active: boolean | null;
+  quantity: number;
+};
+
 export default function SMChatbot() {
+  const router = useRouter();
+
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
@@ -15,13 +29,46 @@ export default function SMChatbot() {
     {
       role: 'assistant',
       content:
-        'Hola, soy el asistente de SM Events. Puedo ayudarte con luces, sonido, pantallas LED, tarimas, DJs y cotizaciones para tu evento.',
+        'Hola, soy el asistente de SM Events. Puedo ayudarte con luces, sonido, pantallas LED, tarimas, DJs y también puedo armarte una selección inicial para cotizar tu evento.',
     },
   ]);
   const [error, setError] = useState<string | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [quoteSuggestions, setQuoteSuggestions] = useState<QuoteSuggestionItem[]>([]);
 
   const visibleMessages = useMemo(() => messages.slice(-14), [messages]);
+
+  const quoteSuggestionsTotal = useMemo(
+    () =>
+      quoteSuggestions.reduce(
+        (sum, item) => sum + Number(item.price ?? 0) * item.quantity,
+        0
+      ),
+    [quoteSuggestions]
+  );
+
+  const formatMoney = (value: number | null | undefined) => {
+    return `$${Number(value ?? 0).toLocaleString()}`;
+  };
+
+  const addSuggestionsToQuote = () => {
+    if (quoteSuggestions.length === 0) return;
+
+    const cart = quoteSuggestions.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      price: item.price,
+      category: item.category,
+      image_url: item.image_url,
+      is_active: item.is_active,
+      quantity: item.quantity,
+    }));
+
+    window.localStorage.setItem('sm-events-catalog-cart', JSON.stringify(cart));
+    setOpen(false);
+    router.push('/cotizar?from=chatbot');
+  };
 
   const sendMessage = async () => {
     const cleanInput = input.trim();
@@ -37,6 +84,7 @@ export default function SMChatbot() {
     setInput('');
     setSending(true);
     setError(null);
+    setQuoteSuggestions([]);
 
     try {
       const response = await fetch('/api/chat', {
@@ -53,6 +101,10 @@ export default function SMChatbot() {
 
       if (data.conversationId) {
         setConversationId(data.conversationId);
+      }
+
+      if (Array.isArray(data.quoteItems)) {
+        setQuoteSuggestions(data.quoteItems);
       }
 
       setMessages((current) => [
@@ -115,6 +167,41 @@ export default function SMChatbot() {
                 {message.content}
               </div>
             ))}
+
+            {quoteSuggestions.length > 0 && (
+              <div style={quoteCardStyle}>
+                <p style={quoteCardEyebrowStyle}>Selección sugerida</p>
+                <h3 style={quoteCardTitleStyle}>Lista lista para cotizar</h3>
+
+                <div style={quoteItemListStyle}>
+                  {quoteSuggestions.map((item) => (
+                    <div key={item.id} style={quoteSuggestionItemStyle}>
+                      <div>
+                        <p style={quoteSuggestionNameStyle}>{item.name}</p>
+                        <p style={quoteSuggestionMetaStyle}>
+                          {item.category || 'Servicio'} · {formatMoney(item.price)}
+                        </p>
+                      </div>
+
+                      <strong style={quoteSuggestionQtyStyle}>x{item.quantity}</strong>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={quoteSuggestionTotalStyle}>
+                  <span>Subtotal estimado</span>
+                  <strong>{formatMoney(quoteSuggestionsTotal)}</strong>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={addSuggestionsToQuote}
+                  style={quoteActionButtonStyle}
+                >
+                  Agregar y continuar a cotizar
+                </button>
+              </div>
+            )}
           </div>
 
           {error && <div style={errorStyle}>{error}</div>}
@@ -129,7 +216,7 @@ export default function SMChatbot() {
                   sendMessage();
                 }
               }}
-              placeholder="Escribe tu pregunta..."
+              placeholder="Ej: Necesito luces y sonido para una boda..."
               style={inputStyle}
             />
 
@@ -251,6 +338,86 @@ const userBubbleStyle: React.CSSProperties = {
   justifySelf: 'end',
   background: 'linear-gradient(135deg, #f97316 0%, #ec4899 100%)',
   color: '#ffffff',
+};
+
+const quoteCardStyle: React.CSSProperties = {
+  justifySelf: 'stretch',
+  display: 'grid',
+  gap: 9,
+  padding: 12,
+  borderRadius: 18,
+  background:
+    'linear-gradient(135deg, rgba(245,158,11,0.13), rgba(168,85,247,0.10), rgba(15,23,42,0.92))',
+  border: '1px solid rgba(250,204,21,0.18)',
+};
+
+const quoteCardEyebrowStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#facc15',
+  fontSize: 10,
+  fontWeight: 950,
+  letterSpacing: '0.1em',
+  textTransform: 'uppercase',
+};
+
+const quoteCardTitleStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#ffffff',
+  fontSize: 15,
+  fontWeight: 950,
+};
+
+const quoteItemListStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 7,
+};
+
+const quoteSuggestionItemStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: 10,
+  padding: 9,
+  borderRadius: 14,
+  background: 'rgba(2,6,23,0.38)',
+  border: '1px solid rgba(148,163,184,0.10)',
+};
+
+const quoteSuggestionNameStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#f8fafc',
+  fontSize: 12.5,
+  fontWeight: 900,
+};
+
+const quoteSuggestionMetaStyle: React.CSSProperties = {
+  margin: '3px 0 0',
+  color: '#94a3b8',
+  fontSize: 11,
+};
+
+const quoteSuggestionQtyStyle: React.CSSProperties = {
+  color: '#facc15',
+  fontSize: 12,
+};
+
+const quoteSuggestionTotalStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  color: '#fde68a',
+  fontSize: 13,
+  fontWeight: 900,
+};
+
+const quoteActionButtonStyle: React.CSSProperties = {
+  width: '100%',
+  minHeight: 42,
+  border: 'none',
+  borderRadius: 14,
+  background: 'linear-gradient(135deg, #fb923c, #ec4899, #8b5cf6)',
+  color: '#ffffff',
+  fontSize: 13,
+  fontWeight: 950,
+  cursor: 'pointer',
 };
 
 const errorStyle: React.CSSProperties = {

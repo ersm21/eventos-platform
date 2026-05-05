@@ -171,11 +171,11 @@ export default function CotizarPage() {
   }, []);
 
   useEffect(() => {
-    const fromCatalog = new URLSearchParams(window.location.search).get('from') === 'catalogo';
-    if (!fromCatalog) return;
+    const source = new URLSearchParams(window.location.search).get('from');
+    const shouldLoadCart = source === 'catalogo' || source === 'chatbot';
 
     const savedCart = window.localStorage.getItem('sm-events-catalog-cart');
-    if (!savedCart) return;
+    if (!shouldLoadCart || !savedCart) return;
 
     try {
       type CatalogCartPayloadItem = Partial<Product> & {
