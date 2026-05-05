@@ -89,7 +89,7 @@ export default function Home() {
       setSessionEmail(session?.user?.email ?? null);
     });
 
-    return () => {
+  return () => {
       subscription.unsubscribe();
     };
   }, []);
@@ -267,38 +267,51 @@ export default function Home() {
     }, 900);
   };
 
+  const [isMobileHome, setIsMobileHome] = useState(false);
+
+  useEffect(() => {
+    const updateViewport = () => {
+      setIsMobileHome(window.innerWidth <= 760);
+    };
+
+    updateViewport();
+    window.addEventListener('resize', updateViewport);
+
+    return () => window.removeEventListener('resize', updateViewport);
+  }, []);
+
   return (
-    <main style={pageStyle}>
-      <div style={containerStyle}>
+    <main style={isMobileHome ? mobilePageStyle : pageStyle}>
+      <div style={isMobileHome ? mobileContainerStyle : containerStyle}>
         <AppNavbar ctaHref="/book-meeting" ctaLabel="Hablar con nosotros" />
 
-        <section style={heroShellStyle}>
+        <section style={isMobileHome ? mobileHeroShellStyle : heroShellStyle}>
           <div style={heroGlowStyle} />
           <div style={sideBrandLeftStyle} />
           <div style={sideBrandRightStyle} />
-          <div style={heroGridStyle}>
-            <div style={heroContentStyle}>
+          <div style={isMobileHome ? mobileHeroGridStyle : heroGridStyle}>
+            <div style={isMobileHome ? mobileHeroContentStyle : heroContentStyle}>
               <p style={brandHeroLabelStyle}>Producción de eventos</p>
-              <h1 style={heroTitleStyle}>
+              <h1 style={isMobileHome ? mobileHeroTitleStyle : heroTitleStyle}>
                 Hacemos que tu evento se vea y suene como debe
               </h1>
-              <p style={heroTextStyle}>
+              <p style={isMobileHome ? mobileHeroTextStyle : heroTextStyle}>
                 Cuéntanos qué estás preparando y te ayudamos a organizar luces,
                 sonido, pantallas LED, tarimas y producción con un proceso claro.
               </p>
 
-              <div style={heroButtonsStyle}>
-                <Link href="/book-meeting" style={primaryHeroButtonStyle}>
+              <div style={isMobileHome ? mobileHeroButtonsStyle : heroButtonsStyle}>
+                <Link href="/book-meeting" style={isMobileHome ? mobilePrimaryHeroButtonStyle : primaryHeroButtonStyle}>
                   Solicitar reunión
                 </Link>
-                <Link href="/login" style={secondaryHeroButtonStyle}>
+                <Link href="/login" style={isMobileHome ? mobileSecondaryHeroButtonStyle : secondaryHeroButtonStyle}>
                   Entrar a mi cuenta
                 </Link>
               </div>
             </div>
 
-            <div style={heroVisualWrapStyle}>
-              <div style={photoGridStyle}>
+            <div style={isMobileHome ? mobileHeroVisualWrapStyle : heroVisualWrapStyle}>
+              <div style={isMobileHome ? mobilePhotoGridStyle : photoGridStyle}>
                 <div
                   style={{
                     ...photoTileStyle,
@@ -345,7 +358,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div style={highlightCardStyle}>
+              <div style={isMobileHome ? mobileHighlightCardStyle : highlightCardStyle}>
                 <p style={highlightEyebrowStyle}>Servicio completo</p>
                 <h3 style={highlightTitleStyle}>Del montaje al seguimiento</h3>
                 <p style={highlightTextStyle}>
@@ -487,6 +500,133 @@ export default function Home() {
     </main>
   );
 }
+
+const mobilePageStyle: React.CSSProperties = {
+  minHeight: '100vh',
+  width: '100%',
+  maxWidth: '100%',
+  overflowX: 'hidden',
+  background:
+    'radial-gradient(circle at top left, rgba(250, 204, 21, 0.11), transparent 28%), radial-gradient(circle at bottom right, rgba(236, 72, 153, 0.08), transparent 30%), #020617',
+  color: '#f8fafc',
+};
+
+const mobileContainerStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  margin: '0 auto',
+  padding: '10px 10px 120px',
+  boxSizing: 'border-box',
+  display: 'grid',
+  gap: 12,
+  overflowX: 'hidden',
+};
+
+const mobileHeroShellStyle: React.CSSProperties = {
+  position: 'relative',
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+  boxSizing: 'border-box',
+  borderRadius: 26,
+  padding: 14,
+  overflow: 'hidden',
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.78))',
+  border: '1px solid rgba(250, 204, 21, 0.14)',
+  boxShadow: '0 20px 48px rgba(0, 0, 0, 0.32)',
+};
+
+const mobileHeroGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr)',
+  gap: 14,
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+};
+
+const mobileHeroContentStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 10,
+  width: '100%',
+  minWidth: 0,
+};
+
+const mobileHeroTitleStyle: React.CSSProperties = {
+  margin: '6px 0 0',
+  color: '#ffffff',
+  fontSize: 34,
+  lineHeight: 0.98,
+  fontWeight: 950,
+  letterSpacing: '-0.065em',
+};
+
+const mobileHeroTextStyle: React.CSSProperties = {
+  margin: 0,
+  color: '#cbd5e1',
+  fontSize: 13.5,
+  lineHeight: 1.45,
+};
+
+const mobileHeroButtonsStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  gap: 9,
+  marginTop: 4,
+};
+
+const mobilePrimaryHeroButtonStyle: React.CSSProperties = {
+  minHeight: 48,
+  borderRadius: 17,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '0 16px',
+  background: 'linear-gradient(135deg, #fb923c, #ec4899, #8b5cf6)',
+  color: '#ffffff',
+  fontSize: 14,
+  fontWeight: 950,
+  textDecoration: 'none',
+  boxShadow: '0 14px 32px rgba(236, 72, 153, 0.25)',
+};
+
+const mobileSecondaryHeroButtonStyle: React.CSSProperties = {
+  minHeight: 46,
+  borderRadius: 17,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '0 16px',
+  background: 'rgba(15, 23, 42, 0.72)',
+  border: '1px solid rgba(148, 163, 184, 0.16)',
+  color: '#f8fafc',
+  fontSize: 14,
+  fontWeight: 900,
+  textDecoration: 'none',
+};
+
+const mobileHeroVisualWrapStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: 10,
+  width: '100%',
+  minWidth: 0,
+};
+
+const mobilePhotoGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 8,
+  width: '100%',
+  minWidth: 0,
+};
+
+const mobileHighlightCardStyle: React.CSSProperties = {
+  borderRadius: 18,
+  padding: 12,
+  background: 'rgba(2, 6, 23, 0.54)',
+  border: '1px solid rgba(250, 204, 21, 0.12)',
+};
 
 const pageStyle: React.CSSProperties = {
   minHeight: '100vh',
